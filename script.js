@@ -27,26 +27,26 @@ const applyContactInfo = () => {
 
 applyContactInfo();
 
-const initKakaoMap = () => {
-  const mapElement = document.querySelector("[data-kakao-map]");
+const initNaverMap = () => {
+  const mapElement = document.querySelector("[data-naver-map]");
   if (!mapElement) return;
 
-  const mapWrap = mapElement.closest(".kakao-map-wrap");
-  const fallback = mapWrap?.querySelector("[data-kakao-map-fallback]");
+  const mapWrap = mapElement.closest(".naver-map-wrap");
+  const fallback = mapWrap?.querySelector("[data-naver-map-fallback]");
   const location = contactInfo.location || {};
-  const appKey = contactInfo.kakaoMapJavascriptKey;
+  const clientId = contactInfo.naverMapClientId;
   const lat = Number(location.lat);
   const lng = Number(location.lng);
 
   const showMapError = (reason, detail) => {
     if (fallback) {
-      fallback.innerHTML = "<strong>지도를 불러오지 못했습니다.</strong><p>카카오맵에서 위치를 확인해 주세요.</p>";
+      fallback.innerHTML = "<strong>지도를 불러오지 못했습니다.</strong><p>네이버 지도에서 위치를 확인해 주세요.</p>";
     }
-    console.warn(`[KakaoMap] ${reason}`, detail || "");
+    console.warn(`[NaverMap] ${reason}`, detail || "");
   };
 
-  if (!appKey) {
-    showMapError("Kakao JavaScript key is missing. Set kakaoMapJavascriptKey in contact-data.js.");
+  if (!clientId) {
+    showMapError("Naver Maps Client ID is missing. Set naverMapClientId in contact-data.js.");
     return;
   }
 
@@ -57,55 +57,71 @@ const initKakaoMap = () => {
 
   const renderMap = () => {
     try {
-      if (!window.kakao?.maps || mapElement.dataset.mapInitialized === "true") return;
+      if (!window.naver?.maps || mapElement.dataset.mapInitialized === "true") return;
 
-      const center = new window.kakao.maps.LatLng(lat, lng);
-      const map = new window.kakao.maps.Map(mapElement, {
+      const center = new window.naver.maps.LatLng(lat, lng);
+      const map = new window.naver.maps.Map(mapElement, {
         center,
-        level: window.matchMedia("(max-width: 700px)").matches ? 5 : 4
+        zoom: window.matchMedia("(max-width: 700px)").matches
+          ? location.mobileZoom || 15
+          : location.zoom || 16,
+        zoomControl: true,
+        zoomControlOptions: {
+          position: window.naver.maps.Position.TOP_RIGHT
+        }
       });
 
-      const marker = new window.kakao.maps.Marker({
+      const marker = new window.naver.maps.Marker({
         map,
         position: center,
         title: location.name || contactInfo.hospitalName || "아이숲동물병원"
       });
 
-      const infoWindow = new window.kakao.maps.InfoWindow({
-        content: `<div class="kakao-info-window"><strong>${location.name || contactInfo.hospitalName || "아이숲동물병원"}</strong><span>${location.address || contactInfo.address || ""}</span></div>`,
-        removable: false
+      const infoWindow = new window.naver.maps.InfoWindow({
+        content: `<div class="naver-info-window"><strong>${location.name || contactInfo.hospitalName || "아이숲동물병원"}</strong><span>${location.address || contactInfo.address || ""}</span></div>`,
+        borderWidth: 0,
+        backgroundColor: "transparent",
+        disableAnchor: true
       });
 
       infoWindow.open(map, marker);
+      window.naver.maps.Event.addListener(marker, "click", () => {
+        if (infoWindow.getMap()) {
+          infoWindow.close();
+        } else {
+          infoWindow.open(map, marker);
+        }
+      });
+
       mapElement.dataset.mapInitialized = "true";
       mapWrap?.classList.add("map-ready");
     } catch (error) {
-      showMapError("Map initialization failed. Check Kakao SDK domain registration and app key.", error);
+      showMapError("Map initialization failed. Check Naver Maps API domain registration and Client ID.", error);
     }
   };
 
-  if (window.kakao?.maps) {
-    window.kakao.maps.load(renderMap);
+  if (window.naver?.maps) {
+    renderMap();
     return;
   }
 
-  const existingScript = document.querySelector("script[data-kakao-map-script]");
+  const existingScript = document.querySelector("script[data-naver-map-script]");
   if (existingScript) {
-    existingScript.addEventListener("load", () => window.kakao?.maps?.load(renderMap), { once: true });
-    existingScript.addEventListener("error", (event) => showMapError("Kakao SDK loading failed.", event), { once: true });
+    existingScript.addEventListener("load", renderMap, { once: true });
+    existingScript.addEventListener("error", (event) => showMapError("Naver Maps SDK loading failed.", event), { once: true });
     return;
   }
 
   const script = document.createElement("script");
-  script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(appKey)}&autoload=false`;
+  script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(clientId)}`;
   script.async = true;
-  script.dataset.kakaoMapScript = "true";
-  script.addEventListener("load", () => window.kakao?.maps?.load(renderMap), { once: true });
-  script.addEventListener("error", (event) => showMapError("Kakao SDK loading failed.", event), { once: true });
+  script.dataset.naverMapScript = "true";
+  script.addEventListener("load", renderMap, { once: true });
+  script.addEventListener("error", (event) => showMapError("Naver Maps SDK loading failed.", event), { once: true });
   document.head.append(script);
 };
 
-initKakaoMap();
+initNaverMap();
 
 const setHeaderState = () => {
   header?.classList.toggle("scrolled", window.scrollY > 12);

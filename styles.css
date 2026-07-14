@@ -2234,7 +2234,7 @@ address {
   box-shadow: 0 24px 70px rgba(20, 34, 56, 0.14);
 }
 
-.kakao-map-wrap {
+.naver-map-wrap {
   position: relative;
   width: 100%;
   height: 100%;
@@ -2243,18 +2243,18 @@ address {
   background: #fffdf8;
 }
 
-.kakao-map-canvas,
-.kakao-map-fallback {
+.naver-map-canvas,
+.naver-map-fallback {
   position: absolute;
   inset: 0;
 }
 
-.kakao-map-canvas {
+.naver-map-canvas {
   width: 100%;
   height: 100%;
 }
 
-.kakao-map-fallback {
+.naver-map-fallback {
   display: grid;
   place-content: center;
   padding: 32px;
@@ -2265,25 +2265,25 @@ address {
     #fffdf8;
 }
 
-.kakao-map-wrap.map-ready .kakao-map-fallback {
+.naver-map-wrap.map-ready .naver-map-fallback {
   display: none;
 }
 
-.kakao-map-fallback strong {
+.naver-map-fallback strong {
   display: block;
   margin-bottom: 8px;
   font-size: 18px;
   font-weight: 900;
 }
 
-.kakao-map-fallback p {
+.naver-map-fallback p {
   margin: 0;
   color: #6c6a62;
   font-size: 14px;
   font-weight: 750;
 }
 
-.kakao-info-window {
+.naver-info-window {
   min-width: 168px;
   padding: 10px 12px;
   color: #142238;
@@ -2293,7 +2293,7 @@ address {
   box-shadow: 0 12px 26px rgba(20, 34, 56, 0.16);
 }
 
-.kakao-info-window strong {
+.naver-info-window strong {
   display: block;
   margin-bottom: 4px;
   color: #087c53;
@@ -2301,7 +2301,7 @@ address {
   font-weight: 950;
 }
 
-.kakao-info-window span {
+.naver-info-window span {
   display: block;
   color: #5f5d55;
   font-size: 12px;
@@ -2930,7 +2930,7 @@ address {
   }
 
   .location-map-card,
-  .kakao-map-wrap {
+  .naver-map-wrap {
     min-height: 440px;
   }
 
@@ -3101,7 +3101,7 @@ address {
   }
 
   .location-map-card,
-  .kakao-map-wrap {
+  .naver-map-wrap {
     min-height: 340px;
   }
 
