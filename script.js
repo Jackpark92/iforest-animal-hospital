@@ -93,6 +93,11 @@ const initNaverMap = () => {
         }
       });
 
+      window.addEventListener("resize", () => {
+        window.naver.maps.Event.trigger(map, "resize");
+        map.setCenter(center);
+      }, { passive: true });
+
       mapElement.dataset.mapInitialized = "true";
       mapWrap?.classList.add("map-ready");
     } catch (error) {
