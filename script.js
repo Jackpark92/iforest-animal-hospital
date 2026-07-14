@@ -136,6 +136,17 @@ const setHeaderState = () => {
 setHeaderState();
 window.addEventListener("scroll", setHeaderState, { passive: true });
 
+const closeMobileNav = () => {
+  if (!mobileNav?.classList.contains("open")) return;
+  mobileNav.classList.remove("open");
+  document.body.classList.remove("nav-open");
+  menuToggle?.setAttribute("aria-expanded", "false");
+  mobileAccordions.forEach((accordion) => {
+    accordion.closest(".mobile-accordion")?.classList.remove("open");
+    accordion.setAttribute("aria-expanded", "false");
+  });
+};
+
 menuToggle?.addEventListener("click", () => {
   const isOpen = mobileNav.classList.toggle("open");
   document.body.classList.toggle("nav-open", isOpen);
@@ -193,6 +204,16 @@ mobileNav?.querySelectorAll("a").forEach((link) => {
       accordion.setAttribute("aria-expanded", "false");
     });
   });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeMobileNav();
+});
+
+document.addEventListener("click", (event) => {
+  if (!mobileNav?.classList.contains("open")) return;
+  if (mobileNav.contains(event.target) || menuToggle?.contains(event.target)) return;
+  closeMobileNav();
 });
 
 const getCaseCategories = (item) => item.categories || item.category || [];
