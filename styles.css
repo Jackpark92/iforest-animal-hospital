@@ -1550,6 +1550,8 @@ section {
 
 .case-row {
   position: relative;
+  max-width: 100%;
+  overflow: hidden;
   margin-top: 28px;
 }
 
@@ -1558,8 +1560,10 @@ section {
   grid-auto-columns: calc((100% - 48px) / 4);
   grid-auto-flow: column;
   gap: 16px;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
-  overflow-y: visible;
+  overflow-y: hidden;
   padding: 4px 2px 18px;
   scroll-behavior: smooth;
   scroll-snap-type: x proximity;
