@@ -1631,6 +1631,10 @@ section {
   opacity: 0;
 }
 
+.case-mobile-toggle {
+  display: none;
+}
+
 .case-new-badge {
   position: absolute;
   top: 24px;
@@ -3058,21 +3062,57 @@ address {
 
   .case-row {
     margin-top: 24px;
+    overflow: visible;
   }
 
   .case-track {
-    grid-auto-columns: minmax(236px, 82%);
-    gap: 14px;
-    margin-inline: -2px;
-    padding-bottom: 16px;
+    grid-auto-flow: row;
+    grid-auto-columns: unset;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-inline: 0;
+    overflow: visible;
+    padding: 0;
+    scroll-snap-type: none;
   }
 
   .case-track .case-card {
-    min-height: 356px;
+    min-height: 0;
+    scroll-snap-align: none;
+  }
+
+  .case-category-section:not(.mobile-expanded) .case-track .case-card:nth-child(n + 4) {
+    display: none;
   }
 
   .case-row-button {
     display: none;
+  }
+
+  .case-mobile-toggle {
+    display: inline-flex;
+    width: 100%;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 18px;
+    padding: 0 16px;
+    color: #142238;
+    font-size: 14px;
+    font-weight: 900;
+    background: #fffdf8;
+    border: 1px solid rgba(202, 174, 111, 0.36);
+    border-radius: 999px;
+    box-shadow: 0 12px 28px rgba(20, 34, 56, 0.08);
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .case-mobile-toggle:hover,
+  .case-mobile-toggle:focus-visible {
+    transform: translateY(-2px);
+    background: rgba(202, 174, 111, 0.16);
+    border-color: rgba(202, 174, 111, 0.58);
   }
 
   .case-thumb-text {
@@ -3194,10 +3234,6 @@ address {
 }
 
 @media (max-width: 430px) {
-  .case-track {
-    grid-auto-columns: minmax(220px, 84%);
-  }
-
   .instagram-card {
     padding-inline: 22px;
   }
@@ -3214,10 +3250,6 @@ address {
 
   .case-category-section {
     padding-inline: 16px;
-  }
-
-  .case-track {
-    grid-auto-columns: minmax(204px, 86%);
   }
 
   .location-detail-card,

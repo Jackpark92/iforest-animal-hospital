@@ -435,6 +435,12 @@ const createCaseSection = (section, cases) => {
 
   cases.forEach((item) => track.append(createCaseCard(item)));
 
+  const mobileToggle = document.createElement("button");
+  mobileToggle.className = "case-mobile-toggle";
+  mobileToggle.type = "button";
+  mobileToggle.textContent = `${section.title} 치료 사례 더보기`;
+  mobileToggle.setAttribute("aria-expanded", "false");
+
   const scrollByCard = (direction) => {
     const card = track.querySelector(".case-card");
     const amount = card ? card.getBoundingClientRect().width + 16 : track.clientWidth * 0.8;
@@ -445,9 +451,14 @@ const createCaseSection = (section, cases) => {
   nextButton.addEventListener("click", () => scrollByCard(1));
   track.addEventListener("scroll", () => updateCaseControls(track, previousButton, nextButton), { passive: true });
   window.addEventListener("resize", () => updateCaseControls(track, previousButton, nextButton));
+  mobileToggle.addEventListener("click", () => {
+    const isExpanded = sectionElement.classList.toggle("mobile-expanded");
+    mobileToggle.setAttribute("aria-expanded", String(isExpanded));
+    mobileToggle.textContent = isExpanded ? `${section.title} 치료 사례 접기` : `${section.title} 치료 사례 더보기`;
+  });
 
   row.append(previousButton, track, nextButton);
-  sectionElement.append(header, row);
+  sectionElement.append(header, row, mobileToggle);
 
   requestAnimationFrame(() => updateCaseControls(track, previousButton, nextButton));
   return sectionElement;
