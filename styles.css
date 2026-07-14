@@ -3144,6 +3144,40 @@ address {
 
   .case-media {
     min-height: 156px;
+    background:
+      linear-gradient(90deg, rgba(202, 174, 111, 0.1) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(202, 174, 111, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 84% 30%, rgba(7, 135, 82, 0.14), transparent 0 24%, transparent 25%),
+      linear-gradient(145deg, #fffdf8, #f5efe3 62%, #eaf4ee);
+    background-size: 28px 28px, 28px 28px, auto, auto;
+    color: #142238;
+  }
+
+  .case-media::before {
+    border-color: rgba(202, 174, 111, 0.26);
+  }
+
+  .case-thumb-label {
+    color: #087c53;
+    background: rgba(7, 135, 82, 0.08);
+    border-color: rgba(7, 135, 82, 0.22);
+  }
+
+  .case-thumb-title {
+    color: #142238;
+  }
+
+  .case-thumb-subtitle {
+    color: rgba(20, 34, 56, 0.7);
+  }
+
+  .case-thumb-brand {
+    color: rgba(20, 34, 56, 0.42);
+  }
+
+  .case-thumb-icon {
+    color: #8b6c2e;
+    opacity: 0.16;
   }
 
   .care-card.featured {
