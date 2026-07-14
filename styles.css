@@ -3077,12 +3077,23 @@ address {
   }
 
   .case-track .case-card {
+    display: flex;
     min-height: 0;
+    opacity: 1;
+    transform: none;
     scroll-snap-align: none;
   }
 
   .case-category-section:not(.mobile-expanded) .case-track .case-card:nth-child(n + 4) {
     display: none;
+  }
+
+  .case-category-section:not(.mobile-expanded) .case-track .case-card:nth-child(-n + 3),
+  .case-category-section.mobile-expanded .case-track .case-card {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
   }
 
   .case-row-button {
