@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="860" viewBox="0 0 1200 860" role="img" aria-labelledby="title desc">
+  <title id="title">아이숲동물병원 위치 약도</title>
+  <desc id="desc">경기도 광명시 시청로 33-1 아이숲동물병원 위치를 현충근린공원, 자이 더 헤리티지, 롯데캐슬 SK VIEW 클래시티, 광명시청, 광명사거리역, 철산역 기준으로 안내합니다.</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#f3eadb"/>
+    </linearGradient>
+    <linearGradient id="navy" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#172742"/>
+      <stop offset="1" stop-color="#0b1322"/>
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0b1322" flood-opacity=".15"/>
+    </filter>
+    <style>
+      .kr{font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+      .navy{fill:#142238}
+      .gold{fill:#caae6f}
+      .muted{fill:#6c6a62}
+      .road{stroke-linecap:round;stroke-linejoin:round}
+      .label{font-size:25px;font-weight:800}
+    </style>
+  </defs>
+
+  <rect width="1200" height="860" rx="34" fill="url(#paper)"/>
+  <rect x="46" y="46" width="1108" height="768" rx="28" fill="#fffdf8" stroke="#d9cba9" stroke-width="2"/>
+
+  <g class="kr">
+    <text x="86" y="112" class="navy" font-size="38" font-weight="900">아이숲동물병원 위치 약도</text>
+    <text x="86" y="152" class="muted" font-size="22" font-weight="650">경기도 광명시 시청로 33-1, 1층</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="86" y="196" width="1028" height="500" rx="24" fill="#f8f3e8" stroke="#e1d2ad" stroke-width="2"/>
+
+    <path class="road" d="M170 596H1010" stroke="#67613c" stroke-width="22"/>
+    <path class="road" d="M240 630H940" stroke="#b7a984" stroke-width="4" stroke-dasharray="13 14"/>
+    <path class="road" d="M704 246V650" stroke="#557f9f" stroke-width="24"/>
+    <path class="road" d="M704 408H936" stroke="#557f9f" stroke-width="18"/>
+    <path class="road" d="M704 246V650" stroke="#fffaf0" stroke-width="4" opacity=".24"/>
+    <path class="road" d="M704 408H936" stroke="#fffaf0" stroke-width="4" opacity=".24"/>
+  </g>
+
+  <g class="kr">
+    <rect x="270" y="286" width="292" height="72" rx="18" fill="#fffaf0" stroke="#e1d2ad"/>
+    <path d="M508 335c16-26 19-43 8-60-20 8-32 22-36 42-9-22-24-36-45-43-8 24-1 43 20 59-26-6-45 0-58 18 21 20 47 23 78 9-7 20-5 39 6 55 18-13 27-32 26-56 17 15 36 19 57 12-6-16-24-27-56-36z" fill="#8aa86d" opacity=".58"/>
+    <text x="318" y="332" class="label navy">현충근린공원</text>
+
+    <rect x="770" y="278" width="292" height="80" rx="18" fill="#fffaf0" stroke="#e1d2ad"/>
+    <path d="M804 334h38v-58h-38v58zm46 0h24v-78h-24v78zm32 0h30v-56h-30v56z" fill="#557f9f"/>
+    <text x="944" y="327" text-anchor="middle" class="label navy">자이 더 헤리티지</text>
+
+    <rect x="770" y="446" width="318" height="92" rx="18" fill="#fffaf0" stroke="#e1d2ad"/>
+    <path d="M804 510h40v-66h-40v66zm48 0h26v-86h-26v86zm34 0h32v-60h-32v60z" fill="#557f9f"/>
+    <text x="960" y="482" text-anchor="middle" class="label navy">롯데캐슬 &amp; SK VIEW</text>
+    <text x="960" y="516" text-anchor="middle" class="label navy">클래시티</text>
+
+    <rect x="786" y="560" width="254" height="68" rx="18" fill="#fffaf0" stroke="#e1d2ad"/>
+    <path d="M824 602h78M834 576v36M860 576v36M886 576v36M826 616h76M838 566h52l-26-17-26 17z" fill="none" stroke="#557f9f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="966" y="604" text-anchor="middle" class="label navy">광명시청</text>
+  </g>
+
+  <g class="kr" filter="url(#shadow)">
+    <path d="M276 434c0-34 27-61 61-61h246c34 0 61 27 61 61v46c0 28-20 53-47 59l-3 52-42-50H337c-34 0-61-27-61-61v-46z" fill="#fffdf8" stroke="#caae6f" stroke-width="4"/>
+    <circle cx="594" cy="608" r="22" fill="#caae6f" stroke="#fffdf8" stroke-width="6"/>
+    <text x="462" y="469" text-anchor="middle" fill="#142238" font-size="40" font-weight="900">아이숲동물병원</text>
+    <text x="462" y="508" text-anchor="middle" fill="#6c6a62" font-size="20" font-weight="700">병원 앞 전면주차 가능</text>
+  </g>
+
+  <g class="kr">
+    <circle cx="202" cy="596" r="28" fill="#67613c"/>
+    <text x="202" y="608" text-anchor="middle" fill="#fffaf0" font-size="30" font-weight="900">7</text>
+    <text x="202" y="662" text-anchor="middle" fill="#67613c" font-size="30" font-weight="900">광명사거리역</text>
+    <circle cx="978" cy="596" r="28" fill="#67613c"/>
+    <text x="978" y="608" text-anchor="middle" fill="#fffaf0" font-size="30" font-weight="900">7</text>
+    <text x="978" y="662" text-anchor="middle" fill="#67613c" font-size="30" font-weight="900">철산역</text>
+  </g>
+
+  <g class="kr">
+    <rect x="86" y="724" width="1028" height="58" rx="18" fill="url(#navy)"/>
+    <circle cx="130" cy="753" r="12" fill="#caae6f"/>
+    <text x="154" y="762" fill="#fff7e8" font-size="22" font-weight="800">주차 안내</text>
+    <text x="270" y="762" fill="#fff7e8" font-size="22" font-weight="650">병원 앞 전면주차 가능</text>
+    <path d="M590 736v34" stroke="#caae6f" stroke-width="2" opacity=".5"/>
+    <circle cx="630" cy="753" r="12" fill="#caae6f"/>
+    <text x="654" y="762" fill="#fff7e8" font-size="22" font-weight="800">대중교통</text>
+    <text x="778" y="762" fill="#fff7e8" font-size="22" font-weight="650">7호선 광명사거리역 또는 철산역</text>
+  </g>
+</svg>
