@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --green: #078752;
   --green-dark: #07563d;
   --green-soft: #e5f2ec;
@@ -3084,10 +3085,8 @@ address {
     scroll-snap-align: none;
   }
 
-  .case-category-section:not(.mobile-expanded) .case-track .case-card:nth-child(n + 4) {
-    display: none;
-  }
-
+  .case-category-section .case-track .case-card,
+  .case-category-section:not(.mobile-expanded) .case-track .case-card:nth-child(n + 4),
   .case-category-section:not(.mobile-expanded) .case-track .case-card:nth-child(-n + 3),
   .case-category-section.mobile-expanded .case-track .case-card {
     display: flex;
@@ -3101,7 +3100,7 @@ address {
   }
 
   .case-mobile-toggle {
-    display: inline-flex;
+    display: none;
     width: 100%;
     min-height: 46px;
     align-items: center;
@@ -3141,6 +3140,10 @@ address {
     right: 12px;
     width: min(24%, 64px);
     height: min(24%, 64px);
+  }
+
+  .case-media {
+    min-height: 156px;
   }
 
   .care-card.featured {
