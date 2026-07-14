@@ -94,6 +94,7 @@ const initNaverMap = () => {
       });
 
       window.addEventListener("resize", () => {
+        if (!window.naver?.maps?.Event) return;
         window.naver.maps.Event.trigger(map, "resize");
         map.setCenter(center);
       }, { passive: true });

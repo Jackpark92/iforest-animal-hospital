@@ -25,11 +25,13 @@ footer {
 html {
   scroll-behavior: smooth;
   max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
   max-width: 100%;
+  overflow-x: clip;
   color: var(--ink);
   background: var(--ivory);
   font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
