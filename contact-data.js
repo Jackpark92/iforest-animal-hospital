@@ -1,6 +1,6 @@
 const IFOREST_LOCATION = {
-  name: "아이숲동물병원",
-  address: "경기 광명시 시청로 33-1, 1층",
+  name: "\uC544\uC774\uC232\uB3D9\uBB3C\uBCD1\uC6D0",
+  address: "\uACBD\uAE30\uB3C4 \uAD11\uBA85\uC2DC \uC2DC\uCCAD\uB85C 33-1, 1\uCE35",
   lat: 37.4799175,
   lng: 126.8637915
 };
@@ -13,9 +13,9 @@ window.IFOREST_CONTACT = {
   address: IFOREST_LOCATION.address,
   phone: "02.6951.5100",
   tel: "0269515100",
-  hours: "월-토 10:00 - 20:00 · 일요일 휴진",
-  parking: "병원 앞 전면 주차 2대 가능",
-  publicTransit: "7호선 철산역 또는 광명시청 정류장 이용",
+  hours: "\uC6D4-\uD1A0 10:00 - 20:00 \u00B7 \uC77C\uC694\uC77C \uD734\uC9C4",
+  parking: "\uBCD1\uC6D0 \uC55E \uC804\uBA74 \uC8FC\uCC28 2\uB300 \uAC00\uB2A5",
+  publicTransit: "7\uD638\uC120 \uCCA0\uC0B0\uC5ED \uB610\uB294 \uAD11\uBA85\uC2DC\uCCAD \uC815\uB958\uC7A5 \uC774\uC6A9",
   naverMapUrl: "https://map.naver.com/p/entry/place/1806958154?lng=126.8637915&lat=37.4799175&placePath=%2Fhome&searchType=place&c=15.00,0,0,0,dh",
   kakaoMapUrl: IFOREST_KAKAO_DIRECTIONS_URL,
   directionsUrl: "https://map.naver.com/p/entry/place/1806958154?lng=126.8637915&lat=37.4799175&placePath=%2Fhome&searchType=place&c=15.00,0,0,0,dh",

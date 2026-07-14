@@ -65,13 +65,13 @@
       <div class="mobile-accordion">
         <button type="button" aria-expanded="false" aria-controls="mobile-cases-submenu" data-mobile-accordion>치료사례</button>
         <div class="mobile-submenu" id="mobile-cases-submenu">
-          <a href="#orthopedic">정형외과</a>
-          <a href="#general-surgery">일반외과·종양수술</a>
-          <a href="#internal">내과·노령질환</a>
-          <a href="#dental">치과</a>
-          <a href="#cat">고양이 특화진료</a>
-          <a href="#cardiology">심장·건강검진</a>
-          <a href="#ophthalmology">안과</a>
+          <a href="#cases">정형외과</a>
+          <a href="#cases">일반외과·종양수술</a>
+          <a href="#cases">내과·노령질환</a>
+          <a href="#cases">치과</a>
+          <a href="#cases">고양이 특화진료</a>
+          <a href="#cases">심장·건강검진</a>
+          <a href="#cases">안과</a>
         </div>
       </div>
       <a href="#visit">진료안내</a>
@@ -104,34 +104,35 @@
       </section>
 
       <section class="mobile-home-panel mobile-only" aria-label="모바일 주요 바로가기">
-        <div class="mobile-link-grid">
-          <a href="#why-iforest"><span>아이숲의 특별함</span><strong>신뢰할 수 있는 진료 원칙</strong></a>
-          <a href="#services"><span>진료과목</span><strong>필요한 진료 빠르게 찾기</strong></a>
-          <a href="#cases"><span>치료사례</span><strong>실제 진료 사례 확인</strong></a>
-          <a href="#location"><span>오시는 길</span><strong>지도와 주차 안내</strong></a>
+        <div class="mobile-section-title">
+          <span>MEDICAL CARE</span>
+          <h2>주요 진료 분야</h2>
         </div>
-
         <div class="mobile-service-shortcuts" aria-label="주요 진료 분야">
-          <a href="#general-surgery">외과수술</a>
-          <a href="#internal">내과·노령</a>
-          <a href="#dental">치과</a>
-          <a href="#cat">고양이 진료</a>
-          <a href="#cardiology">심장·검진</a>
-          <a href="#ophthalmology">안과</a>
+          <a href="#services">외과수술</a>
+          <a href="#services">내과·노령</a>
+          <a href="#services">치과</a>
+          <a href="#services">고양이 진료</a>
+          <a href="#services">심장·검진</a>
+          <a href="#services">안과</a>
         </div>
+        <a class="mobile-all-link" href="#services">진료과목 전체보기 →</a>
+
+        <article class="mobile-home-card mobile-story-card">
+          <img src="assets/hospital-lobby-wide.jpg" alt="아이숲동물병원 내부 공간" loading="lazy">
+          <div>
+            <span>아이숲 이야기</span>
+            <h3>처음 방문하는 보호자도 안심할 수 있도록</h3>
+            <p>진료 전 설명부터 치료 후 관리까지, 보호자가 이해할 수 있는 언어로 함께 소통합니다.</p>
+            <a href="https://blog.naver.com/vet_jackpark" target="_blank" rel="noopener noreferrer">병원 이야기 보기 →</a>
+          </div>
+        </article>
 
         <a class="mobile-feature-case" href="#cases" aria-label="대표 치료 사례로 이동">
           <span>대표 치료 사례</span>
-          <strong>실제 치료 과정을 한눈에 확인하세요.</strong>
-          <em>치료 사례 보기 →</em>
-        </a>
-
-        <a class="mobile-doctor-teaser" href="#doctor" aria-label="대표원장 소개로 이동">
-          <img src="assets/director.jpg" alt="아이숲동물병원 박종민 대표원장">
-          <span>
-            <b>대표원장 박종민</b>
-            외과학 석사 대표원장이 진료부터 치료 계획까지 꼼꼼하게 살핍니다.
-          </span>
+          <strong>고양이 구내염 전발치 치료 사례</strong>
+          <small>#고양이구내염 #전발치 #구강통증</small>
+          <em>치료 사례 전체보기 →</em>
         </a>
       </section>
 
@@ -566,6 +567,12 @@
               <span>전화 안내</span>
               <a href="tel:0269515100" data-contact-link="tel" aria-label="아이숲동물병원 전화 연결"><strong data-contact="phone">02.6951.5100</strong></a>
             </article>
+            <article class="location-detail-card mobile-location-hours mobile-only">
+              <span>진료시간</span>
+              <p>월-토 10:00 - 20:00</p>
+              <small>점심시간 13:00 - 14:00 · 일요일 휴진</small>
+              <a class="button primary full" href="tel:0269515100">전화 문의하기</a>
+            </article>
           </div>
 
           <div class="location-map-card reveal">
@@ -647,6 +654,13 @@
             </div>
           </article>
         </div>
+
+        <nav class="mobile-page-shortcuts mobile-only" aria-label="모바일 주요 페이지 바로가기">
+          <a href="#doctor"><span>의료진 소개</span></a>
+          <a href="#why-iforest"><span>아이숲의 특별함</span></a>
+          <a href="#services"><span>진료과목</span></a>
+          <a href="#cases"><span>치료사례</span></a>
+        </nav>
       </section>
     </main>
 

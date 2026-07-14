@@ -1,4 +1,4 @@
-const header = document.querySelector("[data-header]");
+﻿const header = document.querySelector("[data-header]");
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const mobileNav = document.querySelector("[data-mobile-nav]");
 const desktopDropdowns = document.querySelectorAll("[data-desktop-dropdown]");
@@ -63,7 +63,7 @@ const initNaverMap = () => {
       const center = new window.naver.maps.LatLng(lat, lng);
       const map = new window.naver.maps.Map(mapElement, {
         center,
-        zoom: window.matchMedia("(max-width: 700px)").matches
+        zoom: window.matchMedia("(max-width: 768px)").matches
           ? location.mobileZoom || 15
           : location.zoom || 16,
         zoomControl: true,
@@ -325,7 +325,7 @@ const createCaseThumbnail = (item) => {
 
   const label = document.createElement("span");
   label.className = "case-thumb-label";
-  label.textContent = getCaseCategories(item)[0] || "진료 사례";
+  label.textContent = getCaseCategories(item)[0] || "吏꾨즺 ?щ?";
 
   if (isRecentCase(item.publishedAt)) {
     const newBadge = document.createElement("span");
@@ -389,7 +389,7 @@ const createCaseCard = (item) => {
 
   const cta = document.createElement("span");
   cta.className = "case-link";
-  cta.textContent = "치료 과정 보기";
+  cta.textContent = "치료 과정 보기 →";
   body.append(cta);
 
   card.append(media, body);
@@ -496,11 +496,9 @@ const getMobileCaseTags = (item) => {
     .filter(Boolean)
     .join(" ")
     .replace(/[()]/g, " ")
-    .replace(/\s및\s/g, " ")
-    .replace(/\s관리/g, " 관리")
     .split(/[·,/|\s]+/)
     .map((tag) => tag.trim())
-    .filter((tag) => tag.length > 1 && !["및", "후", "전", "진단과"].includes(tag));
+    .filter((tag) => tag.length > 1 && !["및", "등", "진단과"].includes(tag));
 
   return [...new Set(source)].slice(0, 3);
 };
@@ -549,8 +547,8 @@ const renderMobileCaseArchive = (cases, sections) => {
   intro.className = "mobile-case-intro";
   intro.innerHTML = `
     <p class="eyebrow">CASE ARCHIVE</p>
-    <h3>실제 진료 케이스를<br>분야별로 모았습니다</h3>
-    <p>아이숲동물병원에서 직접 진료한 사례를 분야별로 정리했습니다. 자세한 내용은 블로그 원문에서 확인할 수 있습니다.</p>
+    <h3>실제 진료 케이스를<br>분야별로 모아봅니다</h3>
+    <p>아이숲동물병원에서 직접 진료한 사례를 분야별로 정리했습니다. 자세한 내용은 블로그 원문에서 확인하실 수 있습니다.</p>
   `;
 
   const filters = document.createElement("div");
