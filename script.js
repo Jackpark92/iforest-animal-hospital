@@ -4,6 +4,7 @@ const mobileNav = document.querySelector("[data-mobile-nav]");
 const desktopDropdowns = document.querySelectorAll("[data-desktop-dropdown]");
 const mobileAccordions = document.querySelectorAll("[data-mobile-accordion]");
 const caseGrid = document.querySelector("[data-case-grid]");
+const mobileCaseArchive = document.querySelector("[data-mobile-case-archive]");
 const contactInfo = window.IFOREST_CONTACT || {};
 
 const applyContactInfo = () => {
@@ -485,27 +486,156 @@ const createCaseSection = (section, cases) => {
   return sectionElement;
 };
 
+const getCaseUrl = (item) => item.blogUrl || item.url || "";
+
+const getMobileCaseTags = (item) => {
+  if (Array.isArray(item.mobileTags)) return item.mobileTags.slice(0, 3);
+  if (Array.isArray(item.tags)) return item.tags.slice(0, 3);
+
+  const source = [item.subtitle, item.description, item.title]
+    .filter(Boolean)
+    .join(" ")
+    .replace(/[()]/g, " ")
+    .replace(/\s및\s/g, " ")
+    .replace(/\s관리/g, " 관리")
+    .split(/[·,/|\s]+/)
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length > 1 && !["및", "후", "전", "진단과"].includes(tag));
+
+  return [...new Set(source)].slice(0, 3);
+};
+
+const createMobileCaseCard = (item, sectionTitle) => {
+  const card = document.createElement("a");
+  card.className = "mobile-case-card";
+  card.href = getCaseUrl(item) || "https://blog.naver.com/vet_jackpark";
+  card.target = "_blank";
+  card.rel = "noopener noreferrer";
+  card.setAttribute("aria-label", `${item.title} 블로그 원문 보기`);
+
+  const badge = document.createElement("span");
+  badge.className = "mobile-case-badge";
+  badge.textContent = sectionTitle || getCaseCategories(item)[0] || "진료 사례";
+
+  const title = document.createElement("strong");
+  title.className = "mobile-case-title";
+  title.textContent = item.mobileTitle || item.title;
+
+  const tags = document.createElement("div");
+  tags.className = "mobile-case-tags";
+  getMobileCaseTags(item).forEach((tag) => {
+    const tagElement = document.createElement("span");
+    tagElement.textContent = `#${tag.replace(/^#/, "")}`;
+    tags.append(tagElement);
+  });
+
+  const link = document.createElement("em");
+  link.className = "mobile-case-link";
+  link.textContent = "블로그 원문 보기 →";
+
+  card.append(badge, title, tags, link);
+  return card;
+};
+
+const getMobileSectionCases = (section, cases, limit = 3) =>
+  cases
+    .filter((item) => getCaseCategories(item).includes(section.title) && getCaseUrl(item))
+    .slice(0, limit);
+
+const renderMobileCaseArchive = (cases, sections) => {
+  if (!mobileCaseArchive) return;
+
+  const intro = document.createElement("div");
+  intro.className = "mobile-case-intro";
+  intro.innerHTML = `
+    <p class="eyebrow">CASE ARCHIVE</p>
+    <h3>실제 진료 케이스를<br>분야별로 모았습니다</h3>
+    <p>아이숲동물병원에서 직접 진료한 사례를 분야별로 정리했습니다. 자세한 내용은 블로그 원문에서 확인할 수 있습니다.</p>
+  `;
+
+  const filters = document.createElement("div");
+  filters.className = "mobile-case-filters";
+  filters.setAttribute("role", "tablist");
+  filters.setAttribute("aria-label", "치료 케이스 분야 선택");
+
+  const list = document.createElement("div");
+  list.className = "mobile-case-list";
+
+  const sectionMap = sections.map((section) => ({
+    section,
+    cases: getMobileSectionCases(section, cases, 3)
+  })).filter((entry) => entry.cases.length);
+
+  const renderList = (activeId = "all") => {
+    const visibleEntries = activeId === "all"
+      ? sectionMap.map((entry) => ({ ...entry, cases: entry.cases.slice(0, 1) }))
+      : sectionMap.filter((entry) => entry.section.id === activeId).map((entry) => ({ ...entry, cases: entry.cases.slice(0, 3) }));
+
+    const fragment = document.createDocumentFragment();
+    visibleEntries.forEach(({ section, cases: sectionCases }) => {
+      sectionCases.forEach((item) => fragment.append(createMobileCaseCard(item, section.title)));
+    });
+    list.replaceChildren(fragment);
+  };
+
+  const makeFilterButton = (label, id, selected = false) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.dataset.mobileCaseFilter = id;
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-selected", String(selected));
+    if (selected) button.classList.add("active");
+    button.addEventListener("click", () => {
+      filters.querySelectorAll("button").forEach((filter) => {
+        const isActive = filter === button;
+        filter.classList.toggle("active", isActive);
+        filter.setAttribute("aria-selected", String(isActive));
+      });
+      renderList(id);
+    });
+    return button;
+  };
+
+  filters.append(makeFilterButton("전체", "all", true));
+  sectionMap.forEach(({ section }) => filters.append(makeFilterButton(section.title, section.id)));
+
+  const more = document.createElement("a");
+  more.className = "mobile-case-more";
+  more.href = "https://blog.naver.com/vet_jackpark";
+  more.target = "_blank";
+  more.rel = "noopener noreferrer";
+  more.textContent = "네이버 블로그에서 전체 치료 사례 보기 →";
+
+  mobileCaseArchive.replaceChildren(intro, filters, list, more);
+  renderList("all");
+};
+
 const renderCases = () => {
-  if (!caseGrid || !Array.isArray(window.IFOREST_CASES)) return;
+  if (!Array.isArray(window.IFOREST_CASES)) return;
 
   const fragment = document.createDocumentFragment();
   const cases = window.IFOREST_CASES;
   const sections = Array.isArray(window.IFOREST_CASE_SECTIONS) ? window.IFOREST_CASE_SECTIONS : [];
 
-  sections.forEach((section) => {
-    const sectionCases = cases.filter((item) => getCaseCategories(item).includes(section.title));
-    if (sectionCases.length) {
-      fragment.append(createCaseSection(section, sectionCases));
-    }
-  });
+  if (caseGrid) {
+    sections.forEach((section) => {
+      const sectionCases = cases.filter((item) => getCaseCategories(item).includes(section.title));
+      if (sectionCases.length) {
+        fragment.append(createCaseSection(section, sectionCases));
+      }
+    });
 
-  caseGrid.replaceChildren(fragment);
-  requestAnimationFrame(() => {
-    caseGrid.querySelectorAll(".case-card").forEach((card) => card.classList.add("visible"));
-    const targetId = decodeURIComponent(window.location.hash.slice(1));
-    const target = targetId ? document.getElementById(targetId) : null;
-    target?.scrollIntoView();
-  });
+    caseGrid.replaceChildren(fragment);
+    requestAnimationFrame(() => {
+      caseGrid.querySelectorAll(".case-card").forEach((card) => card.classList.add("visible"));
+      const targetId = decodeURIComponent(window.location.hash.slice(1));
+      const target = targetId ? document.getElementById(targetId) : null;
+      target?.scrollIntoView();
+    });
+  }
+
+  renderMobileCaseArchive(cases, sections);
 };
 
 renderCases();
