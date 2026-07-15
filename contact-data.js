@@ -10,12 +10,12 @@ const IFOREST_KAKAO_DIRECTIONS_URL =
 
 const IFOREST_MOBILE_MAP_VIEWPORTS = {
   previous: {
-    zoom: 15,
-    center: { lat: 37.4794, lng: 126.8649 }
+    zoom: 16,
+    center: { lat: 37.4801, lng: 126.86445 }
   },
   current: {
     zoom: 16,
-    center: { lat: 37.4801, lng: 126.86445 }
+    center: { lat: 37.47955, lng: 126.86535 }
   }
 };
 
