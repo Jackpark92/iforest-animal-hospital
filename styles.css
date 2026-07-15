@@ -3101,11 +3101,25 @@ address {
     padding: 72px 20px;
   }
 
-  .services-section {
+  .strengths-section,
+  .doctor-section,
+  .consultant-section,
+  .services-section,
+  .cases-section {
     display: none;
   }
 
-  .services-section:target {
+  .strengths-section:target,
+  .services-section:target,
+  .cases-section:target {
+    display: block;
+  }
+
+  .doctor-section:target {
+    display: grid;
+  }
+
+  .doctor-section:target + .consultant-section {
     display: block;
   }
 
@@ -3847,6 +3861,7 @@ address {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     padding-inline: 20px;
+    scroll-margin-top: 92px;
   }
 
   .mobile-page-shortcuts a {
@@ -3863,6 +3878,57 @@ address {
     border: 1px solid rgba(7, 86, 61, 0.12);
     border-radius: 18px;
     box-shadow: 0 12px 30px rgba(20, 34, 56, 0.08);
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-page-shortcuts a:active {
+    transform: scale(0.98);
+  }
+
+  .mobile-page-shortcuts a:nth-child(1),
+  .mobile-page-shortcuts a:nth-child(4) {
+    color: #fffdf8;
+    background: linear-gradient(135deg, #07563d 0%, #0b6b4d 100%);
+    border-color: rgba(7, 86, 61, 0.38);
+    box-shadow: 0 16px 34px rgba(7, 86, 61, 0.2);
+  }
+
+  .mobile-page-shortcuts a:nth-child(2),
+  .mobile-page-shortcuts a:nth-child(3) {
+    color: #07563d;
+    background: linear-gradient(135deg, #f7fbf2 0%, #edf5e8 100%);
+    border-color: rgba(7, 86, 61, 0.28);
+    box-shadow: 0 12px 28px rgba(7, 86, 61, 0.1);
+  }
+
+  .mobile-detail-return {
+    display: inline-flex;
+    grid-column: 1 / -1;
+    width: min(100%, 430px);
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 22px;
+    padding: 0 18px;
+    color: #07563d;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: center;
+    background: rgba(237, 245, 232, 0.94);
+    border: 1px solid rgba(7, 86, 61, 0.22);
+    border-radius: 999px;
+    box-shadow: 0 10px 24px rgba(7, 86, 61, 0.09);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-detail-return:active {
+    transform: scale(0.98);
+  }
+
+  .mobile-detail-return-bottom {
+    margin: 30px auto 0;
   }
 
   .map-art {
