@@ -3624,20 +3624,31 @@ address {
     gap: 22px;
   }
 
-  #doctor:target .doctor-photo {
-    width: min(72vw, 280px);
-    max-width: 280px;
+  #doctor:target .doctor-photo,
+  #doctor:target + .consultant-section .consultant-photo {
+    width: min(78vw, 300px);
+    max-width: 300px;
     justify-self: center;
+    margin: 0 auto;
   }
 
-  #doctor:target .doctor-photo img {
+  #doctor:target .doctor-photo img,
+  #doctor:target + .consultant-section .consultant-photo img {
     width: 100%;
-    height: min(72vw, 280px);
+    height: min(78vw, 300px);
+    max-height: 300px;
     min-height: 0;
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    object-position: center 18%;
     border-radius: 22px;
+  }
+
+  #doctor:target .doctor-photo img {
+    object-position: center 18%;
+  }
+
+  #doctor:target + .consultant-section .consultant-photo img {
+    object-position: center 16%;
   }
 
   #doctor:target .reveal,
