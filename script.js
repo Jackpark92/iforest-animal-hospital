@@ -41,9 +41,9 @@ const initNaverMap = () => {
   const mobileCenterConfig = location.mobileCenter || {};
   const mobileCenterLat = Number(mobileCenterConfig.lat);
   const mobileCenterLng = Number(mobileCenterConfig.lng);
-  const skviewLabelConfig = location.mobileLabels?.skview || {};
-  const skviewLabelLat = Number(skviewLabelConfig.lat);
-  const skviewLabelLng = Number(skviewLabelConfig.lng);
+  const mobileMapLabels = Array.isArray(location.mobileLabels)
+    ? location.mobileLabels
+    : Object.values(location.mobileLabels || {});
 
   const showMapError = (reason, detail) => {
     if (fallback) {
@@ -118,21 +118,28 @@ const initNaverMap = () => {
       });
 
       infoWindow.open(map, marker);
-      const hasSkviewLabel = !Number.isNaN(skviewLabelLat) && !Number.isNaN(skviewLabelLng) && skviewLabelConfig.label;
-      const skviewLabelMarker = hasSkviewLabel
-        ? new window.naver.maps.Marker({
-          map: mobileQuery.matches ? map : null,
-          position: new window.naver.maps.LatLng(skviewLabelLat, skviewLabelLng),
-          title: skviewLabelConfig.label,
-          icon: {
-            content: `<span class="naver-skview-label">${skviewLabelConfig.label}</span>`,
-            anchor: new window.naver.maps.Point(46, 18)
-          },
-          zIndex: 60
+      const mobileLabelMarkers = mobileMapLabels
+        .map((labelConfig) => {
+          const labelLat = Number(labelConfig.lat);
+          const labelLng = Number(labelConfig.lng);
+          if (Number.isNaN(labelLat) || Number.isNaN(labelLng) || !labelConfig.label) return null;
+          const labelClass = labelConfig.subtle ? "naver-map-label is-subtle" : "naver-map-label";
+          return new window.naver.maps.Marker({
+            map: mobileQuery.matches ? map : null,
+            position: new window.naver.maps.LatLng(labelLat, labelLng),
+            title: labelConfig.label,
+            icon: {
+              content: `<span class="${labelClass}">${labelConfig.label}</span>`,
+              anchor: new window.naver.maps.Point(labelConfig.anchorX || 42, labelConfig.anchorY || 18)
+            },
+            zIndex: labelConfig.subtle ? 50 : 60
+          });
         })
-        : null;
+        .filter(Boolean);
       const syncMobileMapLabels = () => {
-        skviewLabelMarker?.setMap(mobileQuery.matches ? map : null);
+        mobileLabelMarkers.forEach((labelMarker) => {
+          labelMarker.setMap(mobileQuery.matches ? map : null);
+        });
       };
       window.naver.maps.Event.addListener(marker, "click", () => {
         if (infoWindow.getMap()) {
