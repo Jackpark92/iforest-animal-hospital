@@ -15,29 +15,9 @@ const IFOREST_MOBILE_MAP_VIEWPORTS = {
   },
   current: {
     zoom: 15,
-    center: { lat: 37.47935, lng: 126.8648 }
+    center: { lat: 37.4794, lng: 126.8649 }
   }
 };
-
-const IFOREST_MOBILE_MAP_LABELS = [
-  {
-    key: "skview",
-    label: "\uB86F\uB370\uCE90\uC2AC&SKVIEW",
-    lat: 37.4794,
-    lng: 126.8665,
-    anchorX: 46,
-    anchorY: 18
-  },
-  {
-    key: "youngpoong",
-    label: "\uC601\uD48D\uD0C0\uC6B4",
-    lat: 37.47915,
-    lng: 126.86318,
-    anchorX: 32,
-    anchorY: 18,
-    subtle: true
-  }
-];
 
 window.IFOREST_CONTACT = {
   hospitalName: IFOREST_LOCATION.name,
@@ -56,8 +36,7 @@ window.IFOREST_CONTACT = {
     zoom: 16,
     mobileZoom: IFOREST_MOBILE_MAP_VIEWPORTS.current.zoom,
     mobileCenter: IFOREST_MOBILE_MAP_VIEWPORTS.current.center,
-    mobilePreviousViewport: IFOREST_MOBILE_MAP_VIEWPORTS.previous,
-    mobileLabels: IFOREST_MOBILE_MAP_LABELS
+    mobilePreviousViewport: IFOREST_MOBILE_MAP_VIEWPORTS.previous
   },
   instagramUrl: "https://www.instagram.com/iforest_ah/",
   instagramHandle: "@iforest_ah",

@@ -41,9 +41,6 @@ const initNaverMap = () => {
   const mobileCenterConfig = location.mobileCenter || {};
   const mobileCenterLat = Number(mobileCenterConfig.lat);
   const mobileCenterLng = Number(mobileCenterConfig.lng);
-  const mobileMapLabels = Array.isArray(location.mobileLabels)
-    ? location.mobileLabels
-    : Object.values(location.mobileLabels || {});
 
   const showMapError = (reason, detail) => {
     if (fallback) {
@@ -118,29 +115,6 @@ const initNaverMap = () => {
       });
 
       infoWindow.open(map, marker);
-      const mobileLabelMarkers = mobileMapLabels
-        .map((labelConfig) => {
-          const labelLat = Number(labelConfig.lat);
-          const labelLng = Number(labelConfig.lng);
-          if (Number.isNaN(labelLat) || Number.isNaN(labelLng) || !labelConfig.label) return null;
-          const labelClass = labelConfig.subtle ? "naver-map-label is-subtle" : "naver-map-label";
-          return new window.naver.maps.Marker({
-            map: mobileQuery.matches ? map : null,
-            position: new window.naver.maps.LatLng(labelLat, labelLng),
-            title: labelConfig.label,
-            icon: {
-              content: `<span class="${labelClass}">${labelConfig.label}</span>`,
-              anchor: new window.naver.maps.Point(labelConfig.anchorX || 42, labelConfig.anchorY || 18)
-            },
-            zIndex: labelConfig.subtle ? 50 : 60
-          });
-        })
-        .filter(Boolean);
-      const syncMobileMapLabels = () => {
-        mobileLabelMarkers.forEach((labelMarker) => {
-          labelMarker.setMap(mobileQuery.matches ? map : null);
-        });
-      };
       window.naver.maps.Event.addListener(marker, "click", () => {
         if (infoWindow.getMap()) {
           infoWindow.close();
@@ -153,7 +127,6 @@ const initNaverMap = () => {
         if (!window.naver?.maps?.Event) return;
         const isMobile = mobileQuery.matches;
         setMobileMapLock();
-        syncMobileMapLabels();
         map.setOptions?.(getMapInteractionOptions());
         map.setZoom(isMobile ? location.mobileZoom || 15 : location.zoom || 16);
         window.naver.maps.Event.trigger(map, "resize");
