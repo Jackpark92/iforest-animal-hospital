@@ -41,9 +41,6 @@ const initNaverMap = () => {
   const mobileCenterConfig = location.mobileCenter || {};
   const mobileCenterLat = Number(mobileCenterConfig.lat);
   const mobileCenterLng = Number(mobileCenterConfig.lng);
-  const mobileLandmarks = Array.isArray(location.mobileLandmarks)
-    ? location.mobileLandmarks
-    : [];
 
   const showMapError = (reason, detail) => {
     if (fallback) {
@@ -117,28 +114,6 @@ const initNaverMap = () => {
       });
 
       infoWindow.open(map, marker);
-      const landmarkMarkers = mobileLandmarks
-        .map((landmark) => {
-          const landmarkLat = Number(landmark.lat);
-          const landmarkLng = Number(landmark.lng);
-          if (Number.isNaN(landmarkLat) || Number.isNaN(landmarkLng) || !landmark.label) return null;
-          return new window.naver.maps.Marker({
-            map: mobileQuery.matches ? map : null,
-            position: new window.naver.maps.LatLng(landmarkLat, landmarkLng),
-            title: landmark.label,
-            icon: {
-              content: `<span class="naver-landmark-label">${landmark.label}</span>`,
-              anchor: new window.naver.maps.Point(42, 18)
-            },
-            zIndex: 80
-          });
-        })
-        .filter(Boolean);
-      const syncLandmarkLabels = () => {
-        landmarkMarkers.forEach((landmarkMarker) => {
-          landmarkMarker.setMap(mobileQuery.matches ? map : null);
-        });
-      };
       window.naver.maps.Event.addListener(marker, "click", () => {
         if (infoWindow.getMap()) {
           infoWindow.close();
@@ -151,7 +126,6 @@ const initNaverMap = () => {
         if (!window.naver?.maps?.Event) return;
         const isMobile = mobileQuery.matches;
         setMobileMapLock();
-        syncLandmarkLabels();
         map.setOptions?.(getMapInteractionOptions());
         map.setZoom(isMobile ? location.mobileZoom || 15 : location.zoom || 16);
         window.naver.maps.Event.trigger(map, "resize");

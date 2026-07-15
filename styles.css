@@ -2341,23 +2341,6 @@ address {
   line-height: 1.45;
 }
 
-.naver-landmark-label {
-  display: inline-flex;
-  min-width: max-content;
-  align-items: center;
-  justify-content: center;
-  padding: 5px 8px;
-  color: #425149;
-  font-size: 11px;
-  font-weight: 850;
-  line-height: 1;
-  white-space: nowrap;
-  background: rgba(255, 253, 248, 0.94);
-  border: 1px solid rgba(7, 86, 61, 0.16);
-  border-radius: 999px;
-  box-shadow: 0 8px 18px rgba(20, 34, 56, 0.12);
-}
-
 .map-open-actions {
   position: absolute;
   left: 18px;
@@ -3730,6 +3713,22 @@ address {
 
   .naver-map-wrap.mobile-map-locked .naver-map-canvas {
     pointer-events: none;
+  }
+
+  .naver-info-window {
+    min-width: 148px;
+    max-width: 210px;
+    padding: 8px 10px;
+  }
+
+  .naver-info-window strong {
+    margin-bottom: 3px;
+    font-size: 13px;
+  }
+
+  .naver-info-window span {
+    font-size: 11px;
+    line-height: 1.35;
   }
 
   .location-social-grid {
