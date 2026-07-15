@@ -3164,8 +3164,27 @@ address {
   }
 
   .mobile-section-title {
+    position: relative;
     max-width: 430px;
     margin: 0 auto 18px;
+    padding-right: 48px;
+  }
+
+  .mobile-section-title::after {
+    position: absolute;
+    top: 26px;
+    right: 4px;
+    width: 34px;
+    height: 30px;
+    content: "";
+    opacity: 0.34;
+    background:
+      radial-gradient(circle at 50% 72%, rgba(7, 86, 61, 0.3) 0 8px, transparent 8.8px),
+      radial-gradient(circle at 28% 34%, rgba(7, 86, 61, 0.3) 0 4px, transparent 4.8px),
+      radial-gradient(circle at 50% 24%, rgba(7, 86, 61, 0.3) 0 4.4px, transparent 5.2px),
+      radial-gradient(circle at 72% 34%, rgba(7, 86, 61, 0.3) 0 4px, transparent 4.8px);
+    transform: rotate(-10deg);
+    pointer-events: none;
   }
 
   .mobile-section-title span,
@@ -3444,6 +3463,29 @@ address {
 
   .strength-grid {
     gap: 12px;
+  }
+
+  #why-iforest:target {
+    position: relative;
+    overflow: hidden;
+  }
+
+  #why-iforest:target .section-heading {
+    position: relative;
+  }
+
+  #why-iforest:target .section-heading::after {
+    position: absolute;
+    top: -2px;
+    right: 2px;
+    width: 52px;
+    height: 36px;
+    content: "";
+    border: 1.5px solid rgba(7, 86, 61, 0.14);
+    border-bottom-color: transparent;
+    border-radius: 26px 26px 18px 18px;
+    clip-path: polygon(0 38%, 18% 0, 36% 36%, 64% 36%, 82% 0, 100% 38%, 100% 100%, 0 100%);
+    pointer-events: none;
   }
 
   .strength-grid .care-card {
@@ -3828,6 +3870,26 @@ address {
 
   #doctor:target {
     gap: 22px;
+  }
+
+  #doctor:target .doctor-philosophy {
+    position: relative;
+    overflow: hidden;
+  }
+
+  #doctor:target .doctor-philosophy::after {
+    position: absolute;
+    right: 22px;
+    bottom: 18px;
+    width: 38px;
+    height: 18px;
+    content: "";
+    opacity: 0.34;
+    border-right: 2px solid rgba(7, 86, 61, 0.2);
+    border-bottom: 2px solid rgba(7, 86, 61, 0.2);
+    border-radius: 0 0 22px;
+    transform: rotate(-7deg);
+    pointer-events: none;
   }
 
   #doctor:target .doctor-photo,
@@ -4250,6 +4312,21 @@ address {
     font-weight: 850;
     line-height: 1.4;
     letter-spacing: 0;
+  }
+
+  .site-footer > div:first-child p::before {
+    display: inline-block;
+    width: 13px;
+    height: 12px;
+    margin-right: 7px;
+    content: "";
+    opacity: 0.46;
+    background:
+      radial-gradient(circle at 50% 72%, rgba(7, 86, 61, 0.38) 0 3.4px, transparent 3.9px),
+      radial-gradient(circle at 24% 34%, rgba(7, 86, 61, 0.38) 0 1.9px, transparent 2.4px),
+      radial-gradient(circle at 50% 24%, rgba(7, 86, 61, 0.38) 0 2px, transparent 2.5px),
+      radial-gradient(circle at 76% 34%, rgba(7, 86, 61, 0.38) 0 1.9px, transparent 2.4px);
+    vertical-align: -1px;
   }
 
   .footer-info {
