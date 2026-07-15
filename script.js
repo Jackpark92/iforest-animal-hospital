@@ -41,6 +41,9 @@ const initNaverMap = () => {
   const mobileCenterConfig = location.mobileCenter || {};
   const mobileCenterLat = Number(mobileCenterConfig.lat);
   const mobileCenterLng = Number(mobileCenterConfig.lng);
+  const skviewLabelConfig = location.mobileLabels?.skview || {};
+  const skviewLabelLat = Number(skviewLabelConfig.lat);
+  const skviewLabelLng = Number(skviewLabelConfig.lng);
 
   const showMapError = (reason, detail) => {
     if (fallback) {
@@ -102,7 +105,8 @@ const initNaverMap = () => {
       const marker = new window.naver.maps.Marker({
         map,
         position: hospitalPosition,
-        title: location.name || contactInfo.hospitalName || "아이숲동물병원"
+        title: location.name || contactInfo.hospitalName || "아이숲동물병원",
+        zIndex: 100
       });
 
       const infoWindow = new window.naver.maps.InfoWindow({
@@ -114,6 +118,22 @@ const initNaverMap = () => {
       });
 
       infoWindow.open(map, marker);
+      const hasSkviewLabel = !Number.isNaN(skviewLabelLat) && !Number.isNaN(skviewLabelLng) && skviewLabelConfig.label;
+      const skviewLabelMarker = hasSkviewLabel
+        ? new window.naver.maps.Marker({
+          map: mobileQuery.matches ? map : null,
+          position: new window.naver.maps.LatLng(skviewLabelLat, skviewLabelLng),
+          title: skviewLabelConfig.label,
+          icon: {
+            content: `<span class="naver-skview-label">${skviewLabelConfig.label}</span>`,
+            anchor: new window.naver.maps.Point(46, 18)
+          },
+          zIndex: 60
+        })
+        : null;
+      const syncMobileMapLabels = () => {
+        skviewLabelMarker?.setMap(mobileQuery.matches ? map : null);
+      };
       window.naver.maps.Event.addListener(marker, "click", () => {
         if (infoWindow.getMap()) {
           infoWindow.close();
@@ -126,6 +146,7 @@ const initNaverMap = () => {
         if (!window.naver?.maps?.Event) return;
         const isMobile = mobileQuery.matches;
         setMobileMapLock();
+        syncMobileMapLabels();
         map.setOptions?.(getMapInteractionOptions());
         map.setZoom(isMobile ? location.mobileZoom || 15 : location.zoom || 16);
         window.naver.maps.Event.trigger(map, "resize");

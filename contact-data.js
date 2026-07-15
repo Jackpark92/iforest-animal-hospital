@@ -19,6 +19,14 @@ const IFOREST_MOBILE_MAP_VIEWPORTS = {
   }
 };
 
+const IFOREST_MOBILE_MAP_LABELS = {
+  skview: {
+    label: "\uB86F\uB370\uCE90\uC2AC&SKVIEW",
+    lat: 37.4794,
+    lng: 126.8665
+  }
+};
+
 window.IFOREST_CONTACT = {
   hospitalName: IFOREST_LOCATION.name,
   address: IFOREST_LOCATION.address,
@@ -36,7 +44,8 @@ window.IFOREST_CONTACT = {
     zoom: 16,
     mobileZoom: IFOREST_MOBILE_MAP_VIEWPORTS.current.zoom,
     mobileCenter: IFOREST_MOBILE_MAP_VIEWPORTS.current.center,
-    mobilePreviousViewport: IFOREST_MOBILE_MAP_VIEWPORTS.previous
+    mobilePreviousViewport: IFOREST_MOBILE_MAP_VIEWPORTS.previous,
+    mobileLabels: IFOREST_MOBILE_MAP_LABELS
   },
   instagramUrl: "https://www.instagram.com/iforest_ah/",
   instagramHandle: "@iforest_ah",
