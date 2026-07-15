@@ -140,7 +140,17 @@
             <small>전용 대기실 · 전용 진료실</small>
           </a>
         </div>
-        <a class="mobile-all-link" href="#services">진료과목 전체보기 →</a>
+        <button class="mobile-all-link" type="button" data-service-toggle data-service-toggle-mode="open" aria-expanded="false" aria-controls="services">
+          <span>진료과목 전체보기</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg>
+        </button>
+        <article class="mobile-home-card">
+          <img src="assets/care-companion.jpg" alt="아이숲동물병원의 진료 공간에서 편안하게 있는 강아지와 고양이" loading="lazy">
+          <div>
+            <h3>강아지와 고양이 모두 편안한 진료 환경</h3>
+            <p>낯선 병원에서도 아이가 안정감을 느낄 수 있도록 공간과 진료 흐름을 세심하게 준비합니다.</p>
+          </div>
+        </article>
       </section>
 
       <section class="care-promise reveal" id="about-intro" aria-label="인사말">
@@ -457,18 +467,21 @@
       </section>
 
       <section class="services-section" id="services">
-        <a class="mobile-detail-return mobile-only" href="#mobile-shortcuts">← 목록으로 돌아가기</a>
+        <button class="mobile-service-collapse mobile-only" type="button" data-service-toggle data-service-toggle-mode="close" aria-expanded="true" aria-controls="services">
+          <span>진료과목 접기</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m18 15-6-6-6 6"></path></svg>
+        </button>
         <div class="section-heading centered reveal">
           <p class="eyebrow">DEPARTMENTS</p>
           <h2>진료과목</h2>
           <p>예방부터 외과수술, 만성질환 관리까지 아이의 생애주기에 맞춘 진료를 제공합니다.</p>
         </div>
         <div class="service-grid reveal">
-          <article class="service-card">
+          <article class="service-card featured">
             <span class="service-icon" aria-hidden="true">01</span>
-            <h3>예방의학</h3>
-            <p>예방접종과 심장사상충 예방, 내·외부 기생충 관리를 통해 아이가 건강한 일상을 오래 이어갈 수 있도록 돕습니다.</p>
-            <div class="service-tags"><span>예방접종</span><span>심장사상충 예방</span><span>내·외부 기생충 예방</span></div>
+            <h3>외과수술</h3>
+            <p>외과학 석사 대표원장이 직접 진료하며, 정형외과와 일반외과, 치과수술까지 안전한 수술을 위해 최선을 다합니다.</p>
+            <div class="service-tags"><span>슬개골탈구</span><span>십자인대 수술(TPLO · CTWO)</span><span>골절</span><span>종양수술</span><span>방광결석</span><span>스케일링</span><span>고난도 발치</span></div>
           </article>
           <article class="service-card">
             <span class="service-icon" aria-hidden="true">02</span>
@@ -476,38 +489,41 @@
             <p>구토, 설사, 피부질환부터 노령성 질환과 만성질환까지 정확한 진단을 바탕으로 치료합니다.</p>
             <div class="service-tags"><span>구토</span><span>설사</span><span>피부질환</span><span>외이염</span><span>만성질환</span></div>
           </article>
-          <article class="service-card featured">
-            <span class="service-icon" aria-hidden="true">03</span>
-            <h3>외과수술</h3>
-            <p>외과학 석사 대표원장이 직접 진료하며, 정형외과와 일반외과, 치과수술까지 안전한 수술을 위해 최선을 다합니다.</p>
-            <div class="service-tags"><span>슬개골탈구</span><span>십자인대 수술(TPLO · CTWO)</span><span>골절</span><span>종양수술</span><span>방광결석</span><span>스케일링</span><span>고난도 발치</span></div>
-          </article>
           <article class="service-card">
-            <span class="service-icon" aria-hidden="true">04</span>
+            <span class="service-icon" aria-hidden="true">03</span>
             <h3>심장 · 호르몬 진료</h3>
             <p>심장병과 쿠싱증후군, 갑상선 질환, 당뇨병 등 지속적인 관리가 필요한 질환을 체계적으로 진료합니다.</p>
             <div class="service-tags"><span>심장병</span><span>쿠싱증후군</span><span>갑상선질환</span><span>당뇨병</span></div>
           </article>
           <article class="service-card">
-            <span class="service-icon" aria-hidden="true">05</span>
+            <span class="service-icon" aria-hidden="true">04</span>
             <h3>맞춤형 건강검진</h3>
             <p>나이와 품종, 생활환경을 고려하여 아이에게 맞는 건강검진을 계획합니다.</p>
             <div class="service-tags"><span>생애주기별 건강검진</span><span>노령견 건강검진</span><span>노령묘 건강검진</span></div>
           </article>
           <article class="service-card">
-            <span class="service-icon" aria-hidden="true">06</span>
-            <h3>초음파 · 영상진단</h3>
-            <p>복부초음파, 심장초음파, 디지털 X-ray를 활용하여 정확한 진단을 돕습니다.</p>
-            <div class="service-tags"><span>복부초음파</span><span>심장초음파</span><span>디지털 X-ray</span></div>
-          </article>
-          <article class="service-card">
-            <span class="service-icon" aria-hidden="true">07</span>
+            <span class="service-icon" aria-hidden="true">05</span>
             <h3>고양이 친화 진료</h3>
             <p>고양이 전용 대기실과 진료실을 운영하며, 스트레스를 줄인 편안한 진료 환경을 제공합니다.</p>
             <div class="service-tags"><span>고양이 전용 대기실</span><span>고양이 전용 진료실</span><span>고양이 친화 진료</span></div>
           </article>
+          <article class="service-card">
+            <span class="service-icon" aria-hidden="true">06</span>
+            <h3>예방의학</h3>
+            <p>예방접종과 심장사상충 예방, 내·외부 기생충 관리를 통해 아이가 건강한 일상을 오래 이어갈 수 있도록 돕습니다.</p>
+            <div class="service-tags"><span>예방접종</span><span>심장사상충 예방</span><span>내·외부 기생충 예방</span></div>
+          </article>
+          <article class="service-card">
+            <span class="service-icon" aria-hidden="true">07</span>
+            <h3>초음파 · 영상진단</h3>
+            <p>복부초음파, 심장초음파, 디지털 X-ray를 활용하여 정확한 진단을 돕습니다.</p>
+            <div class="service-tags"><span>복부초음파</span><span>심장초음파</span><span>디지털 X-ray</span></div>
+          </article>
         </div>
-        <a class="mobile-detail-return mobile-detail-return-bottom mobile-only" href="#mobile-shortcuts">목록으로 돌아가기</a>
+        <button class="mobile-service-collapse mobile-service-collapse-bottom mobile-only" type="button" data-service-toggle data-service-toggle-mode="close" aria-expanded="true" aria-controls="services">
+          <span>진료과목 접기</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m18 15-6-6-6 6"></path></svg>
+        </button>
       </section>
 
       <section class="cases-section" id="cases">

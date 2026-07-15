@@ -3163,7 +3163,6 @@ address {
 
   .mobile-home-card,
   .mobile-all-link {
-    display: block;
     color: #142238;
     background: #fff;
     border: 1px solid rgba(7, 86, 61, 0.12);
@@ -3236,21 +3235,73 @@ address {
   }
 
   .mobile-all-link {
+    appearance: none;
     max-width: 430px;
-    min-height: 50px;
-    margin: 12px auto 0;
+    width: 100%;
+    min-height: 48px;
+    margin: 10px auto 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     color: var(--green-dark);
     font-size: 14px;
     font-weight: 900;
+    font-family: inherit;
     background: #fff;
+    cursor: pointer;
+  }
+
+  .mobile-all-link span,
+  .mobile-service-collapse span {
+    white-space: nowrap;
+  }
+
+  .mobile-all-link svg,
+  .mobile-service-collapse svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mobile-service-collapse {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: min(100%, 430px);
+    min-height: 48px;
+    margin: 0 auto 22px;
+    color: var(--green-dark);
+    font-size: 14px;
+    font-weight: 900;
+    font-family: inherit;
+    white-space: nowrap;
+    background: #fff;
+    border: 1px solid rgba(7, 86, 61, 0.12);
+    border-radius: 18px;
+    box-shadow: 0 14px 32px rgba(20, 34, 56, 0.08);
+    cursor: pointer;
+  }
+
+  .mobile-all-link:active,
+  .mobile-service-collapse:active {
+    transform: scale(0.985) translateY(1px);
+  }
+
+  .mobile-service-collapse-bottom {
+    margin: 24px auto 0;
   }
 
   .mobile-home-card {
     max-width: 430px;
-    margin: 26px auto 0;
+    margin: 22px auto 0;
     overflow: hidden;
   }
 
@@ -3315,26 +3366,32 @@ address {
   #why-iforest:target,
   #equipment-care:target,
   #services:target,
+  #services.mobile-services-open,
   #cases:target,
   #cases:has(.case-category-section:target) {
     display: block;
   }
 
   #services:target .reveal,
+  #services.mobile-services-open .reveal,
   #services:target .section-heading,
-  #services:target .service-grid {
+  #services.mobile-services-open .section-heading,
+  #services:target .service-grid,
+  #services.mobile-services-open .service-grid {
     opacity: 1;
     transform: none;
     transition: opacity 0.2s ease-out, transform 0.2s ease-out;
   }
 
-  #services:target .service-card {
+  #services:target .service-card,
+  #services.mobile-services-open .service-card {
     opacity: 1;
     transform: none;
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    #services:target .service-card:not(:first-child) {
+    #services:target .service-card:not(:first-child),
+    #services.mobile-services-open .service-card:not(:first-child) {
       animation: subtle-service-fade 0.2s ease-out both;
     }
   }

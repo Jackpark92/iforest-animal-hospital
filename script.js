@@ -253,6 +253,54 @@ document.addEventListener("click", (event) => {
   closeMobileNav();
 });
 
+const serviceSection = document.getElementById("services");
+const mobileHomePanel = document.querySelector(".mobile-home-panel");
+const serviceToggleButtons = document.querySelectorAll("[data-service-toggle]");
+
+const setServiceToggleState = (isOpen) => {
+  serviceSection?.classList.toggle("mobile-services-open", isOpen);
+  serviceToggleButtons.forEach((button) => {
+    button.setAttribute("aria-expanded", String(isOpen));
+    if (button.dataset.serviceToggleMode !== "open") return;
+    const label = button.querySelector("span");
+    const iconPath = button.querySelector("path");
+    if (label) label.textContent = isOpen ? "진료과목 접기" : "진료과목 전체보기";
+    iconPath?.setAttribute("d", isOpen ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6");
+  });
+};
+
+const closeMobileServices = () => {
+  setServiceToggleState(false);
+  if (window.location.hash === "#services") {
+    history.pushState(null, "", `${window.location.pathname}${window.location.search}`);
+  }
+  mobileHomePanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+serviceToggleButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    if (button.dataset.serviceToggleMode === "close") {
+      closeMobileServices();
+      return;
+    }
+    if (serviceSection?.classList.contains("mobile-services-open")) {
+      closeMobileServices();
+      return;
+    }
+    setServiceToggleState(true);
+    if (window.location.hash !== "#services") {
+      history.pushState(null, "", "#services");
+    }
+    serviceSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
+window.addEventListener("hashchange", () => {
+  setServiceToggleState(window.location.hash === "#services");
+});
+
+setServiceToggleState(window.location.hash === "#services");
+
 const getCaseCategories = (item) => item.categories || item.category || [];
 const iconPaths = {
   bone: [
