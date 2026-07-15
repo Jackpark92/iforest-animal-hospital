@@ -8,6 +8,17 @@ const IFOREST_LOCATION = {
 const IFOREST_KAKAO_DIRECTIONS_URL =
   `https://map.kakao.com/link/to/${encodeURIComponent(IFOREST_LOCATION.name)},${IFOREST_LOCATION.lat},${IFOREST_LOCATION.lng}`;
 
+const IFOREST_MOBILE_MAP_VIEWPORTS = {
+  previous: {
+    zoom: 15,
+    center: { lat: 37.47865, lng: 126.86505 }
+  },
+  current: {
+    zoom: 15,
+    center: { lat: 37.47865, lng: 126.86545 }
+  }
+};
+
 window.IFOREST_CONTACT = {
   hospitalName: IFOREST_LOCATION.name,
   address: IFOREST_LOCATION.address,
@@ -23,11 +34,9 @@ window.IFOREST_CONTACT = {
   location: {
     ...IFOREST_LOCATION,
     zoom: 16,
-    mobileZoom: 15,
-    mobileCenter: {
-      lat: 37.47865,
-      lng: 126.86505
-    }
+    mobileZoom: IFOREST_MOBILE_MAP_VIEWPORTS.current.zoom,
+    mobileCenter: IFOREST_MOBILE_MAP_VIEWPORTS.current.center,
+    mobilePreviousViewport: IFOREST_MOBILE_MAP_VIEWPORTS.previous
   },
   instagramUrl: "https://www.instagram.com/iforest_ah/",
   instagramHandle: "@iforest_ah",
