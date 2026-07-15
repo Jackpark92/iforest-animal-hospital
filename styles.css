@@ -3777,7 +3777,7 @@ address {
   }
 
   .location-heading p:not(.eyebrow) br {
-    display: none;
+    display: block;
   }
 
   .location-detail-card,
@@ -3803,9 +3803,21 @@ address {
     min-width: 0;
   }
 
-  .location-map-card,
+  .location-top-grid {
+    gap: 16px;
+  }
+
+  .location-map-card {
+    order: 1;
+    min-height: 0;
+  }
+
+  .location-copy {
+    order: 2;
+  }
+
   .naver-map-wrap {
-    min-height: 320px;
+    min-height: 348px;
     overflow: hidden;
   }
 
@@ -3849,9 +3861,7 @@ address {
   }
 
   .location-pill-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
+    display: none;
   }
 
   .location-pill-actions a,
@@ -3866,7 +3876,8 @@ address {
     position: static;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: 14px;
+    gap: 10px;
+    padding: 12px 14px 14px;
     background: #fffdf8;
   }
 
