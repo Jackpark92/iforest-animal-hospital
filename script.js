@@ -61,12 +61,30 @@ const initNaverMap = () => {
       if (!window.naver?.maps || mapElement.dataset.mapInitialized === "true") return;
 
       const center = new window.naver.maps.LatLng(lat, lng);
+      const mobileQuery = window.matchMedia("(max-width: 768px)");
+      const getMapInteractionOptions = () => {
+        const isMobile = mobileQuery.matches;
+        return {
+          draggable: !isMobile,
+          scrollWheel: false,
+          pinchZoom: !isMobile,
+          keyboardShortcuts: !isMobile,
+          disableDoubleClickZoom: isMobile,
+          disableDoubleTapZoom: isMobile,
+          disableTwoFingerTapZoom: isMobile,
+          zoomControl: !isMobile
+        };
+      };
+      const setMobileMapLock = () => {
+        mapWrap?.classList.toggle("mobile-map-locked", mobileQuery.matches);
+      };
+      setMobileMapLock();
       const map = new window.naver.maps.Map(mapElement, {
         center,
-        zoom: window.matchMedia("(max-width: 768px)").matches
+        zoom: mobileQuery.matches
           ? location.mobileZoom || 15
           : location.zoom || 16,
-        zoomControl: true,
+        ...getMapInteractionOptions(),
         zoomControlOptions: {
           position: window.naver.maps.Position.TOP_RIGHT
         }
@@ -96,6 +114,10 @@ const initNaverMap = () => {
 
       window.addEventListener("resize", () => {
         if (!window.naver?.maps?.Event) return;
+        const isMobile = mobileQuery.matches;
+        setMobileMapLock();
+        map.setOptions?.(getMapInteractionOptions());
+        map.setZoom(isMobile ? location.mobileZoom || 15 : location.zoom || 16);
         window.naver.maps.Event.trigger(map, "resize");
         map.setCenter(center);
       }, { passive: true });

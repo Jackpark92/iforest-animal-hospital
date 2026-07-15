@@ -3624,6 +3624,22 @@ address {
     gap: 22px;
   }
 
+  #doctor:target .doctor-photo {
+    width: min(72vw, 280px);
+    max-width: 280px;
+    justify-self: center;
+  }
+
+  #doctor:target .doctor-photo img {
+    width: 100%;
+    height: min(72vw, 280px);
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: center 18%;
+    border-radius: 22px;
+  }
+
   #doctor:target .reveal,
   #doctor:target + .consultant-section .reveal {
     opacity: 1;
@@ -3678,6 +3694,14 @@ address {
   .naver-map-wrap {
     min-height: 320px;
     overflow: hidden;
+  }
+
+  .naver-map-wrap.mobile-map-locked {
+    touch-action: pan-y;
+  }
+
+  .naver-map-wrap.mobile-map-locked .naver-map-canvas {
+    pointer-events: none;
   }
 
   .location-social-grid {
