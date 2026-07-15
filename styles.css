@@ -3318,6 +3318,36 @@ address {
     display: block;
   }
 
+  #services:target .reveal,
+  #services:target .section-heading,
+  #services:target .service-grid {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  }
+
+  #services:target .service-card {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    #services:target .service-card:not(:first-child) {
+      animation: subtle-service-fade 0.2s ease-out both;
+    }
+  }
+
+  @keyframes subtle-service-fade {
+    from {
+      opacity: 0.88;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .principles,
   .strength-grid,
   .service-grid,
