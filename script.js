@@ -130,6 +130,14 @@ const initNaverMap = () => {
 
       mapElement.dataset.mapInitialized = "true";
       mapWrap?.classList.add("map-ready");
+
+      const refreshMapLayout = () => {
+        if (!window.naver?.maps?.Event) return;
+        window.naver.maps.Event.trigger(map, "resize");
+        map.setCenter(getMapCenter());
+      };
+      requestAnimationFrame(refreshMapLayout);
+      setTimeout(refreshMapLayout, 250);
     } catch (error) {
       showMapError("Map initialization failed. Check Naver Maps API domain registration and Client ID.", error);
     }
