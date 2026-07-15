@@ -3120,7 +3120,8 @@ address {
   }
 
   .mobile-section-title span,
-  .mobile-home-card span {
+  .mobile-home-card span,
+  .mobile-section-label {
     display: block;
     margin-bottom: 8px;
     color: var(--green);
@@ -3233,6 +3234,11 @@ address {
   #doctor:target,
   #visit:target {
     display: grid;
+  }
+
+  #doctor:target + .consultant-section {
+    display: block;
+    padding-top: 0;
   }
 
   #about-philosophy:target,
@@ -3612,6 +3618,33 @@ address {
 
   .consultant-card {
     padding: 20px;
+  }
+
+  #doctor:target {
+    gap: 22px;
+  }
+
+  #doctor:target .reveal,
+  #doctor:target + .consultant-section .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  #doctor:target + .consultant-section .consultant-card {
+    display: grid;
+    gap: 20px;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  #doctor:target + .consultant-section .consultant-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #doctor:target + .consultant-section .consultant-lead {
+    font-size: 15px;
+    line-height: 1.7;
+    word-break: keep-all;
   }
 
   .map-card {
