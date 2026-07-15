@@ -3797,7 +3797,63 @@ address {
   }
 
   .equipment-media {
-    min-height: 230px;
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .equipment-feature-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .equipment-feature-card {
+    overflow: hidden;
+  }
+
+  .equipment-media img {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 18px;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .equipment-media.endoscopy-media img {
+    object-fit: cover;
+    object-position: center 42%;
+    padding: 0;
+  }
+
+  .equipment-feature-copy {
+    position: static;
+    gap: 8px;
+    padding: 18px 18px 20px;
+  }
+
+  .equipment-feature-copy p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.35;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .equipment-feature-copy h3 {
+    margin: 0;
+    font-size: clamp(20px, 5.8vw, 24px);
+    line-height: 1.35;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .equipment-feature-copy span {
+    margin-top: 0;
+    font-size: 14px;
+    line-height: 1.65;
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 
   .doctor-philosophy,
