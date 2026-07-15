@@ -4070,6 +4070,7 @@ address {
 
   .mobile-detail-return {
     display: inline-flex;
+    gap: 8px;
     grid-column: 1 / -1;
     width: min(100%, 430px);
     min-height: 44px;
@@ -4087,6 +4088,21 @@ address {
     border-radius: 999px;
     box-shadow: 0 10px 24px rgba(7, 86, 61, 0.09);
     -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-detail-return svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mobile-detail-return span {
+    white-space: nowrap;
   }
 
   .mobile-detail-return:active {
