@@ -38,6 +38,12 @@ const initNaverMap = () => {
   const clientId = contactInfo.naverMapClientId;
   const lat = Number(location.lat);
   const lng = Number(location.lng);
+  const mobileCenterConfig = location.mobileCenter || {};
+  const mobileCenterLat = Number(mobileCenterConfig.lat);
+  const mobileCenterLng = Number(mobileCenterConfig.lng);
+  const mobileLandmarks = Array.isArray(location.mobileLandmarks)
+    ? location.mobileLandmarks
+    : [];
 
   const showMapError = (reason, detail) => {
     if (fallback) {
@@ -60,8 +66,14 @@ const initNaverMap = () => {
     try {
       if (!window.naver?.maps || mapElement.dataset.mapInitialized === "true") return;
 
-      const center = new window.naver.maps.LatLng(lat, lng);
+      const hospitalPosition = new window.naver.maps.LatLng(lat, lng);
       const mobileQuery = window.matchMedia("(max-width: 768px)");
+      const getMapCenter = () => {
+        const hasMobileCenter = !Number.isNaN(mobileCenterLat) && !Number.isNaN(mobileCenterLng);
+        return mobileQuery.matches && hasMobileCenter
+          ? new window.naver.maps.LatLng(mobileCenterLat, mobileCenterLng)
+          : hospitalPosition;
+      };
       const getMapInteractionOptions = () => {
         const isMobile = mobileQuery.matches;
         return {
@@ -80,7 +92,7 @@ const initNaverMap = () => {
       };
       setMobileMapLock();
       const map = new window.naver.maps.Map(mapElement, {
-        center,
+        center: getMapCenter(),
         zoom: mobileQuery.matches
           ? location.mobileZoom || 15
           : location.zoom || 16,
@@ -92,7 +104,7 @@ const initNaverMap = () => {
 
       const marker = new window.naver.maps.Marker({
         map,
-        position: center,
+        position: hospitalPosition,
         title: location.name || contactInfo.hospitalName || "아이숲동물병원"
       });
 
@@ -100,10 +112,33 @@ const initNaverMap = () => {
         content: `<div class="naver-info-window"><strong>${location.name || contactInfo.hospitalName || "아이숲동물병원"}</strong><span>${location.address || contactInfo.address || ""}</span></div>`,
         borderWidth: 0,
         backgroundColor: "transparent",
-        disableAnchor: true
+        disableAnchor: true,
+        disableAutoPan: true
       });
 
       infoWindow.open(map, marker);
+      const landmarkMarkers = mobileLandmarks
+        .map((landmark) => {
+          const landmarkLat = Number(landmark.lat);
+          const landmarkLng = Number(landmark.lng);
+          if (Number.isNaN(landmarkLat) || Number.isNaN(landmarkLng) || !landmark.label) return null;
+          return new window.naver.maps.Marker({
+            map: mobileQuery.matches ? map : null,
+            position: new window.naver.maps.LatLng(landmarkLat, landmarkLng),
+            title: landmark.label,
+            icon: {
+              content: `<span class="naver-landmark-label">${landmark.label}</span>`,
+              anchor: new window.naver.maps.Point(42, 18)
+            },
+            zIndex: 80
+          });
+        })
+        .filter(Boolean);
+      const syncLandmarkLabels = () => {
+        landmarkMarkers.forEach((landmarkMarker) => {
+          landmarkMarker.setMap(mobileQuery.matches ? map : null);
+        });
+      };
       window.naver.maps.Event.addListener(marker, "click", () => {
         if (infoWindow.getMap()) {
           infoWindow.close();
@@ -116,10 +151,11 @@ const initNaverMap = () => {
         if (!window.naver?.maps?.Event) return;
         const isMobile = mobileQuery.matches;
         setMobileMapLock();
+        syncLandmarkLabels();
         map.setOptions?.(getMapInteractionOptions());
         map.setZoom(isMobile ? location.mobileZoom || 15 : location.zoom || 16);
         window.naver.maps.Event.trigger(map, "resize");
-        map.setCenter(center);
+        map.setCenter(getMapCenter());
       }, { passive: true });
 
       mapElement.dataset.mapInitialized = "true";

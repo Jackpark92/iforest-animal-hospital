@@ -23,7 +23,17 @@ window.IFOREST_CONTACT = {
   location: {
     ...IFOREST_LOCATION,
     zoom: 16,
-    mobileZoom: 15
+    mobileZoom: 14,
+    mobileCenter: {
+      lat: 37.4793,
+      lng: 126.8654
+    },
+    mobileLandmarks: [
+      { label: "SK VIEW", lat: 37.4794, lng: 126.8665 },
+      { label: "\uC790\uC774 \uD5E4\uB9AC\uD2F0\uC9C0", lat: 37.4815, lng: 126.8652 },
+      { label: "\uAD11\uBA85\uC2DC\uCCAD", lat: 37.4783, lng: 126.8644 },
+      { label: "\uCCA0\uC0B0\uC5ED", lat: 37.4761, lng: 126.8680 }
+    ]
   },
   instagramUrl: "https://www.instagram.com/iforest_ah/",
   instagramHandle: "@iforest_ah",
