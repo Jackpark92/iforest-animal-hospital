@@ -2831,6 +2831,31 @@ address {
   height: auto;
 }
 
+@media (min-width: 769px) {
+  .site-footer {
+    align-items: center;
+  }
+
+  .site-footer > div:first-child {
+    display: flex;
+    align-self: center;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    transform: translateY(-3px);
+  }
+
+  .site-footer > div:first-child p {
+    margin: 0;
+    color: var(--green-dark);
+    font-size: 15px;
+    font-weight: 850;
+    line-height: 1.42;
+    letter-spacing: 0.01em;
+  }
+}
+
 .site-footer strong,
 .site-footer a {
   color: var(--green-dark);
