@@ -72,14 +72,14 @@ const initNaverMap = () => {
           : hospitalPosition;
       };
       const getMapInteractionOptions = () => ({
-        draggable: true,
-        scrollWheel: mobileQuery.matches,
-        pinchZoom: true,
-        keyboardShortcuts: true,
-        disableDoubleClickZoom: false,
-        disableDoubleTapZoom: false,
-        disableTwoFingerTapZoom: false,
-        zoomControl: true
+        draggable: !mobileQuery.matches,
+        scrollWheel: !mobileQuery.matches,
+        pinchZoom: !mobileQuery.matches,
+        keyboardShortcuts: !mobileQuery.matches,
+        disableDoubleClickZoom: mobileQuery.matches,
+        disableDoubleTapZoom: mobileQuery.matches,
+        disableTwoFingerTapZoom: mobileQuery.matches,
+        zoomControl: !mobileQuery.matches
       });
       const map = new window.naver.maps.Map(mapElement, {
         center: getMapCenter(),

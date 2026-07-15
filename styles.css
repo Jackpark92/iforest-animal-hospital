@@ -3779,6 +3779,15 @@ address {
     overflow: hidden;
   }
 
+  .naver-map-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: transparent;
+    touch-action: pan-y;
+  }
+
   .naver-info-window {
     min-width: 136px;
     max-width: 188px;
@@ -3865,41 +3874,75 @@ address {
   }
 
   .mobile-page-shortcuts a {
-    display: flex;
-    min-height: 72px;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 14px;
+    min-height: 82px;
     align-items: center;
-    justify-content: center;
-    padding: 12px;
-    color: #142238;
-    font-size: 15px;
-    font-weight: 900;
-    text-align: center;
-    background: rgba(255, 253, 248, 0.94);
-    border: 1px solid rgba(7, 86, 61, 0.12);
+    gap: 6px;
+    padding: 12px 10px;
+    color: #07563d;
+    text-align: left;
+    background: rgba(255, 253, 248, 0.98);
+    border: 1.5px solid rgba(7, 86, 61, 0.28);
     border-radius: 18px;
-    box-shadow: 0 12px 30px rgba(20, 34, 56, 0.08);
-    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    box-shadow: 0 12px 26px rgba(20, 34, 56, 0.08);
+    transition: transform 170ms ease, box-shadow 170ms ease, background 170ms ease, border-color 170ms ease;
     -webkit-tap-highlight-color: transparent;
   }
 
   .mobile-page-shortcuts a:active {
     transform: scale(0.98);
+    background: #f1f7ed;
+    border-color: rgba(7, 86, 61, 0.42);
+    box-shadow: 0 7px 16px rgba(20, 34, 56, 0.07);
   }
 
-  .mobile-page-shortcuts a:nth-child(1),
-  .mobile-page-shortcuts a:nth-child(4) {
-    color: #fffdf8;
-    background: linear-gradient(135deg, #07563d 0%, #0b6b4d 100%);
-    border-color: rgba(7, 86, 61, 0.38);
-    box-shadow: 0 16px 34px rgba(7, 86, 61, 0.2);
+  .mobile-page-shortcuts a:active .shortcut-arrow {
+    transform: translateX(3px);
   }
 
-  .mobile-page-shortcuts a:nth-child(2),
-  .mobile-page-shortcuts a:nth-child(3) {
-    color: #07563d;
-    background: linear-gradient(135deg, #f7fbf2 0%, #edf5e8 100%);
-    border-color: rgba(7, 86, 61, 0.28);
-    box-shadow: 0 12px 28px rgba(7, 86, 61, 0.1);
+  .shortcut-icon {
+    display: inline-grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    color: #087c53;
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1;
+    background: rgba(7, 124, 83, 0.1);
+    border-radius: 10px;
+  }
+
+  .shortcut-copy {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+
+  .shortcut-copy strong {
+    color: #142238;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.25;
+    word-break: keep-all;
+  }
+
+  .shortcut-copy small {
+    color: #5f6b61;
+    font-size: 10.5px;
+    font-weight: 750;
+    line-height: 1.3;
+    word-break: keep-all;
+  }
+
+  .shortcut-arrow {
+    justify-self: end;
+    color: #087c53;
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1;
+    transition: transform 170ms ease;
   }
 
   .mobile-detail-return {
