@@ -22,6 +22,9 @@ const applyContactInfo = () => {
       return;
     }
     element.href = key === "tel" ? `tel:${value}` : value;
+    if (contactInfo.linkLabels?.[key]) {
+      element.textContent = contactInfo.linkLabels[key];
+    }
   });
 
 };

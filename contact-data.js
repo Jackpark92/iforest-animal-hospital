@@ -30,6 +30,10 @@ window.IFOREST_CONTACT = {
   naverMapUrl: "https://map.naver.com/p/entry/place/1806958154?lng=126.8637915&lat=37.4799175&placePath=%2Fhome&searchType=place&c=15.00,0,0,0,dh",
   kakaoMapUrl: IFOREST_KAKAO_DIRECTIONS_URL,
   directionsUrl: "https://map.naver.com/p/entry/place/1806958154?lng=126.8637915&lat=37.4799175&placePath=%2Fhome&searchType=place&c=15.00,0,0,0,dh",
+  linkLabels: {
+    naverMapUrl: "\uD83D\uDCCD \uB124\uC774\uBC84 \uC9C0\uB3C4\uB85C \uAE38\uCC3E\uAE30",
+    kakaoMapUrl: "\uD83D\uDFE1 \uCE74\uCE74\uC624\uB9F5 \uAE38\uCC3E\uAE30"
+  },
   naverMapClientId: "skkskc426z",
   location: {
     ...IFOREST_LOCATION,
