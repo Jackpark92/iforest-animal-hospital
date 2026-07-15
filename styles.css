@@ -3101,6 +3101,14 @@ address {
     padding: 72px 20px;
   }
 
+  .services-section {
+    display: none;
+  }
+
+  .services-section:target {
+    display: block;
+  }
+
   .mobile-home-panel {
     padding: 40px 20px 72px;
     background: #fffdf8;
@@ -3751,14 +3759,6 @@ address {
   .naver-map-wrap {
     min-height: 320px;
     overflow: hidden;
-  }
-
-  .naver-map-wrap.mobile-map-locked {
-    touch-action: pan-y;
-  }
-
-  .naver-map-wrap.mobile-map-locked .naver-map-canvas {
-    pointer-events: none;
   }
 
   .naver-info-window {

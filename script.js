@@ -71,23 +71,16 @@ const initNaverMap = () => {
           ? new window.naver.maps.LatLng(mobileCenterLat, mobileCenterLng)
           : hospitalPosition;
       };
-      const getMapInteractionOptions = () => {
-        const isMobile = mobileQuery.matches;
-        return {
-          draggable: !isMobile,
-          scrollWheel: false,
-          pinchZoom: !isMobile,
-          keyboardShortcuts: !isMobile,
-          disableDoubleClickZoom: isMobile,
-          disableDoubleTapZoom: isMobile,
-          disableTwoFingerTapZoom: isMobile,
-          zoomControl: !isMobile
-        };
-      };
-      const setMobileMapLock = () => {
-        mapWrap?.classList.toggle("mobile-map-locked", mobileQuery.matches);
-      };
-      setMobileMapLock();
+      const getMapInteractionOptions = () => ({
+        draggable: true,
+        scrollWheel: mobileQuery.matches,
+        pinchZoom: true,
+        keyboardShortcuts: true,
+        disableDoubleClickZoom: false,
+        disableDoubleTapZoom: false,
+        disableTwoFingerTapZoom: false,
+        zoomControl: true
+      });
       const map = new window.naver.maps.Map(mapElement, {
         center: getMapCenter(),
         zoom: mobileQuery.matches
@@ -126,7 +119,6 @@ const initNaverMap = () => {
       window.addEventListener("resize", () => {
         if (!window.naver?.maps?.Event) return;
         const isMobile = mobileQuery.matches;
-        setMobileMapLock();
         map.setOptions?.(getMapInteractionOptions());
         map.setZoom(isMobile ? location.mobileZoom || 15 : location.zoom || 16);
         window.naver.maps.Event.trigger(map, "resize");
