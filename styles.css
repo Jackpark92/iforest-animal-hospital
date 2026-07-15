@@ -3865,84 +3865,75 @@ address {
 
   .mobile-page-shortcuts {
     max-width: 430px;
-    margin: 34px auto 0;
+    margin: 32px auto 0;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 14px 12px;
     padding-inline: 20px;
     scroll-margin-top: 92px;
   }
 
   .mobile-page-shortcuts a {
     display: grid;
-    grid-template-columns: 28px minmax(0, 1fr) 14px;
-    min-height: 82px;
+    grid-template-columns: 26px minmax(0, 1fr) 12px;
+    min-height: 66px;
     align-items: center;
-    gap: 6px;
-    padding: 12px 10px;
+    gap: 8px;
+    padding: 12px 11px;
     color: #07563d;
     text-align: left;
-    background: rgba(255, 253, 248, 0.98);
-    border: 1.5px solid rgba(7, 86, 61, 0.28);
-    border-radius: 18px;
-    box-shadow: 0 12px 26px rgba(20, 34, 56, 0.08);
-    transition: transform 170ms ease, box-shadow 170ms ease, background 170ms ease, border-color 170ms ease;
+    background: rgba(255, 253, 248, 0.96);
+    border: 1px solid rgba(7, 86, 61, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 8px 18px rgba(20, 34, 56, 0.06);
+    transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, border-color 150ms ease;
     -webkit-tap-highlight-color: transparent;
   }
 
   .mobile-page-shortcuts a:active {
     transform: scale(0.98);
     background: #f1f7ed;
-    border-color: rgba(7, 86, 61, 0.42);
-    box-shadow: 0 7px 16px rgba(20, 34, 56, 0.07);
+    border-color: rgba(7, 86, 61, 0.32);
+    box-shadow: 0 4px 10px rgba(20, 34, 56, 0.06);
   }
 
   .mobile-page-shortcuts a:active .shortcut-arrow {
-    transform: translateX(3px);
+    transform: translateX(2px);
   }
 
   .shortcut-icon {
     display: inline-grid;
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     place-items: center;
     color: #087c53;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 900;
     line-height: 1;
     background: rgba(7, 124, 83, 0.1);
-    border-radius: 10px;
+    border-radius: 9px;
   }
 
   .shortcut-copy {
-    display: grid;
+    display: block;
     min-width: 0;
-    gap: 4px;
   }
 
   .shortcut-copy strong {
     color: #142238;
-    font-size: 13px;
-    font-weight: 900;
+    font-size: 14px;
+    font-weight: 850;
     line-height: 1.25;
-    word-break: keep-all;
-  }
-
-  .shortcut-copy small {
-    color: #5f6b61;
-    font-size: 10.5px;
-    font-weight: 750;
-    line-height: 1.3;
     word-break: keep-all;
   }
 
   .shortcut-arrow {
     justify-self: end;
-    color: #087c53;
-    font-size: 15px;
-    font-weight: 900;
+    color: rgba(7, 86, 61, 0.52);
+    font-size: 16px;
+    font-weight: 800;
     line-height: 1;
-    transition: transform 170ms ease;
+    transition: transform 150ms ease;
   }
 
   .mobile-detail-return {
