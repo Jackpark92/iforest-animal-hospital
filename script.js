@@ -438,13 +438,11 @@ const createCaseThumbnail = (item) => {
 };
 
 const createCaseCard = (item) => {
-  const caseUrl = item.blogUrl || item.url;
+  const caseUrl = getCaseUrl(item);
   const card = document.createElement(caseUrl ? "a" : "article");
   card.className = "case-card";
   if (caseUrl) {
     card.href = caseUrl;
-    card.target = "_blank";
-    card.rel = "noopener noreferrer";
     card.setAttribute("aria-label", `${item.title} 치료 과정 보기`);
   } else {
     card.classList.add("case-card-disabled");
@@ -511,9 +509,7 @@ const createCaseSection = (section, cases) => {
   actions.className = "case-category-actions";
 
   const viewAll = document.createElement("a");
-  viewAll.href = "https://blog.naver.com/vet_jackpark";
-  viewAll.target = "_blank";
-  viewAll.rel = "noopener noreferrer";
+  viewAll.href = `archive.html?category=${encodeURIComponent(section.title)}`;
   viewAll.textContent = `${section.title} 치료 사례 모두 보기 →`;
   viewAll.setAttribute("aria-label", `${section.title} 치료 사례 모두 보기`);
   actions.append(viewAll);
@@ -570,7 +566,10 @@ const createCaseSection = (section, cases) => {
   return sectionElement;
 };
 
-const getCaseUrl = (item) => item.blogUrl || item.url || "";
+const getCaseUrl = (item) => {
+  const id = item.slug || item.id;
+  return id ? `case.html?id=${encodeURIComponent(id)}` : "";
+};
 
 const getMobileCaseTags = (item) => {
   if (Array.isArray(item.mobileTags)) return item.mobileTags.slice(0, 3);
@@ -590,10 +589,8 @@ const getMobileCaseTags = (item) => {
 const createMobileCaseCard = (item, sectionTitle) => {
   const card = document.createElement("a");
   card.className = "mobile-case-card";
-  card.href = getCaseUrl(item) || "https://blog.naver.com/vet_jackpark";
-  card.target = "_blank";
-  card.rel = "noopener noreferrer";
-  card.setAttribute("aria-label", `${item.title} 블로그 원문 보기`);
+  card.href = getCaseUrl(item) || "archive.html";
+  card.setAttribute("aria-label", `${item.title} 치료 사례 보기`);
 
   const badge = document.createElement("span");
   badge.className = "mobile-case-badge";
@@ -613,7 +610,7 @@ const createMobileCaseCard = (item, sectionTitle) => {
 
   const link = document.createElement("em");
   link.className = "mobile-case-link";
-  link.textContent = "블로그 원문 보기 →";
+  link.textContent = "치료 사례 보기 →";
 
   card.append(badge, title, tags, link);
   return card;
@@ -632,7 +629,7 @@ const renderMobileCaseArchive = (cases, sections) => {
   intro.innerHTML = `
     <p class="eyebrow">CASE ARCHIVE</p>
     <h3>실제 진료 케이스를<br>분야별로 모아봅니다</h3>
-    <p>아이숲동물병원에서 직접 진료한 사례를 분야별로 정리했습니다. 자세한 내용은 블로그 원문에서 확인하실 수 있습니다.</p>
+    <p>아이숲동물병원에서 직접 진료한 사례를 분야별로 정리했습니다. 사례를 누르면 홈페이지 안에서 자세한 내용을 확인하실 수 있습니다.</p>
   `;
 
   const filters = document.createElement("div");
@@ -684,10 +681,8 @@ const renderMobileCaseArchive = (cases, sections) => {
 
   const more = document.createElement("a");
   more.className = "mobile-case-more";
-  more.href = "https://blog.naver.com/vet_jackpark";
-  more.target = "_blank";
-  more.rel = "noopener noreferrer";
-  more.textContent = "네이버 블로그에서 전체 치료 사례 보기 →";
+  more.href = "archive.html";
+  more.textContent = "전체 치료 사례 아카이브 보기 →";
 
   mobileCaseArchive.replaceChildren(intro, filters, list, more);
   renderList("all");
