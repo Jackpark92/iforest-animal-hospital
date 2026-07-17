@@ -45,11 +45,12 @@ const loadOptionalScript = (src, test) => new Promise((resolve) => {
 });
 
 const getSupabaseConfig = async () => {
-  if (window.IFOREST_ADMIN_CONFIG?.supabaseUrl && window.IFOREST_ADMIN_CONFIG?.supabaseAnonKey) {
+  const hasConfig = (config) => config?.supabaseUrl && (config?.supabasePublishableKey || config?.supabaseAnonKey);
+  if (hasConfig(window.IFOREST_ADMIN_CONFIG)) {
     return window.IFOREST_ADMIN_CONFIG;
   }
   await loadOptionalScript("admin-config.js", () => Boolean(window.IFOREST_ADMIN_CONFIG));
-  return window.IFOREST_ADMIN_CONFIG?.supabaseUrl && window.IFOREST_ADMIN_CONFIG?.supabaseAnonKey
+  return hasConfig(window.IFOREST_ADMIN_CONFIG)
     ? window.IFOREST_ADMIN_CONFIG
     : null;
 };
@@ -60,7 +61,8 @@ const loadDatabaseCases = async () => {
   const hasClient = await loadOptionalScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2", () => Boolean(window.supabase?.createClient));
   if (!hasClient) return [];
   try {
-    const client = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+    const publishableKey = config.supabasePublishableKey || config.supabaseAnonKey;
+    const client = window.supabase.createClient(config.supabaseUrl, publishableKey);
     const { data, error } = await client
       .from(config.tableName || "cases")
       .select("*")

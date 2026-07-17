@@ -83,12 +83,13 @@ const sanitizeHtml = (html = "") => {
 
 const initialize = async () => {
   state.config = await loadConfig();
-  if (!state.config?.supabaseUrl || !state.config?.supabaseAnonKey || !window.supabase?.createClient) {
+  const publishableKey = state.config?.supabasePublishableKey || state.config?.supabaseAnonKey;
+  if (!state.config?.supabaseUrl || !publishableKey || !window.supabase?.createClient) {
     show("[data-admin-setup]", true);
     return;
   }
 
-  state.client = window.supabase.createClient(state.config.supabaseUrl, state.config.supabaseAnonKey);
+  state.client = window.supabase.createClient(state.config.supabaseUrl, publishableKey);
   const { data } = await state.client.auth.getSession();
   state.user = data.session?.user || null;
   state.client.auth.onAuthStateChange((_, session) => {
