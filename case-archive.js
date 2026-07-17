@@ -25,6 +25,74 @@ const toCaseDetailUrl = (item) => `case.html?id=${encodeURIComponent(toCaseId(it
 
 const fallbackImage = "assets/hero.jpg";
 
+const loadOptionalScript = (src, test) => new Promise((resolve) => {
+  if (test?.()) {
+    resolve(true);
+    return;
+  }
+  if (document.querySelector(`script[src="${src}"]`)) {
+    const existing = document.querySelector(`script[src="${src}"]`);
+    existing.addEventListener("load", () => resolve(true), { once: true });
+    existing.addEventListener("error", () => resolve(false), { once: true });
+    return;
+  }
+  const script = document.createElement("script");
+  script.src = src;
+  script.async = true;
+  script.addEventListener("load", () => resolve(true), { once: true });
+  script.addEventListener("error", () => resolve(false), { once: true });
+  document.head.append(script);
+});
+
+const getSupabaseConfig = async () => {
+  if (window.IFOREST_ADMIN_CONFIG?.supabaseUrl && window.IFOREST_ADMIN_CONFIG?.supabaseAnonKey) {
+    return window.IFOREST_ADMIN_CONFIG;
+  }
+  await loadOptionalScript("admin-config.js", () => Boolean(window.IFOREST_ADMIN_CONFIG));
+  return window.IFOREST_ADMIN_CONFIG?.supabaseUrl && window.IFOREST_ADMIN_CONFIG?.supabaseAnonKey
+    ? window.IFOREST_ADMIN_CONFIG
+    : null;
+};
+
+const loadDatabaseCases = async () => {
+  const config = await getSupabaseConfig();
+  if (!config) return [];
+  const hasClient = await loadOptionalScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2", () => Boolean(window.supabase?.createClient));
+  if (!hasClient) return [];
+  try {
+    const client = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+    const { data, error } = await client
+      .from(config.tableName || "cases")
+      .select("*")
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+    if (error) throw error;
+    return (data || []).map((item) => ({
+      id: item.slug || item.id,
+      slug: item.slug || item.id,
+      title: item.title,
+      category: normalizeCategory(item.category),
+      categories: [normalizeCategory(item.category)],
+      summary: item.summary || "",
+      species: item.species || "",
+      breed: item.breed || "",
+      age: item.age || "",
+      sex: item.sex || "",
+      diagnosis: item.diagnosis || "",
+      date: (item.published_at || item.created_at || "").slice(0, 10),
+      thumbnail: item.thumbnail_url || item.thumbnail || "",
+      sourceUrl: item.source_url || "",
+      contentHtml: item.content_html || "",
+      body: item.body || [],
+      images: item.images || [],
+      published: true
+    }));
+  } catch (error) {
+    console.info("Supabase case archive is not available.", error);
+    return [];
+  }
+};
+
 const loadImportedCases = async () => {
   try {
     const response = await fetch("content/cases/index.json", { cache: "no-store" });
@@ -65,8 +133,9 @@ const mergeCases = async () => {
     category: normalizeCategory(item.category),
     categories: item.categories || [item.category].filter(Boolean).map(normalizeCategory)
   }));
+  const databaseCases = await loadDatabaseCases();
   const byId = new Map();
-  [...baseCases, ...importedCases].forEach((item) => {
+  [...baseCases, ...importedCases, ...databaseCases].forEach((item) => {
     const id = toCaseId(item);
     if (!id) return;
     byId.set(id, item);
@@ -110,15 +179,19 @@ const renderArchive = async () => {
 
   const cards = visibleCases.map((item) => {
     const image = item.thumbnail || item.images?.[0]?.src || fallbackImage;
-    const meta = [item.species, item.age, item.date].filter(Boolean).join(" · ");
+    const meta = [item.species, item.age, item.diagnosis || item.breed].filter(Boolean).join(" · ");
     const category = normalizeCategory(item.category || item.categories?.[0] || "치료 사례");
     return `
       <a class="archive-card" href="${toCaseDetailUrl(item)}">
-        <img src="${escapeText(image)}" alt="${escapeText(item.title)} 대표 이미지" loading="lazy">
-        <span>${escapeText(category)}</span>
-        <h3>${escapeText(item.title)}</h3>
-        <p>${escapeText(item.summary || "아이숲동물병원의 실제 진료 사례입니다.")}</p>
-        <small>${escapeText(meta || "진료 사례")}</small>
+        <div class="archive-card-media">
+          <img src="${escapeText(image)}" alt="${escapeText(item.title)} 대표 이미지" loading="lazy">
+          <h3>${escapeText(item.title)}</h3>
+        </div>
+        <div class="archive-card-info">
+          <span>${escapeText(category)}</span>
+          <p>${escapeText(item.summary || "아이숲동물병원의 실제 진료 사례입니다.")}</p>
+          <small>${escapeText(meta || item.date || "진료 사례")}</small>
+        </div>
       </a>
     `;
   }).join("");
@@ -127,6 +200,9 @@ const renderArchive = async () => {
 };
 
 const createBodyHtml = (item) => {
+  if (item.contentHtml) {
+    return sanitizeRichHtml(item.contentHtml);
+  }
   if (Array.isArray(item.body) && item.body.length) {
     return item.body.map((block) => {
       if (block.type === "heading") return `<h2>${escapeText(block.text)}</h2>`;
@@ -142,6 +218,37 @@ const createBodyHtml = (item) => {
     ? `<p>자세한 원문 기록은 하단의 네이버 블로그 원문 보기에서 확인하실 수 있습니다.</p>`
     : "";
   return `<p>${escapeText(summary)}</p>${source}`;
+};
+
+const sanitizeRichHtml = (html = "") => {
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  const allowedTags = new Set(["P", "H2", "H3", "H4", "STRONG", "B", "EM", "I", "UL", "OL", "LI", "BLOCKQUOTE", "HR", "A", "IMG", "FIGURE", "FIGCAPTION", "TABLE", "THEAD", "TBODY", "TR", "TH", "TD", "BR", "DIV", "SPAN"]);
+  const allowedAttrs = new Set(["href", "target", "rel", "src", "alt", "loading", "width", "height", "class"]);
+  template.content.querySelectorAll("*").forEach((node) => {
+    if (!allowedTags.has(node.tagName)) {
+      node.replaceWith(...node.childNodes);
+      return;
+    }
+    [...node.attributes].forEach((attr) => {
+      const name = attr.name.toLowerCase();
+      if (!allowedAttrs.has(name) || /^on/i.test(name)) {
+        node.removeAttribute(attr.name);
+        return;
+      }
+      if ((name === "href" || name === "src") && /^(javascript|data):/i.test(attr.value)) {
+        node.removeAttribute(attr.name);
+      }
+    });
+    if (node.tagName === "A") {
+      node.setAttribute("target", "_blank");
+      node.setAttribute("rel", "noopener noreferrer");
+    }
+    if (node.tagName === "IMG") {
+      node.setAttribute("loading", "lazy");
+    }
+  });
+  return template.innerHTML;
 };
 
 const renderDetail = async () => {
