@@ -54,7 +54,7 @@ alter table public.cases enable row level security;
 create policy "Admins can view admins"
 on public.case_admins for select
 to authenticated
-using (auth.uid() = user_id or lower(auth.jwt() ->> 'email') = lower(email));
+using (auth.uid() = user_id);
 
 create policy "Published cases are public"
 on public.cases for select
@@ -68,7 +68,6 @@ using (exists (
   select 1
   from public.case_admins
   where user_id = auth.uid()
-     or lower(email) = lower(auth.jwt() ->> 'email')
 ));
 
 create policy "Admins can insert cases"
@@ -78,7 +77,6 @@ with check (exists (
   select 1
   from public.case_admins
   where user_id = auth.uid()
-     or lower(email) = lower(auth.jwt() ->> 'email')
 ));
 
 create policy "Admins can update cases"
@@ -88,13 +86,11 @@ using (exists (
   select 1
   from public.case_admins
   where user_id = auth.uid()
-     or lower(email) = lower(auth.jwt() ->> 'email')
 ))
 with check (exists (
   select 1
   from public.case_admins
   where user_id = auth.uid()
-     or lower(email) = lower(auth.jwt() ->> 'email')
 ));
 
 create policy "Admins can delete cases"
@@ -104,7 +100,6 @@ using (exists (
   select 1
   from public.case_admins
   where user_id = auth.uid()
-     or lower(email) = lower(auth.jwt() ->> 'email')
 ));
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -134,7 +129,6 @@ with check (
     select 1
     from public.case_admins
     where user_id = auth.uid()
-       or lower(email) = lower(auth.jwt() ->> 'email')
   )
 );
 
@@ -147,7 +141,6 @@ using (
     select 1
     from public.case_admins
     where user_id = auth.uid()
-       or lower(email) = lower(auth.jwt() ->> 'email')
   )
 )
 with check (
@@ -156,7 +149,6 @@ with check (
     select 1
     from public.case_admins
     where user_id = auth.uid()
-       or lower(email) = lower(auth.jwt() ->> 'email')
   )
 );
 
@@ -169,7 +161,6 @@ using (
     select 1
     from public.case_admins
     where user_id = auth.uid()
-       or lower(email) = lower(auth.jwt() ->> 'email')
   )
 );
 

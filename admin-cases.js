@@ -221,7 +221,7 @@ const renderAuthState = async () => {
     const account = state.user.email || "이메일 확인 불가";
     const userId = state.user.id || "ID 확인 불가";
     const detail = state.adminCheckError ? ` 확인 오류: ${state.adminCheckError}` : "";
-    setAuthNotice(`관리자 권한을 확인하지 못했습니다. 현재 로그인: ${account} / ${userId}.${detail} 관리자 계정으로 다시 로그인하거나 case_admins의 user_id를 확인해 주세요.`);
+    setAuthNotice(`관리자 권한을 확인하지 못했습니다. 현재 로그인: ${account} / ${userId}.${detail} case_admins.user_id가 현재 로그인 user id와 일치하는지 확인해 주세요.`);
     showOnly("login");
     return;
   }
@@ -245,17 +245,25 @@ const setAuthNotice = (text = "") => {
 const verifyAdmin = async () => {
   if (!state.user) return false;
   state.adminCheckError = "";
-  const { error } = await state.client
-    .from(state.config.tableName || "cases")
-    .select("id")
-    .limit(1);
+  const { data: userData, error: userError } = await state.client.auth.getUser();
+  if (userError || !userData?.user) {
+    state.adminCheckError = userError?.message || "현재 로그인 사용자를 확인하지 못했습니다.";
+    return false;
+  }
+
+  state.user = userData.user;
+  const { data, error } = await state.client
+    .from("case_admins")
+    .select("user_id")
+    .eq("user_id", state.user.id)
+    .maybeSingle();
 
   if (error) {
     console.info("Admin permission check failed.", error);
-    state.adminCheckError = error.message || "cases 접근 권한 확인 실패";
+    state.adminCheckError = error.message || "case_admins 관리자 행 조회 실패";
     return false;
   }
-  return true;
+  return Boolean(data);
 };
 
 const logoutAdmin = async () => {
