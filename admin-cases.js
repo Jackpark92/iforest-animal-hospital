@@ -13,6 +13,11 @@ const state = {
   client: null,
   user: null,
   cases: [],
+  filters: {
+    search: "",
+    category: "",
+    status: ""
+  },
   thumbnail: null,
   images: [],
   currentCase: null
@@ -107,15 +112,28 @@ const renderAuthState = async () => {
   show("[data-admin-dashboard]", loggedIn);
   if (loggedIn) {
     await loadCases();
-    resetForm();
+    await migrateBaseCasesOnce();
+    showListView();
   }
 };
 
 const bindEvents = () => {
   $("[data-login-form]")?.addEventListener("submit", handleLogin);
   $("[data-logout]")?.addEventListener("click", () => state.client.auth.signOut());
-  $("[data-new-case]")?.addEventListener("click", resetForm);
-  $("[data-import-base-cases]")?.addEventListener("click", importBaseCases);
+  $("[data-new-case]")?.addEventListener("click", startNewCase);
+  $("[data-back-to-list]")?.addEventListener("click", () => showListView());
+  $("[data-case-search]")?.addEventListener("input", (event) => {
+    state.filters.search = event.target.value.trim().toLowerCase();
+    renderCaseList();
+  });
+  $("[data-category-filter]")?.addEventListener("change", (event) => {
+    state.filters.category = event.target.value;
+    renderCaseList();
+  });
+  $("[data-status-filter]")?.addEventListener("change", (event) => {
+    state.filters.status = event.target.value;
+    renderCaseList();
+  });
   $("[data-case-form]")?.addEventListener("submit", handleSave);
   $("[data-preview-case]")?.addEventListener("click", renderPreview);
   $("[data-thumbnail-input]")?.addEventListener("change", (event) => uploadThumbnail(event.target.files?.[0]));
@@ -165,6 +183,7 @@ const loadCases = async () => {
     return;
   }
   state.cases = data || [];
+  renderCategoryFilter();
   renderCaseList();
 };
 
@@ -176,32 +195,98 @@ const getStatusLabel = (status = "draft") => ({
   private: "비공개"
 }[status] || status);
 
+const getFilteredCases = () => {
+  const search = state.filters.search;
+  return state.cases.filter((item) => {
+    const matchesSearch = !search || [
+      item.title,
+      item.card_description,
+      item.summary,
+      item.diagnosis,
+      item.category
+    ].filter(Boolean).join(" ").toLowerCase().includes(search);
+    const matchesCategory = !state.filters.category || item.category === state.filters.category;
+    const matchesStatus = !state.filters.status || item.status === state.filters.status;
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+};
+
+const renderCategoryFilter = () => {
+  const select = $("[data-category-filter]");
+  if (!select) return;
+  const current = select.value;
+  const categories = [...new Set(state.cases.map((item) => item.category).filter(Boolean))];
+  select.innerHTML = '<option value="">전체</option>' + categories.map((category) => (
+    `<option value="${category}">${category}</option>`
+  )).join("");
+  select.value = categories.includes(current) ? current : "";
+};
+
 const renderCaseList = () => {
   const list = $("[data-case-list]");
   if (!list) return;
+  const cases = getFilteredCases();
   if (!state.cases.length) {
     list.innerHTML = '<p class="admin-empty">아직 등록된 치료 사례가 없습니다.</p>';
     return;
   }
-  list.innerHTML = state.cases.map((item) => `
+  if (!cases.length) {
+    list.innerHTML = '<p class="admin-empty">검색 조건에 맞는 치료 사례가 없습니다.</p>';
+    return;
+  }
+  list.innerHTML = `
+    <div class="admin-case-table-head" aria-hidden="true">
+      <span>섬네일</span>
+      <span>제목</span>
+      <span>카테고리</span>
+      <span>상태</span>
+      <span>게시일</span>
+      <span>관리</span>
+    </div>
+    ${cases.map((item) => `
     <article class="admin-case-item">
       <img src="${item.thumbnail_url || "assets/hero.jpg"}" alt="" loading="lazy">
       <div>
         <strong>${item.title}</strong>
-        <span>${item.category || "카테고리 없음"} · ${getStatusLabel(item.status)}</span>
-        <small>게시일 ${(item.published_at || "").slice(0, 10) || "-"}</small>
+        <small>${item.card_description || item.summary || item.diagnosis || ""}</small>
       </div>
-      <button type="button" data-edit-id="${item.id}">수정</button>
-      <button type="button" data-delete-id="${item.id}">삭제</button>
-      <a href="${getCaseUrl(item)}" target="_blank" rel="noopener noreferrer">공개 페이지 보기</a>
+      <span>${item.category || "카테고리 없음"}</span>
+      <span>${getStatusLabel(item.status)}</span>
+      <small>${(item.published_at || "").slice(0, 10) || "-"}</small>
+      <div class="admin-case-actions">
+        <button type="button" data-edit-id="${item.id}">수정</button>
+        <a href="${getCaseUrl(item)}" target="_blank" rel="noopener noreferrer">보기</a>
+        <button type="button" data-delete-id="${item.id}">삭제</button>
+      </div>
     </article>
-  `).join("");
+  `).join("")}`;
   list.querySelectorAll("[data-edit-id]").forEach((button) => {
     button.addEventListener("click", () => editCase(button.dataset.editId));
   });
   list.querySelectorAll("[data-delete-id]").forEach((button) => {
     button.addEventListener("click", () => deleteCase(button.dataset.deleteId));
   });
+};
+
+const showListView = (text = "") => {
+  show("[data-list-view]", true);
+  show("[data-editor-view]", false);
+  message("[data-list-message]", text);
+  $("[data-list-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const showEditorView = () => {
+  show("[data-list-view]", false);
+  show("[data-editor-view]", true);
+  message("[data-list-message]", "");
+  message("[data-editor-message]", "");
+  $("[data-editor-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const startNewCase = () => {
+  resetForm();
+  $("[data-save-label]").textContent = "치료 사례 등록";
+  showEditorView();
 };
 
 const resetForm = () => {
@@ -213,6 +298,7 @@ const resetForm = () => {
   if (form) form.elements.publishedAt.value = new Date().toISOString().slice(0, 10);
   $("[data-rich-editor]").innerHTML = "<p>진료 사례 내용을 입력해 주세요.</p>";
   $("[data-editor-title]").textContent = "새 치료 사례 작성";
+  $("[data-save-label]").textContent = "치료 사례 등록";
   renderThumbnail();
   renderImages();
   message("[data-editor-message]", "");
@@ -241,8 +327,10 @@ const editCase = (id) => {
   form.elements.publishedAt.value = (item.published_at || "").slice(0, 10);
   $("[data-rich-editor]").innerHTML = item.content_html || "<p></p>";
   $("[data-editor-title]").textContent = "치료 사례 수정";
+  $("[data-save-label]").textContent = "수정 내용 저장";
   renderThumbnail();
   renderImages();
+  showEditorView();
 };
 
 const collectPayload = (saveMode) => {
@@ -278,13 +366,13 @@ const handleSave = async (event) => {
   event.preventDefault();
   const saveMode = event.submitter?.value;
   const payload = collectPayload(saveMode);
+  const id = $("[data-case-form]").elements.id.value;
   if (!payload.title) {
     message("[data-editor-message]", "제목을 입력해 주세요.", true);
     return;
   }
   message("[data-editor-message]", "저장 중입니다.");
   const table = state.config.tableName || "cases";
-  const id = $("[data-case-form]").elements.id.value;
   const query = id
     ? state.client.from(table).update(payload).eq("id", id).select().single()
     : state.client.from(table).insert({ ...payload, created_at: new Date().toISOString() }).select().single();
@@ -293,21 +381,20 @@ const handleSave = async (event) => {
     message("[data-editor-message]", `저장 실패: ${error.message}`, true);
     return;
   }
-  message("[data-editor-message]", "저장되었습니다.");
   state.currentCase = data;
   await loadCases();
-  editCase(data.id);
+  showListView(id ? "치료 사례가 수정되었습니다." : "치료 사례가 등록되었습니다.");
 };
 
 const deleteCase = async (id) => {
-  if (!window.confirm("이 치료 사례를 삭제할까요? 삭제 후 되돌릴 수 없습니다.")) return;
+  if (!window.confirm("이 치료 사례를 삭제하시겠습니까? 삭제한 내용은 복구하기 어렵습니다.")) return;
   const { error } = await state.client.from(state.config.tableName || "cases").delete().eq("id", id);
   if (error) {
     message("[data-editor-message]", `삭제 실패: ${error.message}`, true);
     return;
   }
   await loadCases();
-  resetForm();
+  showListView("치료 사례가 삭제되었습니다.");
 };
 
 const baseCaseToContentHtml = (item) => {
@@ -323,16 +410,21 @@ const baseCaseToContentHtml = (item) => {
   return `<p>${item.description || item.subtitle || "아이숲동물병원의 실제 치료 사례입니다."}</p>`;
 };
 
-const importBaseCases = async () => {
+const migrateBaseCasesOnce = async () => {
+  const migrationKey = "iforest-base-cases-migrated-v1";
+  if (window.localStorage?.getItem(migrationKey) === "1") return;
   const baseCases = Array.isArray(window.IFOREST_CASES) ? window.IFOREST_CASES : [];
-  if (!baseCases.length) {
-    message("[data-editor-message]", "가져올 기본 치료 사례가 없습니다.", true);
+  if (!baseCases.length) return;
+
+  const existingSlugs = new Set(state.cases.map((item) => item.slug || item.id).filter(Boolean));
+  const missingCases = baseCases.filter((item) => !existingSlugs.has(slugify(item.id || item.title)));
+  if (!missingCases.length) {
+    window.localStorage?.setItem(migrationKey, "1");
     return;
   }
-  if (!window.confirm(`기본 치료 사례 ${baseCases.length}개를 Supabase로 가져올까요? 같은 slug가 있으면 업데이트됩니다.`)) return;
 
   const now = new Date().toISOString();
-  const rows = baseCases.map((item) => ({
+  const rows = missingCases.map((item) => ({
     title: item.title || item.thumbnailTitle || item.id,
     slug: slugify(item.id || item.title),
     category: (item.categories || [item.category] || [])[0] || CATEGORIES[0],
@@ -353,16 +445,15 @@ const importBaseCases = async () => {
     author_id: state.user?.id
   }));
 
-  message("[data-editor-message]", "기본 치료 사례를 Supabase로 가져오는 중입니다.");
   const { error } = await state.client
     .from(state.config.tableName || "cases")
     .upsert(rows, { onConflict: "slug" });
 
   if (error) {
-    message("[data-editor-message]", `기본 사례 가져오기 실패: ${error.message}`, true);
+    console.info("Base case migration skipped.", error);
     return;
   }
-  message("[data-editor-message]", "기본 치료 사례를 Supabase로 가져왔습니다. 이제 관리자 목록에서 수정할 수 있습니다.");
+  window.localStorage?.setItem(migrationKey, "1");
   await loadCases();
 };
 

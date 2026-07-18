@@ -38,28 +38,46 @@
           </div>
           <div class="admin-header-actions">
             <a class="button ghost" href="archive.html" target="_blank" rel="noopener noreferrer">공개 목록 보기</a>
-            <button class="button ghost" type="button" data-import-base-cases>기본 사례 가져오기</button>
             <button class="button ghost" type="button" data-logout>로그아웃</button>
           </div>
         </header>
 
         <div class="admin-layout">
-          <aside class="admin-list-panel">
+          <aside class="admin-list-panel" data-list-view>
             <div class="admin-list-head">
-              <h2>치료 사례 목록</h2>
-              <button type="button" data-new-case>새 글</button>
+              <h2>치료 사례 관리</h2>
+              <button type="button" data-new-case>새 치료 사례 작성</button>
             </div>
+            <div class="admin-list-tools">
+              <label>검색
+                <input type="search" data-case-search placeholder="제목, 설명, 진단 검색">
+              </label>
+              <label>카테고리
+                <select data-category-filter>
+                  <option value="">전체</option>
+                </select>
+              </label>
+              <label>공개 상태
+                <select data-status-filter>
+                  <option value="">전체</option>
+                  <option value="published">공개</option>
+                  <option value="draft">임시저장</option>
+                  <option value="private">비공개</option>
+                </select>
+              </label>
+            </div>
+            <p class="admin-message" data-list-message></p>
             <div class="admin-case-list" data-case-list aria-live="polite"></div>
           </aside>
 
-          <form class="admin-editor" data-case-form>
+          <form class="admin-editor" data-case-form data-editor-view hidden>
             <input type="hidden" name="id">
             <div class="admin-editor-head">
               <h2 data-editor-title>새 치료 사례 작성</h2>
               <div class="admin-editor-actions">
+                <button type="button" data-back-to-list>목록으로 돌아가기</button>
                 <button type="button" data-preview-case>미리보기</button>
-                <button type="submit" name="saveMode" value="draft">임시저장</button>
-                <button class="admin-publish-button" type="submit" name="saveMode" value="published">게시하기</button>
+                <button class="admin-publish-button" type="submit" data-save-label>치료 사례 등록</button>
               </div>
             </div>
 

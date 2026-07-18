@@ -3248,7 +3248,7 @@ address {
 
 .admin-layout {
   display: grid;
-  grid-template-columns: minmax(280px, 0.38fr) minmax(0, 1fr);
+  grid-template-columns: 1fr;
   gap: 18px;
   align-items: start;
 }
@@ -3260,6 +3260,13 @@ address {
 
 .admin-list-head {
   justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.admin-list-tools {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.4fr) repeat(2, minmax(150px, 0.7fr));
+  gap: 10px;
   margin-bottom: 14px;
 }
 
@@ -3308,10 +3315,23 @@ address {
   gap: 10px;
 }
 
+.admin-case-table-head,
 .admin-case-item {
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-columns: 72px minmax(180px, 1.4fr) minmax(120px, 0.7fr) 92px 100px minmax(190px, auto);
   gap: 10px;
+  align-items: center;
+}
+
+.admin-case-table-head {
+  padding: 0 10px 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-case-item {
   padding: 10px;
   background: #fffdf8;
   border: 1px solid rgba(7, 86, 61, 0.12);
@@ -3319,8 +3339,9 @@ address {
 }
 
 .admin-case-item img {
-  width: 58px;
-  height: 58px;
+  width: 72px;
+  aspect-ratio: 4 / 3;
+  height: auto;
   object-fit: contain;
   border-radius: 10px;
   background: #f5f0e5;
@@ -3346,8 +3367,10 @@ address {
   font-size: 12px;
 }
 
-.admin-case-item button {
-  grid-column: span 1;
+.admin-case-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .admin-editor {
@@ -5218,6 +5241,29 @@ address {
   .admin-editor-actions {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .admin-list-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-case-table-head {
+    display: none;
+  }
+
+  .admin-case-item {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+
+  .admin-case-item > span,
+  .admin-case-item > small,
+  .admin-case-actions {
+    grid-column: 2;
+  }
+
+  .admin-case-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .admin-field-grid,

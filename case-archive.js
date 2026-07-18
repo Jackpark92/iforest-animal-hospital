@@ -142,6 +142,15 @@ const mergeCases = async () => {
     categories: item.categories || [item.category].filter(Boolean).map(normalizeCategory)
   }));
   const databaseCases = await loadDatabaseCases();
+  if (databaseCases.length) {
+    const byDatabaseId = new Map();
+    [...importedCases, ...databaseCases].forEach((item) => {
+      const id = toCaseId(item);
+      if (!id) return;
+      byDatabaseId.set(id, item);
+    });
+    return [...byDatabaseId.values()].filter((item) => includeDrafts || item.published !== false);
+  }
   const byId = new Map();
   [...baseCases, ...importedCases, ...databaseCases].forEach((item) => {
     const id = toCaseId(item);
