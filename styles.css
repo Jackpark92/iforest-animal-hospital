@@ -3409,6 +3409,10 @@ address {
   gap: 10px;
 }
 
+.admin-thumbnail-preview {
+  display: grid;
+}
+
 .admin-image-item {
   display: grid;
   gap: 8px;
@@ -3423,6 +3427,25 @@ address {
   aspect-ratio: 4 / 3;
   object-fit: cover;
   border-radius: 10px;
+}
+
+.admin-thumbnail-item {
+  grid-template-columns: minmax(140px, 220px) minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.admin-thumbnail-item img {
+  max-width: 220px;
+}
+
+.admin-thumbnail-item strong,
+.admin-thumbnail-item small {
+  display: block;
+}
+
+.admin-thumbnail-item small {
+  margin-top: 4px;
+  color: var(--muted);
 }
 
 .editor-toolbar {
@@ -5187,8 +5210,13 @@ address {
   }
 
   .admin-field-grid,
-  .admin-image-list {
+  .admin-image-list,
+  .admin-thumbnail-item {
     grid-template-columns: 1fr;
+  }
+
+  .admin-thumbnail-item img {
+    max-width: none;
   }
 
   .admin-list-panel,

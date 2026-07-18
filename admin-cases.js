@@ -13,6 +13,7 @@ const state = {
   client: null,
   user: null,
   cases: [],
+  thumbnail: null,
   images: [],
   currentCase: null
 };
@@ -116,6 +117,8 @@ const bindEvents = () => {
   $("[data-new-case]")?.addEventListener("click", resetForm);
   $("[data-case-form]")?.addEventListener("submit", handleSave);
   $("[data-preview-case]")?.addEventListener("click", renderPreview);
+  $("[data-thumbnail-input]")?.addEventListener("change", (event) => uploadThumbnail(event.target.files?.[0]));
+  $("[data-remove-thumbnail]")?.addEventListener("click", removeThumbnail);
   $("[data-image-input]")?.addEventListener("change", (event) => uploadFiles([...event.target.files]));
   $(".admin-file-drop")?.addEventListener("dragover", (event) => {
     event.preventDefault();
@@ -193,12 +196,14 @@ const renderCaseList = () => {
 
 const resetForm = () => {
   state.currentCase = null;
+  state.thumbnail = null;
   state.images = [];
   const form = $("[data-case-form]");
   form?.reset();
   if (form) form.elements.publishedAt.value = new Date().toISOString().slice(0, 10);
   $("[data-rich-editor]").innerHTML = "<p>진료 사례 내용을 입력해 주세요.</p>";
   $("[data-editor-title]").textContent = "새 치료 사례 작성";
+  renderThumbnail();
   renderImages();
   message("[data-editor-message]", "");
 };
@@ -207,7 +212,8 @@ const editCase = (id) => {
   const item = state.cases.find((entry) => String(entry.id) === String(id));
   if (!item) return;
   state.currentCase = item;
-  state.images = Array.isArray(item.images) ? item.images : [];
+  state.thumbnail = item.thumbnail_url ? { url: item.thumbnail_url, path: item.thumbnail_path || "", alt: `${item.title || "대표"} 섬네일` } : null;
+  state.images = Array.isArray(item.images) ? item.images.map(({ isThumbnail, ...image }) => image) : [];
   const form = $("[data-case-form]");
   form.elements.id.value = item.id;
   form.elements.title.value = item.title || "";
@@ -224,6 +230,7 @@ const editCase = (id) => {
   form.elements.publishedAt.value = (item.published_at || "").slice(0, 10);
   $("[data-rich-editor]").innerHTML = item.content_html || "<p></p>";
   $("[data-editor-title]").textContent = "치료 사례 수정";
+  renderThumbnail();
   renderImages();
 };
 
@@ -233,7 +240,6 @@ const collectPayload = (saveMode) => {
   const title = String(data.get("title") || "").trim();
   const slug = slugify(data.get("slug") || title);
   const contentHtml = sanitizeHtml($("[data-rich-editor]").innerHTML);
-  const thumbnail = state.images.find((image) => image.isThumbnail)?.url || state.images[0]?.url || "";
   const now = new Date().toISOString();
   return {
     title,
@@ -245,12 +251,12 @@ const collectPayload = (saveMode) => {
     sex: data.get("sex"),
     diagnosis: data.get("diagnosis"),
     summary: data.get("summary"),
-    thumbnail_url: thumbnail,
+    thumbnail_url: state.thumbnail?.url || "",
     content_html: contentHtml,
     source_url: data.get("sourceUrl"),
     status: saveMode || data.get("status") || "draft",
     published_at: saveMode === "published" ? (data.get("publishedAt") || now.slice(0, 10)) : data.get("publishedAt") || null,
-    images: state.images,
+    images: state.images.map(({ isThumbnail, ...image }) => image),
     updated_at: now,
     author_id: state.user?.id
   };
@@ -292,36 +298,102 @@ const deleteCase = async (id) => {
   resetForm();
 };
 
+const isValidImageFile = (file) => file && /^image\/(jpeg|png|webp)$/.test(file.type) && file.size <= 8 * 1024 * 1024;
+
+const createStoragePath = (folder, file) => {
+  const ext = file.name.split(".").pop().toLowerCase();
+  return `${folder}/${state.user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+};
+
+const getPathFromPublicUrl = (url) => {
+  const bucket = state.config.storageBucket || "case-images";
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const index = String(url || "").indexOf(marker);
+  return index >= 0 ? decodeURIComponent(url.slice(index + marker.length)) : "";
+};
+
+const uploadImageToStorage = async (file, folder) => {
+  const bucket = state.config.storageBucket || "case-images";
+  const filePath = createStoragePath(folder, file);
+  const { error } = await state.client.storage.from(bucket).upload(filePath, file, {
+    cacheControl: "31536000",
+    upsert: false,
+    contentType: file.type
+  });
+  if (error) throw error;
+  const { data } = state.client.storage.from(bucket).getPublicUrl(filePath);
+  return {
+    url: data.publicUrl,
+    path: filePath,
+    alt: file.name.replace(/\.[^.]+$/, "")
+  };
+};
+
+const uploadThumbnail = async (file) => {
+  if (!file) return;
+  if (!isValidImageFile(file)) {
+    message("[data-editor-message]", "대표 섬네일은 JPG, PNG, WebP 이미지만 8MB 이하로 업로드할 수 있습니다.", true);
+    return;
+  }
+  try {
+    message("[data-thumbnail-progress]", "대표 섬네일 업로드 중입니다.");
+    state.thumbnail = await uploadImageToStorage(file, "thumbnails");
+    message("[data-thumbnail-progress]", "");
+    renderThumbnail();
+  } catch (error) {
+    message("[data-thumbnail-progress]", "");
+    message("[data-editor-message]", `대표 섬네일 업로드 실패: ${error.message}`, true);
+  }
+};
+
+const removeThumbnail = async () => {
+  if (!state.thumbnail) return;
+  if (!window.confirm("대표 섬네일을 삭제할까요? 본문 이미지는 유지됩니다.")) return;
+  const path = state.thumbnail.path || getPathFromPublicUrl(state.thumbnail.url);
+  state.thumbnail = null;
+  if (path) {
+    await state.client.storage.from(state.config.storageBucket || "case-images").remove([path]);
+  }
+  renderThumbnail();
+};
+
 const uploadFiles = async (files) => {
-  const validFiles = files.filter((file) => /^image\/(jpeg|png|webp)$/.test(file.type) && file.size <= 8 * 1024 * 1024);
+  const validFiles = files.filter(isValidImageFile);
   if (!validFiles.length) {
     message("[data-editor-message]", "JPG, PNG, WebP 이미지만 8MB 이하로 업로드할 수 있습니다.", true);
     return;
   }
-  const bucket = state.config.storageBucket || "case-images";
   for (const [index, file] of validFiles.entries()) {
     message("[data-upload-progress]", `${index + 1}/${validFiles.length} 업로드 중입니다.`);
-    const ext = file.name.split(".").pop().toLowerCase();
-    const filePath = `${state.user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await state.client.storage.from(bucket).upload(filePath, file, {
-      cacheControl: "31536000",
-      upsert: false,
-      contentType: file.type
-    });
-    if (error) {
-      message("[data-editor-message]", `이미지 업로드 실패: ${error.message}`, true);
+    try {
+      state.images.push(await uploadImageToStorage(file, "contents"));
+    } catch (error) {
+      message("[data-editor-message]", `본문 이미지 업로드 실패: ${error.message}`, true);
       continue;
     }
-    const { data } = state.client.storage.from(bucket).getPublicUrl(filePath);
-    state.images.push({
-      url: data.publicUrl,
-      path: filePath,
-      alt: file.name.replace(/\.[^.]+$/, ""),
-      isThumbnail: state.images.length === 0
-    });
   }
   message("[data-upload-progress]", "");
   renderImages();
+};
+
+const renderThumbnail = () => {
+  const target = $("[data-thumbnail-preview]");
+  if (!target) return;
+  if (!state.thumbnail) {
+    target.innerHTML = '<p class="admin-empty">대표 섬네일이 없습니다.</p>';
+    return;
+  }
+  target.innerHTML = `
+    <article class="admin-image-item admin-thumbnail-item">
+      <img src="${state.thumbnail.url}" alt="">
+      <div>
+        <strong>대표 섬네일</strong>
+        <small>치료 아카이브 목록 카드에 표시됩니다.</small>
+      </div>
+      <button type="button" data-remove-thumbnail>삭제</button>
+    </article>
+  `;
+  target.querySelector("[data-remove-thumbnail]")?.addEventListener("click", removeThumbnail);
 };
 
 const renderImages = () => {
@@ -335,7 +407,6 @@ const renderImages = () => {
     <article class="admin-image-item">
       <img src="${image.url}" alt="">
       <input value="${image.alt || ""}" data-alt-index="${index}" aria-label="이미지 설명">
-      <button type="button" data-thumb-index="${index}">${image.isThumbnail ? "대표 이미지" : "대표로 지정"}</button>
       <button type="button" data-insert-image="${index}">본문 삽입</button>
       <button type="button" data-remove-image="${index}">삭제</button>
     </article>
@@ -343,13 +414,6 @@ const renderImages = () => {
   list.querySelectorAll("[data-alt-index]").forEach((input) => {
     input.addEventListener("input", () => {
       state.images[Number(input.dataset.altIndex)].alt = input.value;
-    });
-  });
-  list.querySelectorAll("[data-thumb-index]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const index = Number(button.dataset.thumbIndex);
-      state.images = state.images.map((image, imageIndex) => ({ ...image, isThumbnail: imageIndex === index }));
-      renderImages();
     });
   });
   list.querySelectorAll("[data-insert-image]").forEach((button) => {
@@ -361,7 +425,6 @@ const renderImages = () => {
   list.querySelectorAll("[data-remove-image]").forEach((button) => {
     button.addEventListener("click", () => {
       state.images.splice(Number(button.dataset.removeImage), 1);
-      if (state.images.length && !state.images.some((image) => image.isThumbnail)) state.images[0].isThumbnail = true;
       renderImages();
     });
   });

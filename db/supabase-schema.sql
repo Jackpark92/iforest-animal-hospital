@@ -31,6 +31,16 @@ create table if not exists public.cases (
 create index if not exists cases_status_published_idx on public.cases(status, published_at desc);
 create index if not exists cases_category_idx on public.cases(category);
 
+alter table public.cases
+add column if not exists thumbnail_url text;
+
+comment on column public.cases.thumbnail_url is
+'Representative thumbnail for archive cards only. Content images are stored separately in the images jsonb column.';
+
+-- Storage path convention:
+-- case-images/thumbnails/... : representative thumbnails for archive cards
+-- case-images/contents/...   : content images inserted manually into case body
+
 alter table public.case_admins enable row level security;
 alter table public.cases enable row level security;
 
