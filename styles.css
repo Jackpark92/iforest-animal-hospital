@@ -2874,7 +2874,7 @@ address {
 .archive-toolbar {
   display: grid;
   gap: 18px;
-  max-width: var(--max);
+  max-width: min(1320px, calc(100vw - 80px));
   margin: 0 auto;
   padding: 0 clamp(20px, 5vw, 70px) 30px;
   text-align: center;
@@ -2922,7 +2922,7 @@ address {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
-  max-width: var(--max);
+  max-width: min(1320px, calc(100vw - 80px));
   margin: 0 auto;
   padding: 0 clamp(20px, 5vw, 70px) clamp(86px, 10vw, 132px);
 }
@@ -3162,14 +3162,14 @@ address {
 
 .admin-shell {
   min-height: 100svh;
-  padding: clamp(24px, 4vw, 48px);
+  padding: clamp(28px, 4vw, 56px);
 }
 
 .admin-setup,
 .admin-loading,
 .admin-login,
 .admin-dashboard {
-  max-width: 1180px;
+  max-width: min(1440px, calc(100vw - 72px));
   margin: 0 auto;
 }
 
@@ -3273,7 +3273,7 @@ address {
 .admin-list-panel,
 .admin-editor,
 .admin-detail-panel {
-  padding: 18px;
+  padding: 22px;
 }
 
 .admin-list-head {
@@ -3283,9 +3283,9 @@ address {
 
 .admin-list-tools {
   display: grid;
-  grid-template-columns: minmax(240px, 1.4fr) repeat(2, minmax(150px, 0.7fr));
-  gap: 10px;
-  margin-bottom: 14px;
+  grid-template-columns: minmax(360px, 1.4fr) repeat(2, minmax(180px, 0.7fr));
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
 .admin-list-head h2,
@@ -3349,14 +3349,14 @@ address {
 
 .admin-case-list {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .admin-case-table-head,
 .admin-case-item {
   display: grid;
-  grid-template-columns: 72px minmax(220px, 1fr) 110px 74px 74px 104px;
-  gap: 10px;
+  grid-template-columns: 86px minmax(320px, 1fr) 132px 86px 86px 120px;
+  gap: 12px;
   align-items: center;
 }
 
@@ -3369,14 +3369,14 @@ address {
 }
 
 .admin-case-item {
-  padding: 10px;
+  padding: 12px;
   background: #fffdf8;
   border: 1px solid rgba(7, 86, 61, 0.12);
   border-radius: 14px;
 }
 
 .admin-case-item img {
-  width: 72px;
+  width: 86px;
   aspect-ratio: 4 / 3;
   height: auto;
   object-fit: contain;
