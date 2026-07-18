@@ -221,7 +221,7 @@ const renderAuthState = async () => {
     const account = state.user.email || "이메일 확인 불가";
     const userId = state.user.id || "ID 확인 불가";
     const detail = state.adminCheckError ? ` 확인 오류: ${state.adminCheckError}` : "";
-    setAuthNotice(`관리자 권한을 확인하지 못했습니다. 현재 로그인: ${account} / ${userId}.${detail} case_admins.user_id가 현재 로그인 user id와 일치하는지 확인해 주세요.`);
+    setAuthNotice(`관리자 권한을 확인하지 못했습니다. 현재 로그인: ${account} / ${userId}.${detail} case_admins.user_id와 SELECT 권한 정책을 확인해 주세요.`);
     showOnly("login");
     return;
   }

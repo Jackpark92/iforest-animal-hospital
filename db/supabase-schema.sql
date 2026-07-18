@@ -51,6 +51,11 @@ comment on column public.cases.card_description is
 alter table public.case_admins enable row level security;
 alter table public.cases enable row level security;
 
+grant usage on schema public to anon, authenticated;
+grant select on public.case_admins to authenticated;
+grant select on public.cases to anon, authenticated;
+grant insert, update, delete on public.cases to authenticated;
+
 create policy "Admins can view admins"
 on public.case_admins for select
 to authenticated

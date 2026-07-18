@@ -7,6 +7,11 @@ update public.case_admins
 set user_id = '2c97cb18-4ae0-4d7e-867c-8b87a9907167'
 where lower(email) = lower('treey1624@naver.com');
 
+grant usage on schema public to anon, authenticated;
+grant select on public.case_admins to authenticated;
+grant select on public.cases to anon, authenticated;
+grant insert, update, delete on public.cases to authenticated;
+
 drop policy if exists "Admins can view admins" on public.case_admins;
 
 create policy "Admins can view admins"
