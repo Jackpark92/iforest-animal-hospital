@@ -13,6 +13,7 @@ const state = {
   client: null,
   user: null,
   isAdmin: false,
+  adminCheckError: "",
   cases: [],
   selectedCase: null,
   thumbnail: null,
@@ -217,7 +218,10 @@ const renderAuthState = async () => {
 
   const isAdmin = await verifyAdmin();
   if (!isAdmin) {
-    setAuthNotice("관리자 권한이 없는 계정입니다. 관리자 계정으로 다시 로그인해 주세요.");
+    const account = state.user.email || "이메일 확인 불가";
+    const userId = state.user.id || "ID 확인 불가";
+    const detail = state.adminCheckError ? ` 확인 오류: ${state.adminCheckError}` : "";
+    setAuthNotice(`관리자 권한을 확인하지 못했습니다. 현재 로그인: ${account} / ${userId}.${detail} 관리자 계정으로 다시 로그인하거나 case_admins의 user_id를 확인해 주세요.`);
     showOnly("login");
     return;
   }
@@ -240,21 +244,42 @@ const setAuthNotice = (text = "") => {
 
 const verifyAdmin = async () => {
   if (!state.user) return false;
+  state.adminCheckError = "";
   const email = state.user.email || "";
-  const { data, error } = await state.client
+  const byUserId = await state.client
     .from("case_admins")
     .select("user_id,email")
-    .or(`user_id.eq.${state.user.id},email.eq.${email}`)
+    .eq("user_id", state.user.id)
     .maybeSingle();
-  if (error) {
-    console.info("Admin permission check failed.", error);
+
+  if (byUserId.data) return true;
+  if (byUserId.error) {
+    console.info("Admin user_id check failed.", byUserId.error);
+    state.adminCheckError = byUserId.error.message || "user_id 확인 실패";
+  }
+
+  if (!email) return false;
+
+  const byEmail = await state.client
+    .from("case_admins")
+    .select("user_id,email")
+    .ilike("email", email)
+    .limit(1)
+    .maybeSingle();
+
+  if (byEmail.data) return true;
+  if (byEmail.error) {
+    console.info("Admin email check failed.", byEmail.error);
+    state.adminCheckError = byEmail.error.message || state.adminCheckError || "email 확인 실패";
     return false;
   }
-  return Boolean(data);
+
+  return false;
 };
 
 const logoutAdmin = async () => {
   state.isAdmin = false;
+  state.adminCheckError = "";
   state.user = null;
   state.cases = [];
   state.selectedCase = null;
@@ -273,7 +298,7 @@ const handleLogin = async (event) => {
     email: form.get("email"),
     password: form.get("password")
   });
-  message("[data-login-message]", error ? "로그인에 실패했습니다. 계정을 확인해 주세요." : "", Boolean(error));
+  message("[data-login-message]", error ? `로그인 실패: ${error.message}` : "", Boolean(error));
 };
 
 const loadCases = async () => {
