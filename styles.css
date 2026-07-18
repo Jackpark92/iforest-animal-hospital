@@ -3339,7 +3339,7 @@ address {
 .admin-case-table-head,
 .admin-case-item {
   display: grid;
-  grid-template-columns: 72px minmax(180px, 1.4fr) minmax(120px, 0.7fr) 92px 100px minmax(190px, auto);
+  grid-template-columns: 72px minmax(220px, 1fr) 110px 74px 74px 104px;
   gap: 10px;
   align-items: center;
 }
@@ -5337,13 +5337,14 @@ address {
 
   .admin-case-item > span,
   .admin-case-item > small,
+  .admin-case-item > button:not(.admin-title-button),
   .admin-case-actions {
     grid-column: 2;
   }
 
+  .admin-case-item > button:not(.admin-title-button),
   .admin-case-actions {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
   }
 
   .admin-detail-meta {

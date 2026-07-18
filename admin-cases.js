@@ -129,8 +129,11 @@ const initialize = async () => {
 
 const bindEvents = () => {
   $("[data-login-form]")?.addEventListener("submit", handleLogin);
-  $$("[data-show-list], [data-back-to-list], [data-cancel-editor]").forEach((button) => {
-    button.addEventListener("click", () => showListView());
+  document.addEventListener("click", (event) => {
+    const action = event.target.closest("[data-show-list], [data-back-to-list], [data-cancel-editor]");
+    if (!action) return;
+    event.preventDefault();
+    showListView();
   });
   $$("[data-new-case]").forEach((button) => button.addEventListener("click", showCreateView));
   $("[data-logout]")?.addEventListener("click", () => state.client.auth.signOut());
@@ -181,6 +184,9 @@ const bindEvents = () => {
     if (state.selectedCase) showEditView(state.selectedCase.id);
   });
   $("[data-detail-delete]")?.addEventListener("click", () => {
+    if (state.selectedCase) deleteCase(state.selectedCase.id);
+  });
+  $("[data-editor-delete]")?.addEventListener("click", () => {
     if (state.selectedCase) deleteCase(state.selectedCase.id);
   });
 };
@@ -263,29 +269,26 @@ const renderCaseList = () => {
     <div class="admin-case-table-head" aria-hidden="true">
       <span>섬네일</span>
       <span>제목</span>
-      <span>카테고리</span>
-      <span>공개 상태</span>
-      <span>수정일</span>
-      <span>관리</span>
+      <span>작성일</span>
+      <span>수정</span>
+      <span>삭제</span>
+      <span>공개 보기</span>
     </div>
     ${cases.map((item) => `
       <article class="admin-case-item">
         <img src="${escapeText(item.thumbnail_url || "assets/hero.jpg")}" alt="" loading="lazy">
-        <button class="admin-title-button" type="button" data-view-id="${item.id}">
+        <button class="admin-title-button" type="button" data-edit-id="${item.id}" title="수정 화면 열기">
           <strong>${escapeText(item.title)}</strong>
-          <small>${escapeText(item.card_description || item.summary || "")}</small>
+          <small>${escapeText(item.category || "카테고리 없음")} · ${getStatusLabel(item.status)}</small>
         </button>
-        <span>${escapeText(item.category || "카테고리 없음")}</span>
-        <span>${getStatusLabel(item.status)}</span>
-        <small>${formatDate(item.updated_at || item.created_at)}</small>
+        <small>${formatDate(item.created_at || item.updated_at)}</small>
+        <button type="button" data-edit-id="${item.id}">수정</button>
+        <button type="button" data-delete-id="${item.id}">삭제</button>
         <div class="admin-case-actions">
-          <button type="button" data-view-id="${item.id}">보기</button>
-          <button type="button" data-edit-id="${item.id}">수정</button>
-          <button type="button" data-delete-id="${item.id}">삭제</button>
+          <a href="${escapeText(getCaseUrl(item))}" target="_blank" rel="noopener noreferrer">공개 보기</a>
         </div>
       </article>
     `).join("")}`;
-  $$("[data-view-id]", list).forEach((button) => button.addEventListener("click", () => showDetailView(button.dataset.viewId)));
   $$("[data-edit-id]", list).forEach((button) => button.addEventListener("click", () => showEditView(button.dataset.editId)));
   $$("[data-delete-id]", list).forEach((button) => button.addEventListener("click", () => deleteCase(button.dataset.deleteId)));
 };
@@ -298,6 +301,7 @@ const setView = (view) => {
 
 const showListView = (text = "") => {
   state.selectedCase = null;
+  renderCaseList();
   setView("list");
   message("[data-admin-message]", text);
   $("[data-list-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -316,17 +320,23 @@ const showDetailView = (id, text = "") => {
 const showCreateView = () => {
   resetForm();
   $("[data-editor-title]").textContent = "새 글 작성";
-  $("[data-save-label]").textContent = "글 등록";
+  $("[data-save-label]").textContent = "저장";
+  show("[data-editor-delete]", false);
   setView("editor");
   $("[data-editor-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
 const showEditView = (id) => {
   const item = state.cases.find((entry) => String(entry.id) === String(id));
-  if (!item) return;
+  if (!item) {
+    message("[data-admin-message]", "수정할 글을 찾지 못했습니다. 목록을 새로 불러와 주세요.", true);
+    showListView();
+    return;
+  }
   fillForm(item);
-  $("[data-editor-title]").textContent = "기존 글 수정";
-  $("[data-save-label]").textContent = "수정 저장";
+  $("[data-editor-title]").textContent = "치료 사례 수정";
+  $("[data-save-label]").textContent = "저장";
+  show("[data-editor-delete]", true);
   setView("editor");
   $("[data-editor-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
