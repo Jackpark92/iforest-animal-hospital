@@ -46,11 +46,13 @@ window.IFOREST_CASE_SECTIONS = [
 window.IFOREST_CASES = [
   {
     id: "orthopedic-patella-luxation",
+    thumbnail: "assets/cases/patellar-xray-4x3.jpg",
+    thumbnailFit: "contain",
     title: "슬개골 탈구",
     thumbnailLines: ["슬개골 탈구"],
-    subtitle: "활차구 성형술 · 경골조면이식술",
-    description: "활차구 성형술 경골조면이식술",
-    descriptionLines: ["활차구 성형술", "경골조면이식술"],
+    subtitle: "활차후 성형술 · 경골조면이식술",
+    description: "활차후 성형술 · 경골조면이식술",
+    descriptionLines: ["활차후 성형술 · 경골조면이식술"],
     categories: ["정형외과"],
     icon: "bone",
     blogUrl: "https://blog.naver.com/PostView.naver?blogId=vet_jackpark&logNo=223899252051",

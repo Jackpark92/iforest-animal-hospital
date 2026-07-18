@@ -409,6 +409,18 @@ const createCaseThumbnail = (item) => {
   const media = document.createElement("div");
   media.className = "case-media";
 
+  if (item.thumbnail) {
+    media.classList.add("case-media-photo");
+    const image = document.createElement("img");
+    image.src = item.thumbnail;
+    image.alt = `${item.title} 대표 이미지`;
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.className = item.thumbnailFit === "cover" ? "fit-cover" : "fit-contain";
+    media.append(image);
+    return media;
+  }
+
   const textWrap = document.createElement("div");
   textWrap.className = "case-thumb-text";
 
