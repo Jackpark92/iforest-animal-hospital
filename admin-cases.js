@@ -12,6 +12,7 @@ const state = {
   config: null,
   client: null,
   user: null,
+  isAdmin: false,
   cases: [],
   selectedCase: null,
   thumbnail: null,
@@ -29,6 +30,13 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const show = (selector, visible) => {
   const element = $(selector);
   if (element) element.hidden = !visible;
+};
+
+const showOnly = (view) => {
+  show("[data-admin-loading]", view === "loading");
+  show("[data-admin-setup]", view === "setup");
+  show("[data-admin-login]", view === "login");
+  show("[data-admin-dashboard]", view === "dashboard");
 };
 
 const message = (selector, text, isError = false) => {
@@ -109,10 +117,11 @@ const getStatusLabel = (status = "draft") => ({
 const getCaseUrl = (item) => `case.html?id=${encodeURIComponent(item.slug || item.id)}&preview=1`;
 
 const initialize = async () => {
+  showOnly("loading");
   state.config = await loadConfig();
   const publishableKey = state.config?.supabasePublishableKey || state.config?.supabaseAnonKey;
   if (!state.config?.supabaseUrl || !publishableKey || !window.supabase?.createClient) {
-    show("[data-admin-setup]", true);
+    showOnly("setup");
     return;
   }
 
@@ -133,10 +142,12 @@ const bindEvents = () => {
     const action = event.target.closest("[data-show-list], [data-back-to-list], [data-cancel-editor]");
     if (!action) return;
     event.preventDefault();
+    if (!state.isAdmin) return;
     showListView();
   });
   $$("[data-new-case]").forEach((button) => button.addEventListener("click", showCreateView));
-  $("[data-logout]")?.addEventListener("click", () => state.client.auth.signOut());
+  $("[data-logout]")?.addEventListener("click", logoutAdmin);
+  $("[data-force-logout]")?.addEventListener("click", logoutAdmin);
   $("[data-case-search]")?.addEventListener("input", (event) => {
     state.filters.search = event.target.value.trim().toLowerCase();
     renderCaseList();
@@ -192,18 +203,70 @@ const bindEvents = () => {
 };
 
 const renderAuthState = async () => {
-  const loggedIn = Boolean(state.user);
-  show("[data-admin-login]", !loggedIn);
-  show("[data-admin-dashboard]", loggedIn);
-  if (!loggedIn) return;
+  showOnly("loading");
+  state.isAdmin = false;
+  state.cases = [];
+  state.selectedCase = null;
+  renderCaseList();
+  setAuthNotice("");
+
+  if (!state.user) {
+    showOnly("login");
+    return;
+  }
+
+  const isAdmin = await verifyAdmin();
+  if (!isAdmin) {
+    setAuthNotice("관리자 권한이 없는 계정입니다. 관리자 계정으로 다시 로그인해 주세요.");
+    showOnly("login");
+    return;
+  }
+
+  state.isAdmin = true;
+  showOnly("dashboard");
   await loadCases();
   await migrateBaseCasesOnce();
   showListView();
 };
 
+const setAuthNotice = (text = "") => {
+  const notice = $("[data-auth-notice]");
+  const noticeText = $("[data-auth-notice-text]");
+  const loginForm = $("[data-login-form]");
+  if (noticeText) noticeText.textContent = text;
+  if (notice) notice.hidden = !text;
+  if (loginForm) loginForm.hidden = Boolean(text && state.user);
+};
+
+const verifyAdmin = async () => {
+  if (!state.user) return false;
+  const { data, error } = await state.client
+    .from("case_admins")
+    .select("user_id,email")
+    .eq("user_id", state.user.id)
+    .maybeSingle();
+  if (error) {
+    console.info("Admin permission check failed.", error);
+    return false;
+  }
+  return Boolean(data);
+};
+
+const logoutAdmin = async () => {
+  state.isAdmin = false;
+  state.user = null;
+  state.cases = [];
+  state.selectedCase = null;
+  resetForm();
+  await state.client?.auth.signOut();
+  setAuthNotice("");
+  showOnly("login");
+};
+
 const handleLogin = async (event) => {
   event.preventDefault();
   const form = new FormData(event.currentTarget);
+  setAuthNotice("");
   message("[data-login-message]", "로그인 중입니다.");
   const { error } = await state.client.auth.signInWithPassword({
     email: form.get("email"),

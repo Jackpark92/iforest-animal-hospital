@@ -16,11 +16,21 @@
         <p><strong>admin-config.js</strong>에 Supabase Project URL과 Publishable Key를 입력해 주세요.</p>
       </section>
 
+      <section class="admin-loading" data-admin-loading>
+        <p class="eyebrow">IFOREST CASE CMS</p>
+        <h1>관리자 확인 중입니다</h1>
+        <p>로그인 상태와 관리자 권한을 확인하고 있습니다.</p>
+      </section>
+
       <section class="admin-login" data-admin-login hidden>
         <div>
           <p class="eyebrow">IFOREST CASE CMS</p>
           <h1>치료 사례 관리자</h1>
           <p>관리자 계정으로 로그인하면 치료 사례 글을 작성, 수정, 삭제할 수 있습니다.</p>
+        </div>
+        <div class="admin-auth-notice" data-auth-notice hidden>
+          <p data-auth-notice-text></p>
+          <button class="button ghost" type="button" data-force-logout>로그아웃</button>
         </div>
         <form data-login-form>
           <label>이메일<input type="email" name="email" autocomplete="email" required></label>

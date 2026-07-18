@@ -3156,12 +3156,17 @@ address {
   background: linear-gradient(180deg, var(--ivory), #fffdf8);
 }
 
+.admin-page [hidden] {
+  display: none !important;
+}
+
 .admin-shell {
   min-height: 100svh;
   padding: clamp(24px, 4vw, 48px);
 }
 
 .admin-setup,
+.admin-loading,
 .admin-login,
 .admin-dashboard {
   max-width: 1180px;
@@ -3169,6 +3174,7 @@ address {
 }
 
 .admin-setup,
+.admin-loading,
 .admin-login {
   display: grid;
   gap: 24px;
@@ -3178,6 +3184,16 @@ address {
   border: 1px solid var(--line);
   border-radius: 18px;
   box-shadow: var(--shadow);
+}
+
+.admin-auth-notice {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  color: var(--green-dark);
+  background: var(--green-soft);
+  border: 1px solid rgba(7, 86, 61, 0.18);
+  border-radius: 14px;
 }
 
 .admin-login form,
