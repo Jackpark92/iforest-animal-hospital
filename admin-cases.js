@@ -245,36 +245,17 @@ const setAuthNotice = (text = "") => {
 const verifyAdmin = async () => {
   if (!state.user) return false;
   state.adminCheckError = "";
-  const email = state.user.email || "";
-  const byUserId = await state.client
-    .from("case_admins")
-    .select("user_id,email")
-    .eq("user_id", state.user.id)
-    .maybeSingle();
+  const { error } = await state.client
+    .from(state.config.tableName || "cases")
+    .select("id")
+    .limit(1);
 
-  if (byUserId.data) return true;
-  if (byUserId.error) {
-    console.info("Admin user_id check failed.", byUserId.error);
-    state.adminCheckError = byUserId.error.message || "user_id 확인 실패";
-  }
-
-  if (!email) return false;
-
-  const byEmail = await state.client
-    .from("case_admins")
-    .select("user_id,email")
-    .ilike("email", email)
-    .limit(1)
-    .maybeSingle();
-
-  if (byEmail.data) return true;
-  if (byEmail.error) {
-    console.info("Admin email check failed.", byEmail.error);
-    state.adminCheckError = byEmail.error.message || state.adminCheckError || "email 확인 실패";
+  if (error) {
+    console.info("Admin permission check failed.", error);
+    state.adminCheckError = error.message || "cases 접근 권한 확인 실패";
     return false;
   }
-
-  return false;
+  return true;
 };
 
 const logoutAdmin = async () => {
