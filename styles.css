@@ -1342,15 +1342,20 @@ section {
 
 .case-card-premium-medical .case-body {
   position: relative;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-height: 112px;
+  min-height: 150px;
   padding: 16px 17px 17px;
   background:
     radial-gradient(circle at 100% 0%, rgba(255, 253, 248, 0.13), transparent 42%),
     linear-gradient(180deg, #118c67 0%, #0c7758 100%);
+}
+
+.case-card-premium-medical::after {
+  display: block;
+  flex: 0 0 28px;
+  content: "";
+  background: #fffdf8;
 }
 
 .case-card-premium-medical .case-body::after {
@@ -1391,8 +1396,8 @@ section {
 }
 
 .case-card-premium-medical .case-link {
-  margin-top: auto;
-  padding-top: 18px;
+  margin-top: 18px;
+  padding-top: 0;
   color: #fffdf8;
   font-size: 13.5px;
   text-shadow: 0 1px 0 rgba(0, 36, 26, 0.18);
