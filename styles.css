@@ -2966,14 +2966,14 @@ address {
   right: 0;
   bottom: 0;
   display: -webkit-box;
-  min-height: 58px;
+  min-height: 48px;
   margin: 0;
-  padding: 11px 14px;
+  padding: 8px 14px;
   overflow: hidden;
   color: #fff;
   font-size: 17px;
   font-weight: 850;
-  line-height: 1.24;
+  line-height: 1.2;
   word-break: keep-all;
   background: rgba(7, 86, 61, 0.9);
   -webkit-line-clamp: 2;
@@ -3009,9 +3009,9 @@ address {
   overflow: hidden;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.56;
+  line-height: 1.5;
   word-break: keep-all;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 

@@ -222,7 +222,7 @@ const editCase = (id) => {
   const item = state.cases.find((entry) => String(entry.id) === String(id));
   if (!item) return;
   state.currentCase = item;
-  state.thumbnail = item.thumbnail_url ? { url: item.thumbnail_url, path: item.thumbnail_path || "", alt: `${item.title || "대표"} 섬네일` } : null;
+  state.thumbnail = item.thumbnail_url ? { url: item.thumbnail_url, path: item.thumbnail_path || "", alt: `${item.title || "대표"} 이미지` } : null;
   state.images = Array.isArray(item.images) ? item.images.map(({ isThumbnail, ...image }) => image) : [];
   const form = $("[data-case-form]");
   form.elements.id.value = item.id;
@@ -236,6 +236,7 @@ const editCase = (id) => {
   form.elements.sex.value = item.sex || "";
   form.elements.diagnosis.value = item.diagnosis || "";
   form.elements.summary.value = item.summary || "";
+  form.elements.cardDescription.value = item.card_description || "";
   form.elements.sourceUrl.value = item.source_url || "";
   form.elements.publishedAt.value = (item.published_at || "").slice(0, 10);
   $("[data-rich-editor]").innerHTML = item.content_html || "<p></p>";
@@ -261,6 +262,7 @@ const collectPayload = (saveMode) => {
     sex: data.get("sex"),
     diagnosis: data.get("diagnosis"),
     summary: data.get("summary"),
+    card_description: String(data.get("cardDescription") || "").trim(),
     thumbnail_url: state.thumbnail?.url || "",
     content_html: contentHtml,
     source_url: data.get("sourceUrl"),
@@ -340,6 +342,7 @@ const importBaseCases = async () => {
     sex: item.sex || "",
     diagnosis: item.diagnosis || item.subtitle || item.description || "",
     summary: item.description || item.subtitle || "",
+    card_description: item.description || item.subtitle || "",
     thumbnail_url: item.thumbnail || "",
     content_html: sanitizeHtml(baseCaseToContentHtml(item)),
     source_url: item.blogUrl || "",
@@ -397,23 +400,23 @@ const uploadImageToStorage = async (file, folder) => {
 const uploadThumbnail = async (file) => {
   if (!file) return;
   if (!isValidImageFile(file)) {
-    message("[data-editor-message]", "대표 섬네일은 JPG, PNG, WebP 이미지만 8MB 이하로 업로드할 수 있습니다.", true);
+    message("[data-editor-message]", "대표 이미지는 JPG, PNG, WebP 이미지만 8MB 이하로 업로드할 수 있습니다.", true);
     return;
   }
   try {
-    message("[data-thumbnail-progress]", "대표 섬네일 업로드 중입니다.");
+    message("[data-thumbnail-progress]", "대표 이미지 업로드 중입니다.");
     state.thumbnail = await uploadImageToStorage(file, "thumbnails");
     message("[data-thumbnail-progress]", "");
     renderThumbnail();
   } catch (error) {
     message("[data-thumbnail-progress]", "");
-    message("[data-editor-message]", `대표 섬네일 업로드 실패: ${error.message}`, true);
+    message("[data-editor-message]", `대표 이미지 업로드 실패: ${error.message}`, true);
   }
 };
 
 const removeThumbnail = async () => {
   if (!state.thumbnail) return;
-  if (!window.confirm("대표 섬네일을 삭제할까요? 본문 이미지는 유지됩니다.")) return;
+  if (!window.confirm("대표 이미지를 삭제할까요? 본문 이미지는 유지됩니다.")) return;
   const path = state.thumbnail.path || getPathFromPublicUrl(state.thumbnail.url);
   state.thumbnail = null;
   if (path) {
@@ -445,14 +448,14 @@ const renderThumbnail = () => {
   const target = $("[data-thumbnail-preview]");
   if (!target) return;
   if (!state.thumbnail) {
-    target.innerHTML = '<p class="admin-empty">대표 섬네일이 없습니다.</p>';
+    target.innerHTML = '<p class="admin-empty">대표 이미지가 없습니다.</p>';
     return;
   }
   target.innerHTML = `
     <article class="admin-image-item admin-thumbnail-item">
       <img src="${state.thumbnail.url}" alt="">
       <div>
-        <strong>대표 섬네일</strong>
+        <strong>대표 이미지</strong>
         <small>치료 아카이브 목록 카드에 표시됩니다.</small>
       </div>
       <button type="button" data-remove-thumbnail>삭제</button>

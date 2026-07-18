@@ -93,16 +93,19 @@
             </div>
 
             <label class="admin-wide-field">요약<textarea name="summary" rows="3" maxlength="220"></textarea></label>
+            <label class="admin-wide-field">카드 설명
+              <textarea name="cardDescription" rows="3" maxlength="180" placeholder="치료 아카이브 목록에 표시될 짧은 설명을 입력해 주세요."></textarea>
+            </label>
             <label class="admin-wide-field">네이버 블로그 원문 URL<input name="sourceUrl" type="url" placeholder="https://blog.naver.com/..."></label>
 
             <section class="admin-upload-box">
               <div>
-                <h3>대표 섬네일</h3>
-                <p>권장 크기 1200 × 900px · 4:3 비율 · 완성된 섬네일 이미지를 업로드해 주세요.</p>
+                <h3>대표 이미지</h3>
+                <p>권장 크기 1200 × 900px · 4:3 비율 · 실제 환자 사진, X-ray, 초음파 또는 병원 사진을 업로드해 주세요.</p>
               </div>
               <label class="admin-file-drop">
                 <input type="file" data-thumbnail-input accept="image/jpeg,image/png,image/webp">
-                <span>대표 섬네일 이미지 업로드</span>
+                <span>대표 이미지 업로드</span>
               </label>
               <div class="admin-upload-progress" data-thumbnail-progress></div>
               <div class="admin-thumbnail-preview" data-thumbnail-preview></div>

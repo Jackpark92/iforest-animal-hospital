@@ -87,6 +87,7 @@ const loadDatabaseCases = async () => {
       diagnosis: item.diagnosis || "",
       date: (item.published_at || item.created_at || "").slice(0, 10),
       thumbnail: item.thumbnail_url || item.thumbnail || "",
+      cardDescription: item.card_description || "",
       sourceUrl: item.source_url || "",
       contentHtml: item.content_html || "",
       body: item.body || [],
@@ -119,6 +120,7 @@ const getBaseCases = () => (Array.isArray(window.IFOREST_CASES) ? window.IFOREST
   category: normalizeCategory((item.categories || [])[0] || item.category || "치료 사례"),
   categories: item.categories || [item.category].filter(Boolean),
   summary: item.description || item.subtitle || "아이숲동물병원에서 직접 진료한 실제 치료 사례입니다.",
+  cardDescription: item.cardDescription || item.description || item.subtitle || "",
   species: item.species || "",
   breed: item.breed || "",
   age: item.age || "",
@@ -195,8 +197,8 @@ const renderArchive = async () => {
         </div>
         <div class="archive-card-info">
           <span>${escapeText(category)}</span>
-          <p>${escapeText(item.summary || "아이숲동물병원의 실제 진료 사례입니다.")}</p>
-          <small>${escapeText(meta || item.date || "진료 사례")}</small>
+          <p>${escapeText(item.cardDescription || item.summary || "아이숲동물병원의 실제 진료 사례입니다.")}</p>
+          <small>진료 사례</small>
         </div>
       </a>
     `;

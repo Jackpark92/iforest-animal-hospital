@@ -16,6 +16,7 @@ create table if not exists public.cases (
   age text,
   sex text,
   diagnosis text,
+  card_description text,
   summary text,
   thumbnail_url text,
   content_html text not null default '',
@@ -34,8 +35,14 @@ create index if not exists cases_category_idx on public.cases(category);
 alter table public.cases
 add column if not exists thumbnail_url text;
 
+alter table public.cases
+add column if not exists card_description text;
+
 comment on column public.cases.thumbnail_url is
 'Representative thumbnail for archive cards only. Content images are stored separately in the images jsonb column.';
+
+comment on column public.cases.card_description is
+'Short plain-text description shown on public archive cards.';
 
 -- Storage path convention:
 -- case-images/thumbnails/... : representative thumbnails for archive cards
