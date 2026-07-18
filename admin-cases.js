@@ -240,10 +240,11 @@ const setAuthNotice = (text = "") => {
 
 const verifyAdmin = async () => {
   if (!state.user) return false;
+  const email = state.user.email || "";
   const { data, error } = await state.client
     .from("case_admins")
     .select("user_id,email")
-    .eq("user_id", state.user.id)
+    .or(`user_id.eq.${state.user.id},email.eq.${email}`)
     .maybeSingle();
   if (error) {
     console.info("Admin permission check failed.", error);

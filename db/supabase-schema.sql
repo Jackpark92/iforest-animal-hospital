@@ -54,7 +54,7 @@ alter table public.cases enable row level security;
 create policy "Admins can view admins"
 on public.case_admins for select
 to authenticated
-using (auth.uid() = user_id);
+using (auth.uid() = user_id or lower(auth.jwt() ->> 'email') = lower(email));
 
 create policy "Published cases are public"
 on public.cases for select
@@ -64,23 +64,48 @@ using (status = 'published');
 create policy "Admins can read all cases"
 on public.cases for select
 to authenticated
-using (exists (select 1 from public.case_admins where user_id = auth.uid()));
+using (exists (
+  select 1
+  from public.case_admins
+  where user_id = auth.uid()
+     or lower(email) = lower(auth.jwt() ->> 'email')
+));
 
 create policy "Admins can insert cases"
 on public.cases for insert
 to authenticated
-with check (exists (select 1 from public.case_admins where user_id = auth.uid()));
+with check (exists (
+  select 1
+  from public.case_admins
+  where user_id = auth.uid()
+     or lower(email) = lower(auth.jwt() ->> 'email')
+));
 
 create policy "Admins can update cases"
 on public.cases for update
 to authenticated
-using (exists (select 1 from public.case_admins where user_id = auth.uid()))
-with check (exists (select 1 from public.case_admins where user_id = auth.uid()));
+using (exists (
+  select 1
+  from public.case_admins
+  where user_id = auth.uid()
+     or lower(email) = lower(auth.jwt() ->> 'email')
+))
+with check (exists (
+  select 1
+  from public.case_admins
+  where user_id = auth.uid()
+     or lower(email) = lower(auth.jwt() ->> 'email')
+));
 
 create policy "Admins can delete cases"
 on public.cases for delete
 to authenticated
-using (exists (select 1 from public.case_admins where user_id = auth.uid()));
+using (exists (
+  select 1
+  from public.case_admins
+  where user_id = auth.uid()
+     or lower(email) = lower(auth.jwt() ->> 'email')
+));
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
@@ -105,7 +130,12 @@ on storage.objects for insert
 to authenticated
 with check (
   bucket_id = 'case-images'
-  and exists (select 1 from public.case_admins where user_id = auth.uid())
+  and exists (
+    select 1
+    from public.case_admins
+    where user_id = auth.uid()
+       or lower(email) = lower(auth.jwt() ->> 'email')
+  )
 );
 
 create policy "Admins can update case images"
@@ -113,11 +143,21 @@ on storage.objects for update
 to authenticated
 using (
   bucket_id = 'case-images'
-  and exists (select 1 from public.case_admins where user_id = auth.uid())
+  and exists (
+    select 1
+    from public.case_admins
+    where user_id = auth.uid()
+       or lower(email) = lower(auth.jwt() ->> 'email')
+  )
 )
 with check (
   bucket_id = 'case-images'
-  and exists (select 1 from public.case_admins where user_id = auth.uid())
+  and exists (
+    select 1
+    from public.case_admins
+    where user_id = auth.uid()
+       or lower(email) = lower(auth.jwt() ->> 'email')
+  )
 );
 
 create policy "Admins can delete case images"
@@ -125,7 +165,12 @@ on storage.objects for delete
 to authenticated
 using (
   bucket_id = 'case-images'
-  and exists (select 1 from public.case_admins where user_id = auth.uid())
+  and exists (
+    select 1
+    from public.case_admins
+    where user_id = auth.uid()
+       or lower(email) = lower(auth.jwt() ->> 'email')
+  )
 );
 
 -- 관리자 계정 생성 후 아래 예시처럼 auth.users의 id와 email을 등록하세요.
