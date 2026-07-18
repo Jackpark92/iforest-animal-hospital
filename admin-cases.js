@@ -229,7 +229,6 @@ const renderAuthState = async () => {
   state.isAdmin = true;
   showOnly("dashboard");
   await loadCases();
-  await migrateBaseCasesOnce();
   showListView();
 };
 
@@ -534,57 +533,6 @@ const deleteCase = async (id) => {
   }
   await loadCases();
   showListView("치료 사례가 삭제되었습니다.");
-};
-
-const baseCaseToContentHtml = (item) => {
-  if (Array.isArray(item.body) && item.body.length) {
-    return item.body.map((block) => {
-      if (block.type === "heading") return `<h2>${escapeText(block.text || "")}</h2>`;
-      if (block.type === "image") {
-        return `<figure><img src="${escapeText(block.src || "")}" alt="${escapeText(block.alt || item.title || "")}" loading="lazy"><figcaption>${escapeText(block.caption || "")}</figcaption></figure>`;
-      }
-      return `<p>${escapeText(block.text || "")}</p>`;
-    }).join("");
-  }
-  return `<p>${escapeText(item.description || item.subtitle || "아이숲동물병원의 실제 치료 사례입니다.")}</p>`;
-};
-
-const migrateBaseCasesOnce = async () => {
-  const baseCases = Array.isArray(window.IFOREST_CASES) ? window.IFOREST_CASES : [];
-  if (!baseCases.length) return;
-  const migrationKey = "iforest-base-cases-migrated-v2";
-  if (window.localStorage?.getItem(migrationKey) === "1") return;
-  const existingSlugs = new Set(state.cases.map((item) => item.slug || item.id).filter(Boolean));
-  const missingCases = baseCases.filter((item) => !existingSlugs.has(slugify(item.id || item.title)));
-  if (!missingCases.length) {
-    window.localStorage?.setItem(migrationKey, "1");
-    return;
-  }
-  const now = new Date().toISOString();
-  const rows = missingCases.map((item) => ({
-    title: item.title || item.thumbnailTitle || item.id,
-    slug: slugify(item.id || item.title),
-    category: (item.categories || [item.category] || [])[0] || CATEGORIES[0],
-    card_description: item.description || item.subtitle || "",
-    summary: item.description || item.subtitle || "",
-    thumbnail_url: item.thumbnail || "",
-    content_html: sanitizeHtml(baseCaseToContentHtml(item)),
-    source_url: item.blogUrl || "",
-    status: item.published === false ? "draft" : "published",
-    published_at: item.publishedAt || null,
-    images: Array.isArray(item.images) ? item.images : [],
-    updated_at: now,
-    author_id: state.user?.id
-  }));
-  const { error } = await state.client
-    .from(state.config.tableName || "cases")
-    .upsert(rows, { onConflict: "slug" });
-  if (error) {
-    console.info("Base case migration skipped.", error);
-    return;
-  }
-  window.localStorage?.setItem(migrationKey, "1");
-  await loadCases();
 };
 
 const isValidImageFile = (file) => file && /^image\/(jpeg|png|webp)$/.test(file.type) && file.size <= 8 * 1024 * 1024;

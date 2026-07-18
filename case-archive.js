@@ -100,59 +100,11 @@ const loadDatabaseCases = async () => {
   }
 };
 
-const loadImportedCases = async () => {
-  try {
-    const response = await fetch("content/cases/index.json", { cache: "no-store" });
-    if (!response.ok) return [];
-    const imported = await response.json();
-    if (!Array.isArray(imported)) return [];
-    return imported;
-  } catch (error) {
-    console.info("Imported case index is not available.", error);
-    return [];
-  }
-};
-
-const getBaseCases = () => (Array.isArray(window.IFOREST_CASES) ? window.IFOREST_CASES : []).map((item) => ({
-  id: item.id,
-  slug: item.id,
-  title: item.title,
-  category: normalizeCategory((item.categories || [])[0] || item.category || "치료 사례"),
-  categories: item.categories || [item.category].filter(Boolean),
-  summary: item.description || item.subtitle || "아이숲동물병원에서 직접 진료한 실제 치료 사례입니다.",
-  cardDescription: item.cardDescription || item.description || item.subtitle || "",
-  species: item.species || "",
-  breed: item.breed || "",
-  age: item.age || "",
-  date: item.publishedAt || "",
-  thumbnail: item.thumbnail || fallbackImage,
-  sourceUrl: item.blogUrl || "",
-  body: item.body || [],
-  images: item.images || [],
-  published: item.published !== false,
-  featured: Boolean(item.featured)
-}));
-
 const mergeCases = async () => {
   const includeDrafts = getUrlParams().get("preview") === "1" || getUrlParams().get("draft") === "1";
-  const baseCases = getBaseCases();
-  const importedCases = (await loadImportedCases()).map((item) => ({
-    ...item,
-    category: normalizeCategory(item.category),
-    categories: item.categories || [item.category].filter(Boolean).map(normalizeCategory)
-  }));
   const databaseCases = await loadDatabaseCases();
-  if (databaseCases.length) {
-    const byDatabaseId = new Map();
-    [...importedCases, ...databaseCases].forEach((item) => {
-      const id = toCaseId(item);
-      if (!id) return;
-      byDatabaseId.set(id, item);
-    });
-    return [...byDatabaseId.values()].filter((item) => includeDrafts || item.published !== false);
-  }
   const byId = new Map();
-  [...baseCases, ...importedCases, ...databaseCases].forEach((item) => {
+  databaseCases.forEach((item) => {
     const id = toCaseId(item);
     if (!id) return;
     byId.set(id, item);
