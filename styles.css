@@ -3183,6 +3183,7 @@ address {
 .admin-login form,
 .admin-editor,
 .admin-list-panel,
+.admin-detail-panel,
 .admin-upload-box,
 .admin-editor-box,
 .admin-preview {
@@ -3254,7 +3255,8 @@ address {
 }
 
 .admin-list-panel,
-.admin-editor {
+.admin-editor,
+.admin-detail-panel {
   padding: 18px;
 }
 
@@ -3303,6 +3305,25 @@ address {
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+.admin-title-button {
+  display: grid;
+  gap: 4px;
+  min-height: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.admin-title-button:hover strong,
+.admin-title-button:focus-visible strong {
+  color: var(--green);
+  text-decoration: underline;
 }
 
 .admin-publish-button {
@@ -3371,6 +3392,65 @@ address {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+.admin-case-detail {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-detail-thumb {
+  width: min(100%, 520px);
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  background: #f5f0e5;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.admin-detail-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.admin-detail-meta div {
+  padding: 12px;
+  background: #fffdf8;
+  border: 1px solid rgba(7, 86, 61, 0.12);
+  border-radius: 12px;
+}
+
+.admin-detail-meta dt {
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.admin-detail-meta dd {
+  margin: 0;
+  color: #142238;
+  font-weight: 850;
+}
+
+.admin-case-detail h3,
+.admin-help {
+  margin: 0;
+}
+
+.admin-case-detail section,
+.admin-detail-body {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-detail-body {
+  padding: 16px;
+  background: #fffdf8;
+  border: 1px solid rgba(7, 86, 61, 0.12);
+  border-radius: 14px;
 }
 
 .admin-editor {
@@ -5264,6 +5344,10 @@ address {
   .admin-case-actions {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-detail-meta {
+    grid-template-columns: 1fr;
   }
 
   .admin-field-grid,

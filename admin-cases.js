@@ -2,9 +2,9 @@ const CATEGORIES = [
   "정형외과",
   "일반외과·종양수술",
   "내과·노령질환",
+  "치과",
   "고양이 특화진료",
   "심장·건강검진",
-  "치과",
   "안과"
 ];
 
@@ -13,17 +13,18 @@ const state = {
   client: null,
   user: null,
   cases: [],
+  selectedCase: null,
+  thumbnail: null,
+  images: [],
   filters: {
     search: "",
     category: "",
     status: ""
-  },
-  thumbnail: null,
-  images: [],
-  currentCase: null
+  }
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const show = (selector, visible) => {
   const element = $(selector);
@@ -57,6 +58,12 @@ const slugify = (value) => String(value || "")
   .replace(/^-+|-+$/g, "")
   .slice(0, 90);
 
+const escapeText = (value = "") => {
+  const span = document.createElement("span");
+  span.textContent = String(value);
+  return span.innerHTML;
+};
+
 const sanitizeHtml = (html = "") => {
   const template = document.createElement("template");
   template.innerHTML = html;
@@ -71,6 +78,7 @@ const sanitizeHtml = (html = "") => {
       const name = attr.name.toLowerCase();
       if (!allowedAttrs.has(name) || /^on/i.test(name)) {
         node.removeAttribute(attr.name);
+        return;
       }
       if ((name === "href" || name === "src") && /^(javascript|data):/i.test(attr.value)) {
         node.removeAttribute(attr.name);
@@ -86,6 +94,19 @@ const sanitizeHtml = (html = "") => {
   });
   return template.innerHTML;
 };
+
+const formatDate = (value) => {
+  if (!value) return "-";
+  return String(value).slice(0, 10);
+};
+
+const getStatusLabel = (status = "draft") => ({
+  published: "공개",
+  private: "비공개",
+  draft: "임시저장"
+}[status] || status);
+
+const getCaseUrl = (item) => `case.html?id=${encodeURIComponent(item.slug || item.id)}&preview=1`;
 
 const initialize = async () => {
   state.config = await loadConfig();
@@ -106,22 +127,13 @@ const initialize = async () => {
   renderAuthState();
 };
 
-const renderAuthState = async () => {
-  const loggedIn = Boolean(state.user);
-  show("[data-admin-login]", !loggedIn);
-  show("[data-admin-dashboard]", loggedIn);
-  if (loggedIn) {
-    await loadCases();
-    await migrateBaseCasesOnce();
-    showListView();
-  }
-};
-
 const bindEvents = () => {
   $("[data-login-form]")?.addEventListener("submit", handleLogin);
+  $$("[data-show-list], [data-back-to-list], [data-cancel-editor]").forEach((button) => {
+    button.addEventListener("click", () => showListView());
+  });
+  $$("[data-new-case]").forEach((button) => button.addEventListener("click", showCreateView));
   $("[data-logout]")?.addEventListener("click", () => state.client.auth.signOut());
-  $("[data-new-case]")?.addEventListener("click", startNewCase);
-  $("[data-back-to-list]")?.addEventListener("click", () => showListView());
   $("[data-case-search]")?.addEventListener("input", (event) => {
     state.filters.search = event.target.value.trim().toLowerCase();
     renderCaseList();
@@ -135,21 +147,26 @@ const bindEvents = () => {
     renderCaseList();
   });
   $("[data-case-form]")?.addEventListener("submit", handleSave);
-  $("[data-preview-case]")?.addEventListener("click", renderPreview);
   $("[data-thumbnail-input]")?.addEventListener("change", (event) => uploadThumbnail(event.target.files?.[0]));
-  $("[data-remove-thumbnail]")?.addEventListener("click", removeThumbnail);
-  $("[data-image-input]")?.addEventListener("change", (event) => uploadFiles([...event.target.files]));
-  $(".admin-file-drop")?.addEventListener("dragover", (event) => {
-    event.preventDefault();
-    event.currentTarget.classList.add("dragging");
+  $("[data-image-input]")?.addEventListener("change", (event) => uploadContentImages([...event.target.files]));
+  $$(".admin-file-drop").forEach((drop) => {
+    drop.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      event.currentTarget.classList.add("dragging");
+    });
+    drop.addEventListener("dragleave", (event) => event.currentTarget.classList.remove("dragging"));
+    drop.addEventListener("drop", (event) => {
+      event.preventDefault();
+      event.currentTarget.classList.remove("dragging");
+      const files = [...event.dataTransfer.files];
+      if (event.currentTarget.querySelector("[data-thumbnail-input]")) {
+        uploadThumbnail(files[0]);
+        return;
+      }
+      uploadContentImages(files);
+    });
   });
-  $(".admin-file-drop")?.addEventListener("dragleave", (event) => event.currentTarget.classList.remove("dragging"));
-  $(".admin-file-drop")?.addEventListener("drop", (event) => {
-    event.preventDefault();
-    event.currentTarget.classList.remove("dragging");
-    uploadFiles([...event.dataTransfer.files]);
-  });
-  document.querySelectorAll("[data-command]").forEach((button) => {
+  $$("[data-command]").forEach((button) => {
     button.addEventListener("click", () => {
       document.execCommand(button.dataset.command, false, button.dataset.value || null);
       $("[data-rich-editor]")?.focus();
@@ -160,6 +177,22 @@ const bindEvents = () => {
     const url = window.prompt("연결할 URL을 입력해 주세요.");
     if (url && /^https:\/\//.test(url)) document.execCommand("createLink", false, url);
   });
+  $("[data-detail-edit]")?.addEventListener("click", () => {
+    if (state.selectedCase) showEditView(state.selectedCase.id);
+  });
+  $("[data-detail-delete]")?.addEventListener("click", () => {
+    if (state.selectedCase) deleteCase(state.selectedCase.id);
+  });
+};
+
+const renderAuthState = async () => {
+  const loggedIn = Boolean(state.user);
+  show("[data-admin-login]", !loggedIn);
+  show("[data-admin-dashboard]", loggedIn);
+  if (!loggedIn) return;
+  await loadCases();
+  await migrateBaseCasesOnce();
+  showListView();
 };
 
 const handleLogin = async (event) => {
@@ -179,7 +212,7 @@ const loadCases = async () => {
     .select("*")
     .order("updated_at", { ascending: false });
   if (error) {
-    message("[data-editor-message]", `목록을 불러오지 못했습니다: ${error.message}`, true);
+    message("[data-admin-message]", `목록을 불러오지 못했습니다: ${error.message}`, true);
     return;
   }
   state.cases = data || [];
@@ -187,39 +220,31 @@ const loadCases = async () => {
   renderCaseList();
 };
 
-const getCaseUrl = (item) => `case.html?id=${encodeURIComponent(item.slug || item.id)}&preview=1`;
-
-const getStatusLabel = (status = "draft") => ({
-  draft: "임시저장",
-  published: "공개",
-  private: "비공개"
-}[status] || status);
-
-const getFilteredCases = () => {
-  const search = state.filters.search;
-  return state.cases.filter((item) => {
-    const matchesSearch = !search || [
-      item.title,
-      item.card_description,
-      item.summary,
-      item.diagnosis,
-      item.category
-    ].filter(Boolean).join(" ").toLowerCase().includes(search);
-    const matchesCategory = !state.filters.category || item.category === state.filters.category;
-    const matchesStatus = !state.filters.status || item.status === state.filters.status;
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
-};
-
 const renderCategoryFilter = () => {
   const select = $("[data-category-filter]");
   if (!select) return;
   const current = select.value;
-  const categories = [...new Set(state.cases.map((item) => item.category).filter(Boolean))];
+  const categories = [...new Set([...CATEGORIES, ...state.cases.map((item) => item.category).filter(Boolean)])];
   select.innerHTML = '<option value="">전체</option>' + categories.map((category) => (
-    `<option value="${category}">${category}</option>`
+    `<option value="${escapeText(category)}">${escapeText(category)}</option>`
   )).join("");
   select.value = categories.includes(current) ? current : "";
+};
+
+const getFilteredCases = () => {
+  const search = state.filters.search;
+  return state.cases.filter((item) => {
+    const searchable = [
+      item.title,
+      item.card_description,
+      item.summary,
+      item.content_html,
+      item.category
+    ].filter(Boolean).join(" ").toLowerCase();
+    return (!search || searchable.includes(search))
+      && (!state.filters.category || item.category === state.filters.category)
+      && (!state.filters.status || item.status === state.filters.status);
+  });
 };
 
 const renderCaseList = () => {
@@ -239,123 +264,147 @@ const renderCaseList = () => {
       <span>섬네일</span>
       <span>제목</span>
       <span>카테고리</span>
-      <span>상태</span>
-      <span>게시일</span>
+      <span>공개 상태</span>
+      <span>수정일</span>
       <span>관리</span>
     </div>
     ${cases.map((item) => `
-    <article class="admin-case-item">
-      <img src="${item.thumbnail_url || "assets/hero.jpg"}" alt="" loading="lazy">
-      <div>
-        <strong>${item.title}</strong>
-        <small>${item.card_description || item.summary || item.diagnosis || ""}</small>
-      </div>
-      <span>${item.category || "카테고리 없음"}</span>
-      <span>${getStatusLabel(item.status)}</span>
-      <small>${(item.published_at || "").slice(0, 10) || "-"}</small>
-      <div class="admin-case-actions">
-        <button type="button" data-edit-id="${item.id}">수정</button>
-        <a href="${getCaseUrl(item)}" target="_blank" rel="noopener noreferrer">보기</a>
-        <button type="button" data-delete-id="${item.id}">삭제</button>
-      </div>
-    </article>
-  `).join("")}`;
-  list.querySelectorAll("[data-edit-id]").forEach((button) => {
-    button.addEventListener("click", () => editCase(button.dataset.editId));
-  });
-  list.querySelectorAll("[data-delete-id]").forEach((button) => {
-    button.addEventListener("click", () => deleteCase(button.dataset.deleteId));
-  });
+      <article class="admin-case-item">
+        <img src="${escapeText(item.thumbnail_url || "assets/hero.jpg")}" alt="" loading="lazy">
+        <button class="admin-title-button" type="button" data-view-id="${item.id}">
+          <strong>${escapeText(item.title)}</strong>
+          <small>${escapeText(item.card_description || item.summary || "")}</small>
+        </button>
+        <span>${escapeText(item.category || "카테고리 없음")}</span>
+        <span>${getStatusLabel(item.status)}</span>
+        <small>${formatDate(item.updated_at || item.created_at)}</small>
+        <div class="admin-case-actions">
+          <button type="button" data-view-id="${item.id}">보기</button>
+          <button type="button" data-edit-id="${item.id}">수정</button>
+          <button type="button" data-delete-id="${item.id}">삭제</button>
+        </div>
+      </article>
+    `).join("")}`;
+  $$("[data-view-id]", list).forEach((button) => button.addEventListener("click", () => showDetailView(button.dataset.viewId)));
+  $$("[data-edit-id]", list).forEach((button) => button.addEventListener("click", () => showEditView(button.dataset.editId)));
+  $$("[data-delete-id]", list).forEach((button) => button.addEventListener("click", () => deleteCase(button.dataset.deleteId)));
+};
+
+const setView = (view) => {
+  show("[data-list-view]", view === "list");
+  show("[data-detail-view]", view === "detail");
+  show("[data-editor-view]", view === "editor");
 };
 
 const showListView = (text = "") => {
-  show("[data-list-view]", true);
-  show("[data-editor-view]", false);
-  message("[data-list-message]", text);
+  state.selectedCase = null;
+  setView("list");
+  message("[data-admin-message]", text);
   $("[data-list-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
-const showEditorView = () => {
-  show("[data-list-view]", false);
-  show("[data-editor-view]", true);
-  message("[data-list-message]", "");
-  message("[data-editor-message]", "");
+const showDetailView = (id, text = "") => {
+  const item = state.cases.find((entry) => String(entry.id) === String(id));
+  if (!item) return;
+  state.selectedCase = item;
+  renderDetail(item);
+  setView("detail");
+  message("[data-admin-message]", text);
+  $("[data-detail-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const showCreateView = () => {
+  resetForm();
+  $("[data-editor-title]").textContent = "새 글 작성";
+  $("[data-save-label]").textContent = "글 등록";
+  setView("editor");
   $("[data-editor-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
-const startNewCase = () => {
-  resetForm();
-  $("[data-save-label]").textContent = "치료 사례 등록";
-  showEditorView();
+const showEditView = (id) => {
+  const item = state.cases.find((entry) => String(entry.id) === String(id));
+  if (!item) return;
+  fillForm(item);
+  $("[data-editor-title]").textContent = "기존 글 수정";
+  $("[data-save-label]").textContent = "수정 저장";
+  setView("editor");
+  $("[data-editor-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const renderDetail = (item) => {
+  $("[data-detail-title]").textContent = item.title || "치료 사례 상세";
+  const publicLink = $("[data-detail-public]");
+  if (publicLink) publicLink.href = getCaseUrl(item);
+  const target = $("[data-detail-content]");
+  if (!target) return;
+  target.innerHTML = `
+    ${item.thumbnail_url ? `<img class="admin-detail-thumb" src="${escapeText(item.thumbnail_url)}" alt="">` : ""}
+    <dl class="admin-detail-meta">
+      <div><dt>제목</dt><dd>${escapeText(item.title || "")}</dd></div>
+      <div><dt>카테고리</dt><dd>${escapeText(item.category || "")}</dd></div>
+      <div><dt>공개 상태</dt><dd>${getStatusLabel(item.status)}</dd></div>
+      <div><dt>작성일</dt><dd>${formatDate(item.created_at)}</dd></div>
+      <div><dt>수정일</dt><dd>${formatDate(item.updated_at)}</dd></div>
+    </dl>
+    <section>
+      <h3>카드 설명</h3>
+      <p>${escapeText(item.card_description || "카드 설명이 없습니다.")}</p>
+    </section>
+    <section>
+      <h3>본문 내용</h3>
+      <div class="admin-detail-body">${sanitizeHtml(item.content_html || "<p>본문 내용이 없습니다.</p>")}</div>
+    </section>
+  `;
 };
 
 const resetForm = () => {
-  state.currentCase = null;
+  state.selectedCase = null;
   state.thumbnail = null;
   state.images = [];
   const form = $("[data-case-form]");
   form?.reset();
-  if (form) form.elements.publishedAt.value = new Date().toISOString().slice(0, 10);
+  if (form) {
+    form.elements.id.value = "";
+    form.elements.status.value = "published";
+  }
   $("[data-rich-editor]").innerHTML = "<p>진료 사례 내용을 입력해 주세요.</p>";
-  $("[data-editor-title]").textContent = "새 치료 사례 작성";
-  $("[data-save-label]").textContent = "치료 사례 등록";
   renderThumbnail();
   renderImages();
-  message("[data-editor-message]", "");
 };
 
-const editCase = (id) => {
-  const item = state.cases.find((entry) => String(entry.id) === String(id));
-  if (!item) return;
-  state.currentCase = item;
+const fillForm = (item) => {
+  state.selectedCase = item;
   state.thumbnail = item.thumbnail_url ? { url: item.thumbnail_url, path: item.thumbnail_path || "", alt: `${item.title || "대표"} 이미지` } : null;
   state.images = Array.isArray(item.images) ? item.images.map(({ isThumbnail, ...image }) => image) : [];
   const form = $("[data-case-form]");
-  form.elements.id.value = item.id;
+  form.elements.id.value = item.id || "";
   form.elements.title.value = item.title || "";
-  form.elements.slug.value = item.slug || "";
   form.elements.category.value = item.category || CATEGORIES[0];
-  form.elements.status.value = item.status || "draft";
-  form.elements.species.value = item.species || "";
-  form.elements.breed.value = item.breed || "";
-  form.elements.age.value = item.age || "";
-  form.elements.sex.value = item.sex || "";
-  form.elements.diagnosis.value = item.diagnosis || "";
-  form.elements.summary.value = item.summary || "";
   form.elements.cardDescription.value = item.card_description || "";
+  form.elements.status.value = item.status || "published";
   form.elements.sourceUrl.value = item.source_url || "";
-  form.elements.publishedAt.value = (item.published_at || "").slice(0, 10);
   $("[data-rich-editor]").innerHTML = item.content_html || "<p></p>";
-  $("[data-editor-title]").textContent = "치료 사례 수정";
-  $("[data-save-label]").textContent = "수정 내용 저장";
   renderThumbnail();
   renderImages();
-  showEditorView();
 };
 
-const collectPayload = (saveMode) => {
+const collectPayload = () => {
   const form = $("[data-case-form]");
   const data = new FormData(form);
   const title = String(data.get("title") || "").trim();
-  const slug = slugify(data.get("slug") || title);
-  const contentHtml = sanitizeHtml($("[data-rich-editor]").innerHTML);
   const now = new Date().toISOString();
+  const status = data.get("status") || "published";
   return {
     title,
-    slug,
+    slug: slugify(state.selectedCase?.slug || title),
     category: data.get("category"),
-    species: data.get("species"),
-    breed: data.get("breed"),
-    age: data.get("age"),
-    sex: data.get("sex"),
-    diagnosis: data.get("diagnosis"),
-    summary: data.get("summary"),
     card_description: String(data.get("cardDescription") || "").trim(),
+    summary: String(data.get("cardDescription") || "").trim(),
     thumbnail_url: state.thumbnail?.url || "",
-    content_html: contentHtml,
+    content_html: sanitizeHtml($("[data-rich-editor]").innerHTML),
     source_url: data.get("sourceUrl"),
-    status: saveMode || data.get("status") || "draft",
-    published_at: saveMode === "published" ? (data.get("publishedAt") || now.slice(0, 10)) : data.get("publishedAt") || null,
+    status,
+    published_at: status === "published" ? (state.selectedCase?.published_at || now.slice(0, 10)) : null,
     images: state.images.map(({ isThumbnail, ...image }) => image),
     updated_at: now,
     author_id: state.user?.id
@@ -364,33 +413,35 @@ const collectPayload = (saveMode) => {
 
 const handleSave = async (event) => {
   event.preventDefault();
-  const saveMode = event.submitter?.value;
-  const payload = collectPayload(saveMode);
-  const id = $("[data-case-form]").elements.id.value;
+  const form = $("[data-case-form]");
+  const id = form.elements.id.value;
+  const payload = collectPayload();
   if (!payload.title) {
-    message("[data-editor-message]", "제목을 입력해 주세요.", true);
+    message("[data-admin-message]", "제목을 입력해 주세요.", true);
     return;
   }
-  message("[data-editor-message]", "저장 중입니다.");
   const table = state.config.tableName || "cases";
   const query = id
     ? state.client.from(table).update(payload).eq("id", id).select().single()
     : state.client.from(table).insert({ ...payload, created_at: new Date().toISOString() }).select().single();
   const { data, error } = await query;
   if (error) {
-    message("[data-editor-message]", `저장 실패: ${error.message}`, true);
+    message("[data-admin-message]", `저장 실패: ${error.message}`, true);
     return;
   }
-  state.currentCase = data;
   await loadCases();
-  showListView(id ? "치료 사례가 수정되었습니다." : "치료 사례가 등록되었습니다.");
+  if (id) {
+    showDetailView(data.id, "치료 사례가 수정되었습니다.");
+  } else {
+    showListView("치료 사례가 등록되었습니다.");
+  }
 };
 
 const deleteCase = async (id) => {
   if (!window.confirm("이 치료 사례를 삭제하시겠습니까? 삭제한 내용은 복구하기 어렵습니다.")) return;
   const { error } = await state.client.from(state.config.tableName || "cases").delete().eq("id", id);
   if (error) {
-    message("[data-editor-message]", `삭제 실패: ${error.message}`, true);
+    message("[data-admin-message]", `삭제 실패: ${error.message}`, true);
     return;
   }
   await loadCases();
@@ -400,41 +451,34 @@ const deleteCase = async (id) => {
 const baseCaseToContentHtml = (item) => {
   if (Array.isArray(item.body) && item.body.length) {
     return item.body.map((block) => {
-      if (block.type === "heading") return `<h2>${block.text || ""}</h2>`;
+      if (block.type === "heading") return `<h2>${escapeText(block.text || "")}</h2>`;
       if (block.type === "image") {
-        return `<figure><img src="${block.src || ""}" alt="${block.alt || item.title || ""}" loading="lazy"><figcaption>${block.caption || ""}</figcaption></figure>`;
+        return `<figure><img src="${escapeText(block.src || "")}" alt="${escapeText(block.alt || item.title || "")}" loading="lazy"><figcaption>${escapeText(block.caption || "")}</figcaption></figure>`;
       }
-      return `<p>${block.text || ""}</p>`;
+      return `<p>${escapeText(block.text || "")}</p>`;
     }).join("");
   }
-  return `<p>${item.description || item.subtitle || "아이숲동물병원의 실제 치료 사례입니다."}</p>`;
+  return `<p>${escapeText(item.description || item.subtitle || "아이숲동물병원의 실제 치료 사례입니다.")}</p>`;
 };
 
 const migrateBaseCasesOnce = async () => {
-  const migrationKey = "iforest-base-cases-migrated-v1";
-  if (window.localStorage?.getItem(migrationKey) === "1") return;
   const baseCases = Array.isArray(window.IFOREST_CASES) ? window.IFOREST_CASES : [];
   if (!baseCases.length) return;
-
+  const migrationKey = "iforest-base-cases-migrated-v2";
+  if (window.localStorage?.getItem(migrationKey) === "1") return;
   const existingSlugs = new Set(state.cases.map((item) => item.slug || item.id).filter(Boolean));
   const missingCases = baseCases.filter((item) => !existingSlugs.has(slugify(item.id || item.title)));
   if (!missingCases.length) {
     window.localStorage?.setItem(migrationKey, "1");
     return;
   }
-
   const now = new Date().toISOString();
   const rows = missingCases.map((item) => ({
     title: item.title || item.thumbnailTitle || item.id,
     slug: slugify(item.id || item.title),
     category: (item.categories || [item.category] || [])[0] || CATEGORIES[0],
-    species: item.species || "",
-    breed: item.breed || "",
-    age: item.age || "",
-    sex: item.sex || "",
-    diagnosis: item.diagnosis || item.subtitle || item.description || "",
-    summary: item.description || item.subtitle || "",
     card_description: item.description || item.subtitle || "",
+    summary: item.description || item.subtitle || "",
     thumbnail_url: item.thumbnail || "",
     content_html: sanitizeHtml(baseCaseToContentHtml(item)),
     source_url: item.blogUrl || "",
@@ -444,11 +488,9 @@ const migrateBaseCasesOnce = async () => {
     updated_at: now,
     author_id: state.user?.id
   }));
-
   const { error } = await state.client
     .from(state.config.tableName || "cases")
     .upsert(rows, { onConflict: "slug" });
-
   if (error) {
     console.info("Base case migration skipped.", error);
     return;
@@ -491,7 +533,7 @@ const uploadImageToStorage = async (file, folder) => {
 const uploadThumbnail = async (file) => {
   if (!file) return;
   if (!isValidImageFile(file)) {
-    message("[data-editor-message]", "대표 이미지는 JPG, PNG, WebP 이미지만 8MB 이하로 업로드할 수 있습니다.", true);
+    message("[data-admin-message]", "대표 이미지는 JPG, PNG, WebP 이미지만 8MB 이하로 업로드할 수 있습니다.", true);
     return;
   }
   try {
@@ -501,7 +543,7 @@ const uploadThumbnail = async (file) => {
     renderThumbnail();
   } catch (error) {
     message("[data-thumbnail-progress]", "");
-    message("[data-editor-message]", `대표 이미지 업로드 실패: ${error.message}`, true);
+    message("[data-admin-message]", `대표 이미지 업로드 실패: ${error.message}`, true);
   }
 };
 
@@ -516,25 +558,6 @@ const removeThumbnail = async () => {
   renderThumbnail();
 };
 
-const uploadFiles = async (files) => {
-  const validFiles = files.filter(isValidImageFile);
-  if (!validFiles.length) {
-    message("[data-editor-message]", "JPG, PNG, WebP 이미지만 8MB 이하로 업로드할 수 있습니다.", true);
-    return;
-  }
-  for (const [index, file] of validFiles.entries()) {
-    message("[data-upload-progress]", `${index + 1}/${validFiles.length} 업로드 중입니다.`);
-    try {
-      state.images.push(await uploadImageToStorage(file, "contents"));
-    } catch (error) {
-      message("[data-editor-message]", `본문 이미지 업로드 실패: ${error.message}`, true);
-      continue;
-    }
-  }
-  message("[data-upload-progress]", "");
-  renderImages();
-};
-
 const renderThumbnail = () => {
   const target = $("[data-thumbnail-preview]");
   if (!target) return;
@@ -544,10 +567,10 @@ const renderThumbnail = () => {
   }
   target.innerHTML = `
     <article class="admin-image-item admin-thumbnail-item">
-      <img src="${state.thumbnail.url}" alt="">
+      <img src="${escapeText(state.thumbnail.url)}" alt="">
       <div>
         <strong>대표 이미지</strong>
-        <small>치료 아카이브 목록 카드에 표시됩니다.</small>
+        <small>치료 사례 목록 카드에 표시됩니다.</small>
       </div>
       <button type="button" data-remove-thumbnail>삭제</button>
     </article>
@@ -555,53 +578,56 @@ const renderThumbnail = () => {
   target.querySelector("[data-remove-thumbnail]")?.addEventListener("click", removeThumbnail);
 };
 
+const uploadContentImages = async (files) => {
+  const validFiles = files.filter(isValidImageFile);
+  if (!validFiles.length) {
+    message("[data-admin-message]", "JPG, PNG, WebP 이미지만 8MB 이하로 업로드할 수 있습니다.", true);
+    return;
+  }
+  for (const [index, file] of validFiles.entries()) {
+    message("[data-upload-progress]", `${index + 1}/${validFiles.length} 업로드 중입니다.`);
+    try {
+      state.images.push(await uploadImageToStorage(file, "contents"));
+    } catch (error) {
+      message("[data-admin-message]", `본문 이미지 업로드 실패: ${error.message}`, true);
+    }
+  }
+  message("[data-upload-progress]", "");
+  renderImages();
+};
+
 const renderImages = () => {
   const list = $("[data-image-list]");
   if (!list) return;
   if (!state.images.length) {
-    list.innerHTML = '<p class="admin-empty">업로드한 이미지가 없습니다.</p>';
+    list.innerHTML = '<p class="admin-empty">업로드한 본문 이미지가 없습니다.</p>';
     return;
   }
   list.innerHTML = state.images.map((image, index) => `
     <article class="admin-image-item">
-      <img src="${image.url}" alt="">
-      <input value="${image.alt || ""}" data-alt-index="${index}" aria-label="이미지 설명">
+      <img src="${escapeText(image.url)}" alt="">
+      <input value="${escapeText(image.alt || "")}" data-alt-index="${index}" aria-label="이미지 설명">
       <button type="button" data-insert-image="${index}">본문 삽입</button>
       <button type="button" data-remove-image="${index}">삭제</button>
     </article>
   `).join("");
-  list.querySelectorAll("[data-alt-index]").forEach((input) => {
+  $$("[data-alt-index]", list).forEach((input) => {
     input.addEventListener("input", () => {
       state.images[Number(input.dataset.altIndex)].alt = input.value;
     });
   });
-  list.querySelectorAll("[data-insert-image]").forEach((button) => {
+  $$("[data-insert-image]", list).forEach((button) => {
     button.addEventListener("click", () => {
       const image = state.images[Number(button.dataset.insertImage)];
       document.execCommand("insertHTML", false, `<figure><img src="${image.url}" alt="${image.alt || ""}" loading="lazy"><figcaption>${image.alt || ""}</figcaption></figure>`);
     });
   });
-  list.querySelectorAll("[data-remove-image]").forEach((button) => {
+  $$("[data-remove-image]", list).forEach((button) => {
     button.addEventListener("click", () => {
       state.images.splice(Number(button.dataset.removeImage), 1);
       renderImages();
     });
   });
-};
-
-const renderPreview = () => {
-  const payload = collectPayload($("[data-case-form]").elements.status.value);
-  const target = $("[data-preview-content]");
-  target.innerHTML = `
-    <span>${payload.category}</span>
-    <h1>${payload.title || "제목 없음"}</h1>
-    ${payload.thumbnail_url ? `<img src="${payload.thumbnail_url}" alt="">` : ""}
-    <p>${payload.summary || ""}</p>
-    <small>${[payload.species, payload.breed, payload.age, payload.diagnosis].filter(Boolean).join(" · ")}</small>
-    <div>${payload.content_html}</div>
-  `;
-  $("[data-preview]").hidden = false;
-  $("[data-preview]").scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
 initialize();

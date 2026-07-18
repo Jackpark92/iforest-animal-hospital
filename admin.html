@@ -13,14 +13,14 @@
       <section class="admin-setup" data-admin-setup hidden>
         <p class="eyebrow">CASE CMS SETUP</p>
         <h1>관리자 설정이 필요합니다</h1>
-        <p>Supabase 프로젝트를 만든 뒤 <strong>admin-config.example.js</strong>를 <strong>admin-config.js</strong>로 복사하고 URL과 anon key를 입력해 주세요.</p>
+        <p><strong>admin-config.js</strong>에 Supabase Project URL과 Publishable Key를 입력해 주세요.</p>
       </section>
 
       <section class="admin-login" data-admin-login hidden>
         <div>
           <p class="eyebrow">IFOREST CASE CMS</p>
           <h1>치료 사례 관리자</h1>
-          <p>관리자 계정으로 로그인한 뒤 치료 사례를 작성하고 게시할 수 있습니다.</p>
+          <p>관리자 계정으로 로그인하면 치료 사례 글을 작성, 수정, 삭제할 수 있습니다.</p>
         </div>
         <form data-login-form>
           <label>이메일<input type="email" name="email" autocomplete="email" required></label>
@@ -36,137 +36,141 @@
             <p class="eyebrow">IFOREST CASE CMS</p>
             <h1>치료 사례 관리</h1>
           </div>
-          <div class="admin-header-actions">
-            <a class="button ghost" href="archive.html" target="_blank" rel="noopener noreferrer">공개 목록 보기</a>
+          <nav class="admin-header-actions" aria-label="관리자 메뉴">
+            <button class="button ghost" type="button" data-show-list>글 목록</button>
+            <button class="button ghost" type="button" data-new-case>새 글 작성</button>
+            <a class="button ghost" href="index.html" target="_blank" rel="noopener noreferrer">홈페이지 보기</a>
             <button class="button ghost" type="button" data-logout>로그아웃</button>
-          </div>
+          </nav>
         </header>
 
-        <div class="admin-layout">
-          <aside class="admin-list-panel" data-list-view>
-            <div class="admin-list-head">
-              <h2>치료 사례 관리</h2>
-              <button type="button" data-new-case>새 치료 사례 작성</button>
-            </div>
-            <div class="admin-list-tools">
-              <label>검색
-                <input type="search" data-case-search placeholder="제목, 설명, 진단 검색">
-              </label>
-              <label>카테고리
-                <select data-category-filter>
-                  <option value="">전체</option>
-                </select>
-              </label>
-              <label>공개 상태
-                <select data-status-filter>
-                  <option value="">전체</option>
-                  <option value="published">공개</option>
-                  <option value="draft">임시저장</option>
-                  <option value="private">비공개</option>
-                </select>
-              </label>
-            </div>
-            <p class="admin-message" data-list-message></p>
-            <div class="admin-case-list" data-case-list aria-live="polite"></div>
-          </aside>
+        <p class="admin-message" data-admin-message></p>
 
-          <form class="admin-editor" data-case-form data-editor-view hidden>
-            <input type="hidden" name="id">
-            <div class="admin-editor-head">
-              <h2 data-editor-title>새 치료 사례 작성</h2>
-              <div class="admin-editor-actions">
-                <button type="button" data-back-to-list>목록으로 돌아가기</button>
-                <button type="button" data-preview-case>미리보기</button>
-                <button class="admin-publish-button" type="submit" data-save-label>치료 사례 등록</button>
-              </div>
-            </div>
-
-            <div class="admin-field-grid">
-              <label>제목<input name="title" required maxlength="120"></label>
-              <label>Slug<input name="slug" maxlength="140" placeholder="비워두면 자동 생성"></label>
-              <label>카테고리
-                <select name="category" required>
-                  <option>정형외과</option>
-                  <option>일반외과·종양수술</option>
-                  <option>내과·노령질환</option>
-                  <option>고양이 특화진료</option>
-                  <option>심장·건강검진</option>
-                  <option>치과</option>
-                  <option>안과</option>
-                </select>
-              </label>
-              <label>공개 상태
-                <select name="status">
-                  <option value="draft">임시저장</option>
-                  <option value="published">공개</option>
-                  <option value="private">비공개</option>
-                </select>
-              </label>
-              <label>환자 종류<input name="species" placeholder="강아지 / 고양이"></label>
-              <label>품종<input name="breed"></label>
-              <label>나이<input name="age"></label>
-              <label>성별<input name="sex"></label>
-              <label>주요 진단<input name="diagnosis" placeholder="예: 슬개골 탈구"></label>
-              <label>작성일<input type="date" name="publishedAt"></label>
-            </div>
-
-            <label class="admin-wide-field">요약<textarea name="summary" rows="3" maxlength="220"></textarea></label>
-            <label class="admin-wide-field">카드 설명
-              <textarea name="cardDescription" rows="3" maxlength="180" placeholder="치료 아카이브 목록에 표시될 짧은 설명을 입력해 주세요."></textarea>
+        <section class="admin-list-panel" data-list-view>
+          <div class="admin-list-head">
+            <h2>치료 사례 글 목록</h2>
+            <button type="button" data-new-case>새 글 작성</button>
+          </div>
+          <div class="admin-list-tools">
+            <label>제목 검색
+              <input type="search" data-case-search placeholder="제목, 설명, 본문 검색">
             </label>
-            <label class="admin-wide-field">네이버 블로그 원문 URL<input name="sourceUrl" type="url" placeholder="https://blog.naver.com/..."></label>
+            <label>카테고리 필터
+              <select data-category-filter>
+                <option value="">전체</option>
+              </select>
+            </label>
+            <label>공개 상태 필터
+              <select data-status-filter>
+                <option value="">전체</option>
+                <option value="published">공개</option>
+                <option value="private">비공개</option>
+                <option value="draft">임시저장</option>
+              </select>
+            </label>
+          </div>
+          <div class="admin-case-list" data-case-list aria-live="polite"></div>
+        </section>
 
-            <section class="admin-upload-box">
-              <div>
-                <h3>대표 이미지</h3>
-                <p>권장 크기 1200 × 900px · 4:3 비율 · 실제 환자 사진, X-ray, 초음파 또는 병원 사진을 업로드해 주세요.</p>
-              </div>
-              <label class="admin-file-drop">
-                <input type="file" data-thumbnail-input accept="image/jpeg,image/png,image/webp">
-                <span>대표 이미지 업로드</span>
-              </label>
-              <div class="admin-upload-progress" data-thumbnail-progress></div>
-              <div class="admin-thumbnail-preview" data-thumbnail-preview></div>
-            </section>
+        <section class="admin-detail-panel" data-detail-view hidden>
+          <div class="admin-editor-head">
+            <h2 data-detail-title>치료 사례 상세</h2>
+            <div class="admin-editor-actions">
+              <button type="button" data-detail-edit>수정</button>
+              <button type="button" data-back-to-list>목록으로 돌아가기</button>
+              <a class="button ghost" href="#" target="_blank" rel="noopener noreferrer" data-detail-public>공개 페이지 보기</a>
+              <button type="button" data-detail-delete>삭제</button>
+            </div>
+          </div>
+          <article class="admin-case-detail" data-detail-content></article>
+        </section>
 
-            <section class="admin-upload-box">
-              <div>
-                <h3>본문 이미지</h3>
-                <p>본문에 삽입할 이미지를 여러 장 업로드할 수 있습니다. 대표 섬네일과는 별도로 관리됩니다.</p>
-              </div>
-              <label class="admin-file-drop">
-                <input type="file" data-image-input accept="image/jpeg,image/png,image/webp" multiple>
-                <span>본문 이미지 선택 또는 드래그 앤 드롭</span>
-              </label>
-              <div class="admin-upload-progress" data-upload-progress></div>
-              <div class="admin-image-list" data-image-list></div>
-            </section>
+        <form class="admin-editor" data-case-form data-editor-view hidden>
+          <input type="hidden" name="id">
+          <div class="admin-editor-head">
+            <h2 data-editor-title>새 글 작성</h2>
+            <div class="admin-editor-actions">
+              <button class="admin-publish-button" type="submit" data-save-label>글 등록</button>
+              <button type="button" data-cancel-editor>취소</button>
+              <button type="button" data-back-to-list>목록으로 돌아가기</button>
+            </div>
+          </div>
 
-            <section class="admin-editor-box">
-              <h3>본문</h3>
-              <div class="editor-toolbar" aria-label="본문 편집 도구">
-                <button type="button" data-command="formatBlock" data-value="h2">제목</button>
-                <button type="button" data-command="formatBlock" data-value="h3">소제목</button>
-                <button type="button" data-command="bold">굵게</button>
-                <button type="button" data-command="italic">기울임</button>
-                <button type="button" data-command="insertUnorderedList">글머리표</button>
-                <button type="button" data-command="insertOrderedList">번호목록</button>
-                <button type="button" data-command="formatBlock" data-value="blockquote">인용</button>
-                <button type="button" data-insert-hr>구분선</button>
-                <button type="button" data-insert-link>링크</button>
-                <button type="button" data-command="undo">실행취소</button>
-                <button type="button" data-command="redo">다시실행</button>
-              </div>
-              <div class="rich-editor" contenteditable="true" data-rich-editor aria-label="치료 사례 본문"></div>
-            </section>
+          <label class="admin-wide-field">제목
+            <input name="title" required maxlength="120" placeholder="예: 슬개골 탈구">
+          </label>
 
-            <section class="admin-preview" data-preview hidden>
-              <h3>미리보기</h3>
-              <article data-preview-content></article>
-            </section>
-            <p class="admin-message" data-editor-message></p>
-          </form>
-        </div>
+          <label class="admin-wide-field">카테고리
+            <select name="category" required>
+              <option>정형외과</option>
+              <option>일반외과·종양수술</option>
+              <option>내과·노령질환</option>
+              <option>치과</option>
+              <option>고양이 특화진료</option>
+              <option>심장·건강검진</option>
+              <option>안과</option>
+            </select>
+          </label>
+
+          <label class="admin-wide-field">카드용 짧은 설명
+            <textarea name="cardDescription" rows="3" maxlength="180" placeholder="치료 사례 목록 카드에 표시될 짧은 설명을 입력해 주세요."></textarea>
+          </label>
+
+          <section class="admin-upload-box">
+            <div>
+              <h3>대표 이미지</h3>
+              <p>치료 사례 목록에 표시할 대표 이미지를 업로드해 주세요. 본문에는 자동 삽입되지 않습니다.</p>
+            </div>
+            <label class="admin-file-drop">
+              <input type="file" data-thumbnail-input accept="image/jpeg,image/png,image/webp">
+              <span>대표 이미지 업로드</span>
+            </label>
+            <div class="admin-upload-progress" data-thumbnail-progress></div>
+            <div class="admin-thumbnail-preview" data-thumbnail-preview></div>
+          </section>
+
+          <section class="admin-editor-box">
+            <h3>본문 내용</h3>
+            <p class="admin-help">진료 과정, 진단, 치료 내용 등을 자유롭게 작성해 주세요.</p>
+            <div class="editor-toolbar" aria-label="본문 편집 도구">
+              <button type="button" data-command="formatBlock" data-value="h2">제목</button>
+              <button type="button" data-command="formatBlock" data-value="h3">소제목</button>
+              <button type="button" data-command="bold">굵게</button>
+              <button type="button" data-command="insertUnorderedList">목록</button>
+              <button type="button" data-command="formatBlock" data-value="blockquote">인용</button>
+              <button type="button" data-insert-hr>구분선</button>
+              <button type="button" data-insert-link>링크</button>
+              <button type="button" data-command="undo">실행취소</button>
+              <button type="button" data-command="redo">다시실행</button>
+            </div>
+            <div class="rich-editor" contenteditable="true" data-rich-editor aria-label="치료 사례 본문"></div>
+          </section>
+
+          <section class="admin-upload-box">
+            <div>
+              <h3>본문 이미지</h3>
+              <p>본문에 삽입할 이미지를 여러 장 업로드할 수 있습니다. 대표 이미지와는 별도로 관리됩니다.</p>
+            </div>
+            <label class="admin-file-drop">
+              <input type="file" data-image-input accept="image/jpeg,image/png,image/webp" multiple>
+              <span>본문 이미지 선택 또는 드래그 앤 드롭</span>
+            </label>
+            <div class="admin-upload-progress" data-upload-progress></div>
+            <div class="admin-image-list" data-image-list></div>
+          </section>
+
+          <label class="admin-wide-field">공개 여부
+            <select name="status">
+              <option value="published">공개</option>
+              <option value="private">비공개</option>
+              <option value="draft">임시저장</option>
+            </select>
+          </label>
+
+          <label class="admin-wide-field">원문 또는 참고 URL
+            <input name="sourceUrl" type="url" placeholder="https://blog.naver.com/...">
+          </label>
+        </form>
       </section>
     </main>
     <script src="cases-data.js"></script>
