@@ -418,6 +418,22 @@ const createCaseThumbnail = (item) => {
     image.decoding = "async";
     image.className = item.thumbnailFit === "cover" ? "fit-cover" : "fit-contain";
     media.append(image);
+    if (item.cardVariant === "premium-medical" && item.thumbnailLogo) {
+      const brand = document.createElement("span");
+      brand.className = "case-media-brand";
+
+      const logo = document.createElement("img");
+      logo.src = item.thumbnailLogo;
+      logo.alt = "";
+      logo.loading = "lazy";
+      logo.decoding = "async";
+
+      const brandText = document.createElement("span");
+      brandText.textContent = "아이숲동물병원";
+
+      brand.append(logo, brandText);
+      media.append(brand);
+    }
     return media;
   }
 
@@ -458,6 +474,9 @@ const createCaseCard = (item) => {
   const caseUrl = getCaseUrl(item);
   const card = document.createElement(caseUrl ? "a" : "article");
   card.className = "case-card";
+  if (item.cardVariant) {
+    card.classList.add(`case-card-${item.cardVariant}`);
+  }
   if (caseUrl) {
     card.href = caseUrl;
     card.target = "_blank";
@@ -490,7 +509,7 @@ const createCaseCard = (item) => {
 
   const cta = document.createElement("span");
   cta.className = "case-link";
-  cta.textContent = "치료 과정 보기 →";
+  cta.textContent = item.cardVariant === "premium-medical" ? "자세히 보기" : "치료 과정 보기";
   body.append(cta);
 
   card.append(media, body);
