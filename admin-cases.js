@@ -224,6 +224,12 @@ const confirmDiscardDraft = (key) => {
   return window.confirm("현재 작성 중인 내용이 있습니다. 내용을 삭제하고 새로 작성하시겠습니까?");
 };
 
+const confirmRestoreDraft = (key) => {
+  const draft = readDraft(key);
+  if (!draftHasContent(draft)) return false;
+  return window.confirm("이전에 작성 중인 내용을 복원하시겠습니까?\n\n확인: 복원\n취소: 폐기");
+};
+
 const applyDraft = (draft) => {
   const form = $("[data-case-form]");
   if (!form || !draft) return;
@@ -552,16 +558,12 @@ const showDetailView = (id, text = "") => {
 };
 
 const handleNewCase = () => {
-  const draft = readDraft(DRAFT_NEW_KEY);
-  const shouldDiscard = draftHasContent(draft)
-    ? window.confirm("현재 작성 중인 내용이 있습니다. 내용을 삭제하고 새로 작성하시겠습니까?")
-    : true;
-  if (shouldDiscard) {
+  if (confirmRestoreDraft(DRAFT_NEW_KEY)) {
+    showCreateView();
+  } else {
     clearDraft(DRAFT_NEW_KEY);
     showCreateView({ skipRestore: true });
-    return;
   }
-  showCreateView();
 };
 
 const showCreateView = ({ skipRestore = false } = {}) => {
