@@ -63,11 +63,15 @@ const loadDatabaseCases = async () => {
   try {
     const publishableKey = config.supabasePublishableKey || config.supabaseAnonKey;
     const client = window.supabase.createClient(config.supabaseUrl, publishableKey);
-    const { data, error } = await client
+    const includeDrafts = getUrlParams().get("preview") === "1" || getUrlParams().get("draft") === "1";
+    let query = client
       .from(config.tableName || "cases")
       .select("*")
-      .eq("status", "published")
       .order("published_at", { ascending: false });
+    if (!includeDrafts) {
+      query = query.eq("status", "published");
+    }
+    const { data, error } = await query;
     if (error) throw error;
     return (data || []).map((item) => ({
       id: item.slug || item.id,

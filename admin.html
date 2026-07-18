@@ -38,6 +38,7 @@
           </div>
           <div class="admin-header-actions">
             <a class="button ghost" href="archive.html" target="_blank" rel="noopener noreferrer">공개 목록 보기</a>
+            <button class="button ghost" type="button" data-import-base-cases>기본 사례 가져오기</button>
             <button class="button ghost" type="button" data-logout>로그아웃</button>
           </div>
         </header>
@@ -97,7 +98,7 @@
             <section class="admin-upload-box">
               <div>
                 <h3>대표 섬네일</h3>
-                <p>치료 아카이브 목록 카드에만 사용하는 이미지입니다. 1200 x 900px, 4:3 비율을 권장합니다.</p>
+                <p>권장 크기 1200 × 900px · 4:3 비율 · 완성된 섬네일 이미지를 업로드해 주세요.</p>
               </div>
               <label class="admin-file-drop">
                 <input type="file" data-thumbnail-input accept="image/jpeg,image/png,image/webp">
@@ -147,6 +148,7 @@
         </div>
       </section>
     </main>
+    <script src="cases-data.js"></script>
     <script src="admin-cases.js"></script>
   </body>
 </html>

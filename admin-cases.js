@@ -115,6 +115,7 @@ const bindEvents = () => {
   $("[data-login-form]")?.addEventListener("submit", handleLogin);
   $("[data-logout]")?.addEventListener("click", () => state.client.auth.signOut());
   $("[data-new-case]")?.addEventListener("click", resetForm);
+  $("[data-import-base-cases]")?.addEventListener("click", importBaseCases);
   $("[data-case-form]")?.addEventListener("submit", handleSave);
   $("[data-preview-case]")?.addEventListener("click", renderPreview);
   $("[data-thumbnail-input]")?.addEventListener("change", (event) => uploadThumbnail(event.target.files?.[0]));
@@ -167,6 +168,14 @@ const loadCases = async () => {
   renderCaseList();
 };
 
+const getCaseUrl = (item) => `case.html?id=${encodeURIComponent(item.slug || item.id)}&preview=1`;
+
+const getStatusLabel = (status = "draft") => ({
+  draft: "임시저장",
+  published: "공개",
+  private: "비공개"
+}[status] || status);
+
 const renderCaseList = () => {
   const list = $("[data-case-list]");
   if (!list) return;
@@ -179,11 +188,12 @@ const renderCaseList = () => {
       <img src="${item.thumbnail_url || "assets/hero.jpg"}" alt="" loading="lazy">
       <div>
         <strong>${item.title}</strong>
-        <span>${item.category || "카테고리 없음"} · ${item.status || "draft"}</span>
-        <small>${(item.updated_at || item.created_at || "").slice(0, 10)}</small>
+        <span>${item.category || "카테고리 없음"} · ${getStatusLabel(item.status)}</span>
+        <small>게시일 ${(item.published_at || "").slice(0, 10) || "-"}</small>
       </div>
       <button type="button" data-edit-id="${item.id}">수정</button>
       <button type="button" data-delete-id="${item.id}">삭제</button>
+      <a href="${getCaseUrl(item)}" target="_blank" rel="noopener noreferrer">공개 페이지 보기</a>
     </article>
   `).join("");
   list.querySelectorAll("[data-edit-id]").forEach((button) => {
@@ -296,6 +306,61 @@ const deleteCase = async (id) => {
   }
   await loadCases();
   resetForm();
+};
+
+const baseCaseToContentHtml = (item) => {
+  if (Array.isArray(item.body) && item.body.length) {
+    return item.body.map((block) => {
+      if (block.type === "heading") return `<h2>${block.text || ""}</h2>`;
+      if (block.type === "image") {
+        return `<figure><img src="${block.src || ""}" alt="${block.alt || item.title || ""}" loading="lazy"><figcaption>${block.caption || ""}</figcaption></figure>`;
+      }
+      return `<p>${block.text || ""}</p>`;
+    }).join("");
+  }
+  return `<p>${item.description || item.subtitle || "아이숲동물병원의 실제 치료 사례입니다."}</p>`;
+};
+
+const importBaseCases = async () => {
+  const baseCases = Array.isArray(window.IFOREST_CASES) ? window.IFOREST_CASES : [];
+  if (!baseCases.length) {
+    message("[data-editor-message]", "가져올 기본 치료 사례가 없습니다.", true);
+    return;
+  }
+  if (!window.confirm(`기본 치료 사례 ${baseCases.length}개를 Supabase로 가져올까요? 같은 slug가 있으면 업데이트됩니다.`)) return;
+
+  const now = new Date().toISOString();
+  const rows = baseCases.map((item) => ({
+    title: item.title || item.thumbnailTitle || item.id,
+    slug: slugify(item.id || item.title),
+    category: (item.categories || [item.category] || [])[0] || CATEGORIES[0],
+    species: item.species || "",
+    breed: item.breed || "",
+    age: item.age || "",
+    sex: item.sex || "",
+    diagnosis: item.diagnosis || item.subtitle || item.description || "",
+    summary: item.description || item.subtitle || "",
+    thumbnail_url: item.thumbnail || "",
+    content_html: sanitizeHtml(baseCaseToContentHtml(item)),
+    source_url: item.blogUrl || "",
+    status: item.published === false ? "draft" : "published",
+    published_at: item.publishedAt || null,
+    images: Array.isArray(item.images) ? item.images : [],
+    updated_at: now,
+    author_id: state.user?.id
+  }));
+
+  message("[data-editor-message]", "기본 치료 사례를 Supabase로 가져오는 중입니다.");
+  const { error } = await state.client
+    .from(state.config.tableName || "cases")
+    .upsert(rows, { onConflict: "slug" });
+
+  if (error) {
+    message("[data-editor-message]", `기본 사례 가져오기 실패: ${error.message}`, true);
+    return;
+  }
+  message("[data-editor-message]", "기본 치료 사례를 Supabase로 가져왔습니다. 이제 관리자 목록에서 수정할 수 있습니다.");
+  await loadCases();
 };
 
 const isValidImageFile = (file) => file && /^image\/(jpeg|png|webp)$/.test(file.type) && file.size <= 8 * 1024 * 1024;

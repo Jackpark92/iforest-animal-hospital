@@ -2949,14 +2949,15 @@ address {
 .archive-card-media {
   position: relative;
   overflow: hidden;
-  background: var(--green-soft);
+  background: #f5f0e5;
 }
 
 .archive-card img {
   width: 100%;
-  aspect-ratio: 1.18 / 1;
-  object-fit: cover;
-  background: var(--green-soft);
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  object-position: center;
+  background: #f5f0e5;
 }
 
 .archive-card-media h3 {
@@ -3276,7 +3277,8 @@ address {
 .admin-editor-actions button,
 .admin-image-item button,
 .editor-toolbar button,
-.admin-case-item button {
+.admin-case-item button,
+.admin-case-item a {
   min-height: 38px;
   padding: 0 12px;
   color: var(--green-dark);
@@ -3287,6 +3289,13 @@ address {
   border: 1px solid var(--line);
   border-radius: 999px;
   cursor: pointer;
+}
+
+.admin-case-item a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .admin-publish-button {
@@ -3312,9 +3321,9 @@ address {
 .admin-case-item img {
   width: 58px;
   height: 58px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 10px;
-  background: var(--green-soft);
+  background: #f5f0e5;
 }
 
 .admin-case-item strong,
@@ -3436,6 +3445,8 @@ address {
 
 .admin-thumbnail-item img {
   max-width: 220px;
+  object-fit: contain;
+  background: #f5f0e5;
 }
 
 .admin-thumbnail-item strong,
