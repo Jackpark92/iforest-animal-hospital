@@ -1342,8 +1342,10 @@ section {
 
 .case-card-premium-medical .case-body {
   position: relative;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   min-height: 112px;
   padding: 16px 17px 17px;
   background:
@@ -1389,6 +1391,7 @@ section {
 }
 
 .case-card-premium-medical .case-link {
+  margin-top: auto;
   padding-top: 18px;
   color: #fffdf8;
   font-size: 13.5px;
