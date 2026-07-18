@@ -18,6 +18,8 @@ const state = {
   selectedCase: null,
   thumbnail: null,
   images: [],
+  activeDraftKey: "",
+  isRestoringDraft: false,
   filters: {
     search: "",
     category: "",
@@ -117,6 +119,139 @@ const getStatusLabel = (status = "draft") => ({
 
 const getCaseUrl = (item) => `case.html?id=${encodeURIComponent(item.slug || item.id)}&preview=1`;
 
+const DRAFT_NEW_KEY = "caseDraftNew";
+const DRAFT_EDIT_PREFIX = "caseDraftEdit_";
+const DEFAULT_EDITOR_HTML = "<p>진료 사례 내용을 입력해 주세요.</p>";
+
+const getDraftKey = (id = "") => id ? `${DRAFT_EDIT_PREFIX}${id}` : DRAFT_NEW_KEY;
+
+const getDraftTimestamp = () => {
+  const now = new Date();
+  return now.toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+};
+
+const getDraftPayload = () => {
+  const form = $("[data-case-form]");
+  if (!form) return null;
+  return {
+    id: form.elements.id.value || "",
+    title: form.elements.title.value || "",
+    category: form.elements.category.value || CATEGORIES[0],
+    cardDescription: form.elements.cardDescription.value || "",
+    status: form.elements.status.value || "published",
+    sourceUrl: form.elements.sourceUrl.value || "",
+    contentHtml: $("[data-rich-editor]")?.innerHTML || DEFAULT_EDITOR_HTML,
+    thumbnail: state.thumbnail,
+    images: state.images,
+    savedAt: new Date().toISOString()
+  };
+};
+
+const draftHasContent = (draft) => Boolean(
+  draft
+  && (
+    draft.title
+    || draft.cardDescription
+    || draft.sourceUrl
+    || draft.thumbnail
+    || (Array.isArray(draft.images) && draft.images.length)
+    || (draft.contentHtml && draft.contentHtml !== DEFAULT_EDITOR_HTML && draft.contentHtml !== "<p></p>")
+  )
+);
+
+const readDraft = (key) => {
+  try {
+    const raw = window.sessionStorage?.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    console.info("Case draft could not be read.", error);
+    return null;
+  }
+};
+
+const updateDraftStatus = (draft = null) => {
+  const target = $("[data-draft-status]");
+  if (!target) return;
+  if (!draft?.savedAt) {
+    target.hidden = true;
+    target.textContent = "";
+    return;
+  }
+  target.hidden = false;
+  target.textContent = `임시 저장됨 · 마지막 임시 저장: ${getDraftTimestampFromIso(draft.savedAt)}`;
+};
+
+const getDraftTimestampFromIso = (value) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return getDraftTimestamp();
+  return date.toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+};
+
+const saveDraft = () => {
+  if (!state.activeDraftKey || state.isRestoringDraft) return;
+  const draft = getDraftPayload();
+  if (!draft) return;
+  draft.savedAt = new Date().toISOString();
+  try {
+    window.sessionStorage?.setItem(state.activeDraftKey, JSON.stringify(draft));
+    updateDraftStatus(draft);
+  } catch (error) {
+    console.info("Case draft could not be saved.", error);
+  }
+};
+
+const clearDraft = (key = state.activeDraftKey) => {
+  if (!key) return;
+  try {
+    window.sessionStorage?.removeItem(key);
+  } catch (error) {
+    console.info("Case draft could not be cleared.", error);
+  }
+  if (key === state.activeDraftKey) updateDraftStatus(null);
+};
+
+const confirmDiscardDraft = (key) => {
+  const draft = readDraft(key);
+  if (!draftHasContent(draft)) return true;
+  return window.confirm("현재 작성 중인 내용이 있습니다. 내용을 삭제하고 새로 작성하시겠습니까?");
+};
+
+const applyDraft = (draft) => {
+  const form = $("[data-case-form]");
+  if (!form || !draft) return;
+  state.isRestoringDraft = true;
+  form.elements.id.value = draft.id || "";
+  form.elements.title.value = draft.title || "";
+  form.elements.category.value = draft.category || CATEGORIES[0];
+  form.elements.cardDescription.value = draft.cardDescription || "";
+  form.elements.status.value = draft.status || "published";
+  form.elements.sourceUrl.value = draft.sourceUrl || "";
+  state.thumbnail = draft.thumbnail || null;
+  state.images = Array.isArray(draft.images) ? draft.images : [];
+  $("[data-rich-editor]").innerHTML = draft.contentHtml || DEFAULT_EDITOR_HTML;
+  renderThumbnail();
+  renderImages();
+  updateDraftStatus(draft);
+  state.isRestoringDraft = false;
+};
+
+const restoreDraft = (key) => {
+  const draft = readDraft(key);
+  if (draftHasContent(draft)) {
+    applyDraft(draft);
+  } else {
+    updateDraftStatus(null);
+  }
+};
+
 const initialize = async () => {
   showOnly("loading");
   state.config = await loadConfig();
@@ -140,13 +275,24 @@ const initialize = async () => {
 const bindEvents = () => {
   $("[data-login-form]")?.addEventListener("submit", handleLogin);
   document.addEventListener("click", (event) => {
-    const action = event.target.closest("[data-show-list], [data-back-to-list], [data-cancel-editor]");
+    const cancel = event.target.closest("[data-cancel-editor]");
+    if (cancel) {
+      event.preventDefault();
+      if (!state.isAdmin) return;
+      if (!confirmDiscardDraft(state.activeDraftKey)) return;
+      clearDraft(state.activeDraftKey);
+      resetForm();
+      showListView();
+      return;
+    }
+
+    const action = event.target.closest("[data-show-list], [data-back-to-list]");
     if (!action) return;
     event.preventDefault();
     if (!state.isAdmin) return;
     showListView();
   });
-  $$("[data-new-case]").forEach((button) => button.addEventListener("click", showCreateView));
+  $$("[data-new-case]").forEach((button) => button.addEventListener("click", handleNewCase));
   $("[data-logout]")?.addEventListener("click", logoutAdmin);
   $("[data-force-logout]")?.addEventListener("click", logoutAdmin);
   $("[data-case-search]")?.addEventListener("input", (event) => {
@@ -162,6 +308,10 @@ const bindEvents = () => {
     renderCaseList();
   });
   $("[data-case-form]")?.addEventListener("submit", handleSave);
+  $("[data-case-form]")?.addEventListener("input", saveDraft);
+  $("[data-case-form]")?.addEventListener("change", saveDraft);
+  $("[data-rich-editor]")?.addEventListener("input", saveDraft);
+  $("[data-rich-editor]")?.addEventListener("blur", saveDraft);
   $("[data-thumbnail-input]")?.addEventListener("change", (event) => uploadThumbnail(event.target.files?.[0]));
   $("[data-image-input]")?.addEventListener("change", (event) => uploadContentImages([...event.target.files]));
   $$(".admin-file-drop").forEach((drop) => {
@@ -185,12 +335,19 @@ const bindEvents = () => {
     button.addEventListener("click", () => {
       document.execCommand(button.dataset.command, false, button.dataset.value || null);
       $("[data-rich-editor]")?.focus();
+      saveDraft();
     });
   });
-  $("[data-insert-hr]")?.addEventListener("click", () => document.execCommand("insertHorizontalRule"));
+  $("[data-insert-hr]")?.addEventListener("click", () => {
+    document.execCommand("insertHorizontalRule");
+    saveDraft();
+  });
   $("[data-insert-link]")?.addEventListener("click", () => {
     const url = window.prompt("연결할 URL을 입력해 주세요.");
-    if (url && /^https:\/\//.test(url)) document.execCommand("createLink", false, url);
+    if (url && /^https:\/\//.test(url)) {
+      document.execCommand("createLink", false, url);
+      saveDraft();
+    }
   });
   $("[data-detail-edit]")?.addEventListener("click", () => {
     if (state.selectedCase) showEditView(state.selectedCase.id);
@@ -394,11 +551,26 @@ const showDetailView = (id, text = "") => {
   $("[data-detail-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
-const showCreateView = () => {
+const handleNewCase = () => {
+  const draft = readDraft(DRAFT_NEW_KEY);
+  const shouldDiscard = draftHasContent(draft)
+    ? window.confirm("현재 작성 중인 내용이 있습니다. 내용을 삭제하고 새로 작성하시겠습니까?")
+    : true;
+  if (shouldDiscard) {
+    clearDraft(DRAFT_NEW_KEY);
+    showCreateView({ skipRestore: true });
+    return;
+  }
+  showCreateView();
+};
+
+const showCreateView = ({ skipRestore = false } = {}) => {
   resetForm();
+  state.activeDraftKey = DRAFT_NEW_KEY;
   $("[data-editor-title]").textContent = "새 글 작성";
   $("[data-save-label]").textContent = "저장";
   show("[data-editor-delete]", false);
+  if (!skipRestore) restoreDraft(state.activeDraftKey);
   setView("editor");
   $("[data-editor-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
@@ -411,9 +583,11 @@ const showEditView = (id) => {
     return;
   }
   fillForm(item);
+  state.activeDraftKey = getDraftKey(item.id);
   $("[data-editor-title]").textContent = "치료 사례 수정";
   $("[data-save-label]").textContent = "저장";
   show("[data-editor-delete]", true);
+  restoreDraft(state.activeDraftKey);
   setView("editor");
   $("[data-editor-view]")?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
@@ -448,15 +622,17 @@ const resetForm = () => {
   state.selectedCase = null;
   state.thumbnail = null;
   state.images = [];
+  state.activeDraftKey = "";
   const form = $("[data-case-form]");
   form?.reset();
   if (form) {
     form.elements.id.value = "";
     form.elements.status.value = "published";
   }
-  $("[data-rich-editor]").innerHTML = "<p>진료 사례 내용을 입력해 주세요.</p>";
+  $("[data-rich-editor]").innerHTML = DEFAULT_EDITOR_HTML;
   renderThumbnail();
   renderImages();
+  updateDraftStatus(null);
 };
 
 const fillForm = (item) => {
@@ -518,8 +694,10 @@ const handleSave = async (event) => {
   }
   await loadCases();
   if (id) {
+    clearDraft(getDraftKey(id));
     showDetailView(data.id, "치료 사례가 수정되었습니다.");
   } else {
+    clearDraft(DRAFT_NEW_KEY);
     showListView("치료 사례가 등록되었습니다.");
   }
 };
@@ -531,6 +709,7 @@ const deleteCase = async (id) => {
     message("[data-admin-message]", `삭제 실패: ${error.message}`, true);
     return;
   }
+  clearDraft(getDraftKey(id));
   await loadCases();
   showListView("치료 사례가 삭제되었습니다.");
 };
@@ -577,6 +756,7 @@ const uploadThumbnail = async (file) => {
     state.thumbnail = await uploadImageToStorage(file, "thumbnails");
     message("[data-thumbnail-progress]", "");
     renderThumbnail();
+    saveDraft();
   } catch (error) {
     message("[data-thumbnail-progress]", "");
     message("[data-admin-message]", `대표 이미지 업로드 실패: ${error.message}`, true);
@@ -592,6 +772,7 @@ const removeThumbnail = async () => {
     await state.client.storage.from(state.config.storageBucket || "case-images").remove([path]);
   }
   renderThumbnail();
+  saveDraft();
 };
 
 const renderThumbnail = () => {
@@ -630,6 +811,7 @@ const uploadContentImages = async (files) => {
   }
   message("[data-upload-progress]", "");
   renderImages();
+  saveDraft();
 };
 
 const renderImages = () => {
