@@ -7,51 +7,6 @@ const caseGrid = document.querySelector("[data-case-grid]");
 const mobileCaseArchive = document.querySelector("[data-mobile-case-archive]");
 const contactInfo = window.IFOREST_CONTACT || {};
 
-const CASE_SECTIONS = [
-  {
-    id: "orthopedic",
-    title: "정형외과",
-    icon: "bone",
-    description: "슬개골 탈구, 십자인대 단열, 고관절 질환 등 다양한 정형외과 수술 사례입니다."
-  },
-  {
-    id: "general-surgery",
-    title: "일반외과·종양수술",
-    icon: "scalpel",
-    description: "이물 제거, 자궁축농증, 방광결석, 비장 및 유선종양 등 다양한 일반외과와 종양수술 사례입니다."
-  },
-  {
-    id: "internal",
-    title: "내과·노령질환",
-    icon: "internal",
-    description: "만성외이염, 쿠싱증후군, 갑상선기능저하증, 당뇨병 등 내과 및 노령질환 진료 사례입니다."
-  },
-  {
-    id: "dental",
-    title: "치과",
-    icon: "dental",
-    description: "강아지와 고양이의 치주질환, 구내염, 치아흡수성 병변 및 발치 치료 사례입니다."
-  },
-  {
-    id: "cat",
-    title: "고양이 특화진료",
-    icon: "cat",
-    description: "신부전, 중독, 소화기·비뇨기·피부질환 등 고양이 특성을 고려한 실제 진료 사례입니다."
-  },
-  {
-    id: "cardiology",
-    title: "심장·건강검진",
-    icon: "heart",
-    description: "심장질환의 조기 진단과 치료, 건강검진을 통해 발견한 실제 진료 사례입니다."
-  },
-  {
-    id: "ophthalmology",
-    title: "안과",
-    icon: "eye",
-    description: "각막궤양, 녹내장, 포도막염 등 다양한 안과질환의 진단과 치료 사례입니다."
-  }
-];
-
 const normalizeCaseCategory = (category = "") => String(category).replace(/\s*·\s*/g, "·").trim();
 
 const applyContactInfo = () => {
@@ -493,6 +448,8 @@ const createCaseCard = (item) => {
   card.className = "case-card";
   if (caseUrl) {
     card.href = caseUrl;
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
     card.setAttribute("aria-label", `${item.title} 치료 과정 보기`);
   } else {
     card.classList.add("case-card-disabled");
@@ -617,8 +574,7 @@ const createCaseSection = (section, cases) => {
 };
 
 const getCaseUrl = (item) => {
-  const id = item.slug || item.id;
-  return id ? `case.html?id=${encodeURIComponent(id)}` : "";
+  return item.blogUrl || item.sourceUrl || "";
 };
 
 const getMobileCaseTags = (item) => {
@@ -637,9 +593,16 @@ const getMobileCaseTags = (item) => {
 };
 
 const createMobileCaseCard = (item, sectionTitle) => {
-  const card = document.createElement("a");
+  const caseUrl = getCaseUrl(item);
+  const card = document.createElement(caseUrl ? "a" : "article");
   card.className = "mobile-case-card";
-  card.href = getCaseUrl(item) || "archive.html";
+  if (caseUrl) {
+    card.href = caseUrl;
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
+  } else {
+    card.classList.add("mobile-case-card-disabled");
+  }
   card.setAttribute("aria-label", `${item.title} 치료 사례 보기`);
 
   const badge = document.createElement("span");
@@ -660,7 +623,7 @@ const createMobileCaseCard = (item, sectionTitle) => {
 
   const link = document.createElement("em");
   link.className = "mobile-case-link";
-  link.textContent = "치료 사례 보기 →";
+  link.textContent = caseUrl ? "블로그 원문 보기 →" : "블로그 링크 확인 필요";
 
   card.append(badge, title, tags, link);
   return card;
@@ -679,7 +642,7 @@ const renderMobileCaseArchive = (cases, sections) => {
   intro.innerHTML = `
     <p class="eyebrow">CASE ARCHIVE</p>
     <h3>실제 진료 케이스를<br>분야별로 모아봅니다</h3>
-    <p>아이숲동물병원에서 직접 진료한 사례를 분야별로 정리했습니다. 사례를 누르면 홈페이지 안에서 자세한 내용을 확인하실 수 있습니다.</p>
+    <p>아이숲동물병원에서 직접 진료한 사례를 분야별로 정리했습니다. 사례를 누르면 네이버 블로그 원문으로 이동합니다.</p>
   `;
 
   const filters = document.createElement("div");
@@ -738,83 +701,12 @@ const renderMobileCaseArchive = (cases, sections) => {
   renderList("all");
 };
 
-const loadCaseScript = (src, test) => new Promise((resolve) => {
-  if (test?.()) {
-    resolve(true);
-    return;
-  }
-  const existing = document.querySelector(`script[src="${src}"]`);
-  if (existing) {
-    existing.addEventListener("load", () => resolve(true), { once: true });
-    existing.addEventListener("error", () => resolve(false), { once: true });
-    return;
-  }
-  const script = document.createElement("script");
-  script.src = src;
-  script.async = true;
-  script.addEventListener("load", () => resolve(true), { once: true });
-  script.addEventListener("error", () => resolve(false), { once: true });
-  document.head.append(script);
-});
-
-const getCaseConfig = async () => {
-  if (window.IFOREST_ADMIN_CONFIG?.supabaseUrl) return window.IFOREST_ADMIN_CONFIG;
-  await loadCaseScript("admin-config.js", () => Boolean(window.IFOREST_ADMIN_CONFIG));
-  return window.IFOREST_ADMIN_CONFIG?.supabaseUrl ? window.IFOREST_ADMIN_CONFIG : null;
-};
-
-const getSectionMeta = (category) =>
-  CASE_SECTIONS.find((section) => normalizeCaseCategory(section.title) === normalizeCaseCategory(category));
-
-const loadCasesFromCms = async () => {
-  const config = await getCaseConfig();
-  const publishableKey = config?.supabasePublishableKey || config?.supabaseAnonKey;
-  if (!config?.supabaseUrl || !publishableKey) return [];
-
-  const hasClient = await loadCaseScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2", () => Boolean(window.supabase?.createClient));
-  if (!hasClient) return [];
-
-  try {
-    const client = window.supabase.createClient(config.supabaseUrl, publishableKey);
-    const { data, error } = await client
-      .from(config.tableName || "cases")
-      .select("*")
-      .eq("status", "published")
-      .order("published_at", { ascending: false });
-    if (error) throw error;
-
-    return (data || []).map((item) => {
-      const category = normalizeCaseCategory(item.category || "치료 사례");
-      const section = getSectionMeta(category);
-      const description = item.card_description || item.summary || "아이숲동물병원의 실제 진료 사례입니다.";
-      return {
-        id: item.slug || item.id,
-        slug: item.slug || item.id,
-        title: item.title || "치료 사례",
-        thumbnailTitle: item.title || "치료 사례",
-        thumbnailLines: String(item.title || "치료 사례").split(/\s+/).slice(0, 2),
-        subtitle: description,
-        description,
-        categories: [category],
-        category,
-        icon: section?.icon || "internal",
-        publishedAt: (item.published_at || item.created_at || "").slice(0, 10),
-        sourceUrl: item.source_url || "",
-        thumbnail: item.thumbnail_url || "",
-        images: item.images || []
-      };
-    });
-  } catch (error) {
-    console.info("CMS case list is not available.", error);
-    return [];
-  }
-};
-
-const renderCases = async () => {
-  const cases = await loadCasesFromCms();
-  const sections = CASE_SECTIONS;
+const renderCases = () => {
+  if (!Array.isArray(window.IFOREST_CASES)) return;
 
   const fragment = document.createDocumentFragment();
+  const cases = window.IFOREST_CASES;
+  const sections = Array.isArray(window.IFOREST_CASE_SECTIONS) ? window.IFOREST_CASE_SECTIONS : [];
 
   if (caseGrid) {
     sections.forEach((section) => {
@@ -824,11 +716,7 @@ const renderCases = async () => {
       }
     });
 
-    if (fragment.childNodes.length) {
-      caseGrid.replaceChildren(fragment);
-    } else {
-      caseGrid.innerHTML = '<p class="archive-empty">아직 등록된 치료 사례가 없습니다.</p>';
-    }
+    caseGrid.replaceChildren(fragment);
     requestAnimationFrame(() => {
       caseGrid.querySelectorAll(".case-card").forEach((card) => card.classList.add("visible"));
       const targetId = decodeURIComponent(window.location.hash.slice(1));
