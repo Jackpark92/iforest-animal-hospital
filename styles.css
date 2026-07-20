@@ -5421,6 +5421,52 @@ address {
     -webkit-overflow-scrolling: touch;
   }
 
+  .archive-filter-scroll-wrap {
+    position: relative;
+    max-width: 100%;
+  }
+
+  .archive-scroll-hint {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 8px;
+    display: flex;
+    width: 54px;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 16px;
+    pointer-events: none;
+    color: rgba(7, 86, 61, 0.62);
+    font-size: 30px;
+    font-weight: 850;
+    line-height: 1;
+    background: linear-gradient(90deg, rgba(253, 250, 242, 0), rgba(253, 250, 242, 0.9) 58%, rgba(253, 250, 242, 1));
+    opacity: 0;
+    transform: translateX(4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  .archive-filter-scroll-wrap.show-scroll-hint .archive-scroll-hint {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .archive-filter-scroll-wrap.show-scroll-hint .archive-filter-list {
+    animation: archive-filter-nudge 0.8s ease-out 0.15s 1 both;
+  }
+
+  @keyframes archive-filter-nudge {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    42% {
+      transform: translateX(16px);
+    }
+  }
+
   .archive-filter-list::-webkit-scrollbar {
     display: none;
   }

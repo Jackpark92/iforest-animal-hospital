@@ -25,6 +25,8 @@ const toCaseDetailUrl = (item) => `case.html?id=${encodeURIComponent(toCaseId(it
 
 const fallbackImage = "assets/hero.jpg";
 
+const isMobileArchiveViewport = () => window.matchMedia("(max-width: 768px)").matches;
+
 const loadImportedCases = async () => {
   try {
     const response = await fetch("content/cases/index.json", { cache: "no-store" });
@@ -94,13 +96,36 @@ const renderArchive = async () => {
   };
 
   filters?.replaceChildren(...CASE_CATEGORY_ORDER.map(makeButton));
+  if (filters && !filters.parentElement?.classList.contains("archive-filter-scroll-wrap")) {
+    const wrap = document.createElement("div");
+    wrap.className = "archive-filter-scroll-wrap";
+    filters.parentNode.insertBefore(wrap, filters);
+    wrap.append(filters);
+
+    const hint = document.createElement("span");
+    hint.className = "archive-scroll-hint";
+    hint.setAttribute("aria-hidden", "true");
+    hint.textContent = ">";
+    wrap.append(hint);
+
+    const updateHint = () => {
+      const hasOverflow = filters.scrollWidth > filters.clientWidth + 2;
+      const hasNotScrolled = filters.scrollLeft <= 2;
+      wrap.classList.toggle("show-scroll-hint", hasOverflow && hasNotScrolled);
+    };
+
+    filters.addEventListener("scroll", updateHint, { passive: true });
+    window.addEventListener("resize", updateHint);
+    requestAnimationFrame(updateHint);
+  }
 
   const visibleCases = activeCategory === "전체"
     ? cases
     : cases.filter((item) => (item.categories || [item.category]).map(normalizeCategory).includes(activeCategory));
 
   if (count) {
-    count.textContent = `${visibleCases.length}개의 치료 사례를 확인할 수 있습니다.`;
+    const displayedCount = isMobileArchiveViewport() ? cases.length : visibleCases.length;
+    count.textContent = `${displayedCount}개의 치료 사례를 확인할 수 있습니다.`;
   }
 
   if (!visibleCases.length) {
