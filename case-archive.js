@@ -25,8 +25,6 @@ const toCaseDetailUrl = (item) => `case.html?id=${encodeURIComponent(toCaseId(it
 
 const fallbackImage = "assets/hero.jpg";
 
-const isMobileArchiveViewport = () => window.matchMedia("(max-width: 768px)").matches;
-
 const loadImportedCases = async () => {
   try {
     const response = await fetch("content/cases/index.json", { cache: "no-store" });
@@ -124,8 +122,7 @@ const renderArchive = async () => {
     : cases.filter((item) => (item.categories || [item.category]).map(normalizeCategory).includes(activeCategory));
 
   if (count) {
-    const displayedCount = isMobileArchiveViewport() ? cases.length : visibleCases.length;
-    count.textContent = `${displayedCount}개의 치료 사례를 확인할 수 있습니다.`;
+    count.textContent = `${cases.length}개의 치료 사례를 확인할 수 있습니다.`;
   }
 
   if (!visibleCases.length) {

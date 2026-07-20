@@ -5393,14 +5393,28 @@ address {
 }
 
 @media (max-width: 768px) {
+  html,
+  body,
+  .case-page,
+  .case-page main,
+  .case-archive-page {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   .archive-main,
   .case-detail-main {
     padding-top: 70px;
   }
 
   .case-archive-hero {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     padding-top: 58px;
     padding-bottom: 24px;
+    overflow-x: hidden;
   }
 
   .case-archive-hero h1 {
@@ -5410,6 +5424,7 @@ address {
   .archive-filter-list {
     flex-wrap: nowrap;
     width: 100%;
+    min-width: 0;
     max-width: 100%;
     box-sizing: border-box;
     justify-content: flex-start;
@@ -5423,7 +5438,20 @@ address {
 
   .archive-filter-scroll-wrap {
     position: relative;
+    width: 100%;
+    min-width: 0;
     max-width: 100%;
+    overflow: hidden;
+  }
+
+  .archive-toolbar {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-right: 20px;
+    padding-left: 20px;
+    overflow-x: hidden;
   }
 
   .archive-scroll-hint {
@@ -5452,21 +5480,6 @@ address {
     transform: translateX(0);
   }
 
-  .archive-filter-scroll-wrap.show-scroll-hint .archive-filter-list {
-    animation: archive-filter-nudge 0.8s ease-out 0.15s 1 both;
-  }
-
-  @keyframes archive-filter-nudge {
-    0%,
-    100% {
-      transform: translateX(0);
-    }
-
-    42% {
-      transform: translateX(16px);
-    }
-  }
-
   .archive-filter-list::-webkit-scrollbar {
     display: none;
   }
@@ -5478,6 +5491,11 @@ address {
   .archive-card-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .archive-card {
