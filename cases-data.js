@@ -77,6 +77,10 @@ window.IFOREST_CASES = [
   },
   {
     id: "orthopedic-cruciate-ligament-pending",
+    thumbnail: "assets/cases/tplo.jpg",
+    thumbnailFit: "contain",
+    cardVariant: "premium-medical",
+    thumbnailLogo: "assets/cases/iforest-green-cross.png",
     title: "십자인대 단열",
     thumbnailLines: ["십자인대", "단열"],
     subtitle: "TPLO",
@@ -163,7 +167,7 @@ window.IFOREST_CASES = [
   },
   {
     id: "cat-bladder-stone",
-    thumbnail: "assets/cases/feline-bladder-stone.png",
+    thumbnail: "assets/cases/feline-bladder-stone.jpg",
     thumbnailFit: "contain",
     cardVariant: "premium-medical",
     thumbnailLogo: "assets/cases/iforest-green-cross.png",
@@ -208,7 +212,7 @@ window.IFOREST_CASES = [
   },
   {
     id: "surgery-skin-mass-cryotherapy",
-    thumbnail: "assets/cases/skin-mass-cryotherapy.jpg",
+    thumbnail: "assets/cases/cryotherapy-mass.jpg",
     thumbnailFit: "contain",
     cardVariant: "premium-medical",
     thumbnailLogo: "assets/cases/iforest-green-cross.png",
@@ -297,6 +301,10 @@ window.IFOREST_CASES = [
   },
   {
     id: "internal-cushing",
+    thumbnail: "assets/cases/cushing-syndrome.jpg",
+    thumbnailFit: "contain",
+    cardVariant: "premium-medical",
+    thumbnailLogo: "assets/cases/iforest-green-cross.png",
     title: "쿠싱증후군",
     thumbnailLines: ["쿠싱증후군"],
     subtitle: "부신피질기능항진증 관리",
@@ -307,6 +315,10 @@ window.IFOREST_CASES = [
   },
   {
     id: "internal-hypothyroidism",
+    thumbnail: "assets/cases/hypothyroidism.jpg",
+    thumbnailFit: "contain",
+    cardVariant: "premium-medical",
+    thumbnailLogo: "assets/cases/iforest-green-cross.png",
     title: "갑상선기능저하증",
     thumbnailLines: ["갑상선기능", "저하증"],
     subtitle: "내분비 검사와 장기 관리",
@@ -317,6 +329,10 @@ window.IFOREST_CASES = [
   },
   {
     id: "internal-diabetes",
+    thumbnail: "assets/cases/canine-diabetes.jpg",
+    thumbnailFit: "contain",
+    cardVariant: "premium-medical",
+    thumbnailLogo: "assets/cases/iforest-green-cross.png",
     title: "강아지 당뇨병",
     thumbnailLines: ["강아지", "당뇨병"],
     subtitle: "인슐린 치료와 혈당 관리",
@@ -327,6 +343,10 @@ window.IFOREST_CASES = [
   },
   {
     id: "internal-insulinoma",
+    thumbnail: "assets/cases/insulinoma.jpg",
+    thumbnailFit: "contain",
+    cardVariant: "premium-medical",
+    thumbnailLogo: "assets/cases/iforest-green-cross.png",
     title: "인슐린종양",
     thumbnailLines: ["인슐린종양"],
     subtitle: "저혈당 원인 진단",
