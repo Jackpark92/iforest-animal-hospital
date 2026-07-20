@@ -4503,10 +4503,16 @@ address {
   .mobile-case-filters {
     display: flex;
     gap: 8px;
-    margin-inline: -20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    justify-content: flex-start;
     padding: 2px 20px 8px;
     overflow-x: auto;
+    overflow-y: hidden;
+    scroll-padding: 0 20px;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .mobile-case-filters::-webkit-scrollbar {
@@ -5403,10 +5409,16 @@ address {
 
   .archive-filter-list {
     flex-wrap: nowrap;
-    margin-inline: -20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    justify-content: flex-start;
     padding: 0 20px 8px;
     overflow-x: auto;
+    overflow-y: hidden;
+    scroll-padding: 0 20px;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .archive-filter-list::-webkit-scrollbar {
