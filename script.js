@@ -276,7 +276,7 @@ const setServiceToggleState = (isOpen) => {
     if (button.dataset.serviceToggleMode !== "open") return;
     const label = button.querySelector("span");
     const iconPath = button.querySelector("path");
-    if (label) label.textContent = isOpen ? "진료과목 접기" : "진료과목 전체보기";
+    if (label) label.textContent = isOpen ? "접기" : "진료과목 전체 보기";
     iconPath?.setAttribute("d", isOpen ? "m18 15-6-6-6 6" : "m6 9 6 6 6-6");
   });
 };
