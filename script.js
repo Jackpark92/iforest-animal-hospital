@@ -5,6 +5,16 @@ const desktopDropdowns = document.querySelectorAll("[data-desktop-dropdown]");
 const mobileAccordions = document.querySelectorAll("[data-mobile-accordion]");
 const caseGrid = document.querySelector("[data-case-grid]");
 const mobileCaseArchive = document.querySelector("[data-mobile-case-archive]");
+const CASE_BLOG_LIST_URL = "https://blog.naver.com/PostList.naver?blogId=vet_jackpark";
+const CASE_CATEGORY_BLOG_URLS = {
+  "정형외과": "https://blog.naver.com/PostList.naver?blogId=vet_jackpark&from=postList&categoryNo=12",
+  "일반외과·종양수술": "https://blog.naver.com/PostList.naver?blogId=vet_jackpark&from=postList&categoryNo=12",
+  "내과·노령질환": "https://blog.naver.com/PostList.naver?blogId=vet_jackpark&from=postList&categoryNo=28",
+  "치과": "https://blog.naver.com/PostList.naver?blogId=vet_jackpark&from=postList&categoryNo=12",
+  "고양이 특화진료": "https://blog.naver.com/PostList.naver?blogId=vet_jackpark&from=postList&categoryNo=29",
+  "심장·건강검진": "https://blog.naver.com/PostList.naver?blogId=vet_jackpark&from=postList&categoryNo=28",
+  "안과": "https://blog.naver.com/PostList.naver?blogId=vet_jackpark&from=postList&categoryNo=28"
+};
 const contactInfo = window.IFOREST_CONTACT || {};
 
 const normalizeCaseCategory = (category = "") => String(category).replace(/\s*·\s*/g, "·").trim();
@@ -547,7 +557,9 @@ const createCaseSection = (section, cases) => {
   actions.className = "case-category-actions";
 
   const viewAll = document.createElement("a");
-  viewAll.href = `archive.html?category=${encodeURIComponent(section.title)}`;
+  viewAll.href = CASE_CATEGORY_BLOG_URLS[section.title] || CASE_BLOG_LIST_URL;
+  viewAll.target = "_blank";
+  viewAll.rel = "noopener noreferrer";
   viewAll.textContent = `${section.title} 치료 사례 모두 보기 →`;
   viewAll.setAttribute("aria-label", `${section.title} 치료 사례 모두 보기`);
   actions.append(viewAll);
@@ -725,8 +737,10 @@ const renderMobileCaseArchive = (cases, sections) => {
 
   const more = document.createElement("a");
   more.className = "mobile-case-more";
-  more.href = "archive.html";
-  more.textContent = "전체 치료 사례 아카이브 보기 →";
+  more.href = CASE_BLOG_LIST_URL;
+  more.target = "_blank";
+  more.rel = "noopener noreferrer";
+  more.textContent = "치료 사례 보기 →";
 
   mobileCaseArchive.replaceChildren(intro, filters, list, more);
   renderList("all");
