@@ -4500,6 +4500,13 @@ address {
     word-break: keep-all;
   }
 
+  .mobile-case-filter-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
   .mobile-case-filters {
     display: flex;
     gap: 8px;
@@ -4513,6 +4520,32 @@ address {
     scroll-padding: 0 20px;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-case-scroll-hint {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 8px;
+    display: flex;
+    width: 54px;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 16px;
+    pointer-events: none;
+    color: rgba(7, 86, 61, 0.64);
+    font-size: 30px;
+    font-weight: 850;
+    line-height: 1;
+    background: linear-gradient(90deg, rgba(253, 250, 242, 0), rgba(253, 250, 242, 0.9) 58%, rgba(253, 250, 242, 1));
+    opacity: 0;
+    transform: translateX(4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  .mobile-case-filter-wrap.show-scroll-hint .mobile-case-scroll-hint {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .mobile-case-filters::-webkit-scrollbar {
@@ -4613,6 +4646,7 @@ address {
     font-size: 15px;
     font-weight: 950;
     text-align: center;
+    white-space: nowrap;
     background: var(--green-dark);
     border-radius: 999px;
     box-shadow: 0 14px 30px rgba(7, 135, 82, 0.18);

@@ -693,6 +693,13 @@ const renderMobileCaseArchive = (cases, sections) => {
   filters.setAttribute("role", "tablist");
   filters.setAttribute("aria-label", "치료 케이스 분야 선택");
 
+  const filterWrap = document.createElement("div");
+  filterWrap.className = "mobile-case-filter-wrap";
+  const filterHint = document.createElement("span");
+  filterHint.className = "mobile-case-scroll-hint";
+  filterHint.textContent = "›";
+  filterHint.setAttribute("aria-hidden", "true");
+
   const list = document.createElement("div");
   list.className = "mobile-case-list";
 
@@ -734,15 +741,25 @@ const renderMobileCaseArchive = (cases, sections) => {
 
   filters.append(makeFilterButton("전체", "all", true));
   sectionMap.forEach(({ section }) => filters.append(makeFilterButton(section.title, section.id)));
+  filterWrap.append(filters, filterHint);
+
+  const updateFilterHint = () => {
+    const canScroll = filters.scrollWidth > filters.clientWidth + 2;
+    const atEnd = filters.scrollLeft + filters.clientWidth >= filters.scrollWidth - 2;
+    filterWrap.classList.toggle("show-scroll-hint", canScroll && !atEnd);
+  };
+  filters.addEventListener("scroll", updateFilterHint, { passive: true });
+  window.addEventListener("resize", updateFilterHint);
+  requestAnimationFrame(updateFilterHint);
 
   const more = document.createElement("a");
   more.className = "mobile-case-more";
   more.href = CASE_BLOG_LIST_URL;
   more.target = "_blank";
   more.rel = "noopener noreferrer";
-  more.textContent = "치료 사례 보기 →";
+  more.textContent = "블로그 치료 사례 보기 ↗";
 
-  mobileCaseArchive.replaceChildren(intro, filters, list, more);
+  mobileCaseArchive.replaceChildren(intro, filterWrap, list, more);
   renderList("all");
 };
 
