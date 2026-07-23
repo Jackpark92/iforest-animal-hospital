@@ -130,22 +130,58 @@ window.IFOREST_PRICE_CATEGORIES = [
     ]
   },
   {
-    category: "투약/조제비용",
+    category: "심장사상충 예방비(개)",
     items: [
-      { name: "넥스가드(Nexgard) 2~3.5 kg", price: "21,000원", note: "" },
-      { name: "넥스가드(Nexgard) 3.5~7.5 kg", price: "23,000원", note: "" },
-      { name: "넥스가드(Nexgard) 7.5~15 kg", price: "26,000원", note: "" },
-      { name: "애드보킷(Advocate) 독 ~4 kg", price: "16,500원", note: "" },
-      { name: "애드보킷(Advocate) 독 4~10 kg", price: "18,500원", note: "" },
-      { name: "애드보킷(Advocate) 독 10~25 kg", price: "25,000원", note: "" },
-      { name: "하트가드(Heartgard) ~11 kg", price: "10,000원", note: "" },
-      { name: "하트가드(Heartgard) 12~22 kg", price: "14,000원", note: "" },
-      { name: "프론트라인(Frontline) ~10 kg", price: "16,000원", note: "" },
-      { name: "프론트라인(Frontline) 10~20 kg", price: "22,000원", note: "" },
-      { name: "넥스가드 캣 콤보 ~2.5 kg", price: "18,000원", note: "" },
-      { name: "넥스가드 캣 콤보 2.5~7.5 kg", price: "20,000원", note: "" },
-      { name: "애드보킷(Advocate) 캣 ~4 kg", price: "16,500원", note: "" },
-      { name: "애드보킷(Advocate) 캣 4~8 kg", price: "18,500원", note: "" }
+      {
+        name: "넥스가드",
+        price: "21,000~26,000원",
+        note: "2~15 kg 체중 구간 기준"
+      },
+      {
+        name: "하트가드",
+        price: "10,000~14,000원",
+        note: "~22 kg 체중 구간 기준"
+      },
+      {
+        name: "애드보킷",
+        price: "16,500~25,000원",
+        note: "~25 kg 체중 구간 기준"
+      }
+    ]
+  },
+  {
+    category: "심장사상충 예방비(고양이)",
+    items: [
+      {
+        name: "넥스가드 캣 콤보",
+        price: "18,000~20,000원",
+        note: "~7.5 kg 체중 구간 기준"
+      },
+      {
+        name: "애드보킷",
+        price: "16,500~18,500원",
+        note: "~8 kg 체중 구간 기준"
+      }
+    ]
+  },
+  {
+    category: "외부기생충 예방비",
+    items: [
+      {
+        name: "프론트라인",
+        price: "16,000~22,000원",
+        note: "~20 kg 체중 구간 기준"
+      }
+    ]
+  },
+  {
+    category: "광범위 구충비",
+    items: [
+      {
+        name: "내부구충제 투약",
+        price: "추후 입력",
+        note: "워드 파일에 별도 금액이 없어 추후 입력 예정"
+      }
     ]
   }
 ];
