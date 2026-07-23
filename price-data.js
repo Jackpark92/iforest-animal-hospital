@@ -88,13 +88,13 @@ window.IFOREST_PRICE_CATEGORIES = [
         note: "전혈구검사(CBC) 검사비와 판독료, 1회당"
       },
       {
-        name: "생화학검사(chemistry) 10종",
+        name: "생화학검사(chemistry) 9종",
         price: "65,000원",
         note: "추가 검사항목 및 외부위탁검사 비용 별도"
       },
       {
-        name: "생화학검사(chemistry) 24종",
-        price: "120,000원",
+        name: "생화학검사(chemistry) 16종",
+        price: "130,000원",
         note: "추가 검사항목 및 외부위탁검사 비용 별도"
       },
       {
