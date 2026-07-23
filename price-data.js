@@ -46,6 +46,8 @@ window.IFOREST_PRICE_CATEGORIES = [
   },
   {
     category: "예방접종료",
+    commonNote:
+      "· 주사재료 및 처치료 포함\n· 백신 접종 이후 발생할 수\n  있는 부작용에 대한 응급\n  처치료 별도",
     items: [
       {
         name: "개 종합백신 접종비",
@@ -81,6 +83,8 @@ window.IFOREST_PRICE_CATEGORIES = [
   },
   {
     category: "혈액검사비용",
+    commonNote:
+      "기타 혈액관련 검사 및\n외부 위탁검사 비용 별도",
     items: [
       {
         name: "전혈구검사비와 그 검사 판독료",
@@ -106,6 +110,8 @@ window.IFOREST_PRICE_CATEGORIES = [
   },
   {
     category: "영상검사비용",
+    commonNote:
+      "· 영상 검사를 위해 마취가\n  필요한 경우 마취전 검사\n  비용 및 마취비는 별도\n· 기타 영상검사 및 외부\n  위탁촬영, 검사비용 별도",
     items: [
       {
         name: "엑스선 촬영비와 그 촬영 판독료 ~10 kg",

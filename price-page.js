@@ -9,19 +9,36 @@ const escapeHtml = (value = "") =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
-const renderPriceSection = ({ category, items = [] }) => {
+const formatNote = (value = "") => escapeHtml(value || "-").replace(/\n/g, "<br>");
+
+const renderPriceSection = ({ category, commonNote = "", items = [] }) => {
   const tableRows = items
     .map(
-      (item) => `
+      (item, index) => `
         <tr>
           <td data-label="구분">${escapeHtml(category)}</td>
           <th scope="row" data-label="진료 항목">${escapeHtml(item.name)}</th>
           <td class="price-value" data-label="진료비용">${escapeHtml(item.price || "추후 입력")}</td>
-          <td data-label="비고">${escapeHtml(item.note || "-")}</td>
+          ${
+            commonNote
+              ? index === 0
+                ? `<td class="price-common-note" data-label="비고" rowspan="${items.length}">${formatNote(commonNote)}</td>`
+                : ""
+              : `<td data-label="비고">${formatNote(item.note || "-")}</td>`
+          }
         </tr>
       `
     )
     .join("");
+
+  const mobileCommonNote = commonNote
+    ? `
+      <aside class="price-common-note-card" aria-label="${escapeHtml(category)} 공통 비고">
+        <strong>비고</strong>
+        <p>${formatNote(commonNote)}</p>
+      </aside>
+    `
+    : "";
 
   const mobileCards = items
     .map(
@@ -34,10 +51,14 @@ const renderPriceSection = ({ category, items = [] }) => {
               <dt>진료비용</dt>
               <dd>${escapeHtml(item.price || "추후 입력")}</dd>
             </div>
-            <div>
-              <dt>비고</dt>
-              <dd>${escapeHtml(item.note || "-")}</dd>
-            </div>
+            ${
+              commonNote
+                ? ""
+                : `<div>
+                    <dt>비고</dt>
+                    <dd>${formatNote(item.note || "-")}</dd>
+                  </div>`
+            }
           </dl>
         </article>
       `
@@ -63,7 +84,7 @@ const renderPriceSection = ({ category, items = [] }) => {
           <tbody>${tableRows}</tbody>
         </table>
       </div>
-      <div class="price-mobile-list">${mobileCards}</div>
+      <div class="price-mobile-list">${mobileCommonNote}${mobileCards}</div>
     </section>
   `;
 };

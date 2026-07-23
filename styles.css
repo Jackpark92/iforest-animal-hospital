@@ -3136,6 +3136,12 @@ address {
   font-weight: 850;
 }
 
+.price-common-note {
+  color: #5d6861;
+  font-weight: 750;
+  white-space: normal;
+}
+
 .price-mobile-list {
   display: none;
 }
@@ -4250,6 +4256,32 @@ address {
     border: 1px solid rgba(7, 86, 61, 0.1);
     border-radius: 18px;
     box-shadow: 0 10px 24px rgba(42, 58, 46, 0.05);
+  }
+
+  .price-common-note-card {
+    padding: 16px 18px;
+    background: rgba(229, 242, 236, 0.72);
+    border: 1px solid rgba(7, 86, 61, 0.12);
+    border-radius: 18px;
+    color: #4f5d55;
+    box-shadow: 0 10px 24px rgba(42, 58, 46, 0.04);
+  }
+
+  .price-common-note-card strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--green-dark);
+    font-size: 14px;
+    font-weight: 850;
+  }
+
+  .price-common-note-card p {
+    margin: 0;
+    color: #56625b;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.55;
+    word-break: keep-all;
   }
 
   .price-item-category {
