@@ -24,7 +24,7 @@ const renderPriceSection = ({ category, commonNote = "", items = [] }) => {
               ? index === 0
                 ? `<td class="price-common-note" data-label="비고" rowspan="${items.length}">${formatNote(commonNote)}</td>`
                 : ""
-              : `<td data-label="비고">${formatNote(item.note || "-")}</td>`
+              : `<td data-label="비고">${item.note ? formatNote(item.note) : ""}</td>`
           }
         </tr>
       `
@@ -54,10 +54,12 @@ const renderPriceSection = ({ category, commonNote = "", items = [] }) => {
             ${
               commonNote
                 ? ""
-                : `<div>
-                    <dt>비고</dt>
-                    <dd>${formatNote(item.note || "-")}</dd>
-                  </div>`
+                : item.note
+                  ? `<div>
+                      <dt>비고</dt>
+                      <dd>${formatNote(item.note)}</dd>
+                    </div>`
+                  : ""
             }
           </dl>
         </article>

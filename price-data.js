@@ -21,6 +21,8 @@ window.IFOREST_PRICE_CATEGORIES = [
   },
   {
     category: "입원비",
+    commonNote:
+      "· 1일당, 의약품 및 의료적 처치 비용 별도",
     items: [
       {
         name: "입원비 0~5 kg",
@@ -84,7 +86,7 @@ window.IFOREST_PRICE_CATEGORIES = [
   {
     category: "혈액검사비용",
     commonNote:
-      "기타 혈액관련 검사 및\n외부 위탁검사 비용 별도",
+      "· 기타 혈액관련 검사 및\n  외부 위탁검사 비용 별도",
     items: [
       {
         name: "전혈구검사비와 그 검사 판독료",
@@ -141,17 +143,17 @@ window.IFOREST_PRICE_CATEGORIES = [
       {
         name: "넥스가드",
         price: "21,000~26,000원",
-        note: "2~15 kg 체중 구간 기준"
+        note: ""
       },
       {
         name: "하트가드",
         price: "10,000~14,000원",
-        note: "~22 kg 체중 구간 기준"
+        note: ""
       },
       {
         name: "애드보킷",
         price: "16,500~25,000원",
-        note: "~25 kg 체중 구간 기준"
+        note: ""
       }
     ]
   },
@@ -161,12 +163,12 @@ window.IFOREST_PRICE_CATEGORIES = [
       {
         name: "넥스가드 캣 콤보",
         price: "18,000~20,000원",
-        note: "~7.5 kg 체중 구간 기준"
+        note: ""
       },
       {
         name: "애드보킷",
         price: "16,500~18,500원",
-        note: "~8 kg 체중 구간 기준"
+        note: ""
       }
     ]
   },
@@ -176,7 +178,7 @@ window.IFOREST_PRICE_CATEGORIES = [
       {
         name: "프론트라인",
         price: "16,000~22,000원",
-        note: "~20 kg 체중 구간 기준"
+        note: ""
       }
     ]
   },
@@ -185,8 +187,8 @@ window.IFOREST_PRICE_CATEGORIES = [
     items: [
       {
         name: "내부구충제 투약",
-        price: "추후 입력",
-        note: "워드 파일에 별도 금액이 없어 추후 입력 예정"
+        price: "3,000~12,000원",
+        note: ""
       }
     ]
   }
