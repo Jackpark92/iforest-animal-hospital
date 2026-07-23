@@ -2988,6 +2988,185 @@ address {
   height: auto;
 }
 
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 16px 0 10px;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.footer-links a {
+  color: var(--green-dark);
+  text-decoration: none;
+}
+
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.price-main {
+  padding-top: 84px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(7, 135, 82, 0.08), transparent 0 24%, transparent 25%),
+    linear-gradient(180deg, var(--ivory), #fffdf8 48%, var(--ivory));
+}
+
+.price-hero {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: clamp(72px, 8vw, 112px) clamp(20px, 5vw, 70px) 34px;
+  text-align: center;
+}
+
+.price-hero h1 {
+  margin: 10px 0 20px;
+  color: var(--green-dark);
+  font-size: clamp(44px, 6vw, 78px);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.price-hero p:not(.eyebrow) {
+  margin: 0;
+  color: #5f6b64;
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.price-content {
+  width: min(var(--max), 100%);
+  margin: 0 auto;
+  padding: 12px clamp(20px, 5vw, 70px) clamp(80px, 9vw, 120px);
+}
+
+.price-content > div {
+  display: grid;
+  gap: 24px;
+}
+
+.price-category-card {
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(7, 86, 61, 0.13);
+  border-radius: 24px;
+  box-shadow: 0 18px 44px rgba(42, 58, 46, 0.08);
+}
+
+.price-category-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(229, 242, 236, 0.92), rgba(255, 248, 232, 0.74));
+  border-bottom: 1px solid rgba(7, 86, 61, 0.12);
+}
+
+.price-category-heading span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 0 7px rgba(7, 135, 82, 0.1);
+}
+
+.price-category-heading h2 {
+  margin: 0;
+  color: var(--green-dark);
+  font-size: clamp(22px, 2.4vw, 28px);
+  line-height: 1.25;
+}
+
+.price-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.price-table th,
+.price-table td {
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(7, 86, 61, 0.1);
+  color: #46524b;
+  font-size: 16px;
+  line-height: 1.55;
+  text-align: left;
+  vertical-align: top;
+  word-break: keep-all;
+}
+
+.price-table thead th {
+  background: rgba(255, 253, 248, 0.8);
+  color: var(--green-dark);
+  font-weight: 850;
+}
+
+.price-table tbody tr:last-child th,
+.price-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.price-table th:nth-child(1),
+.price-table td:nth-child(1) {
+  width: 18%;
+}
+
+.price-table th:nth-child(2),
+.price-table td:nth-child(2) {
+  width: 30%;
+}
+
+.price-table th:nth-child(3),
+.price-table td:nth-child(3) {
+  width: 18%;
+}
+
+.price-table tbody th {
+  color: #162338;
+  font-weight: 800;
+}
+
+.price-value {
+  color: var(--green-dark);
+  font-weight: 850;
+}
+
+.price-mobile-list {
+  display: none;
+}
+
+.price-notice {
+  margin-top: 28px;
+  padding: 26px 28px;
+  background: rgba(229, 242, 236, 0.64);
+  border: 1px solid rgba(7, 86, 61, 0.14);
+  border-radius: 24px;
+  color: #4f5d55;
+  box-shadow: 0 14px 34px rgba(42, 58, 46, 0.06);
+}
+
+.price-notice strong {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--green-dark);
+  font-size: 18px;
+}
+
+.price-notice p {
+  margin: 0;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.price-notice p + p {
+  margin-top: 8px;
+}
+
 .archive-main,
 .case-detail-main {
   padding-top: 84px;
@@ -3928,6 +4107,12 @@ address {
     justify-self: center;
     width: min(240px, 100%);
   }
+
+  .price-table th,
+  .price-table td {
+    padding: 16px 18px;
+    font-size: 15px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -4003,6 +4188,126 @@ address {
   .mobile-accordion button {
     min-height: 46px;
     padding: 12px 14px;
+  }
+
+  .price-main {
+    padding-top: calc(76px + env(safe-area-inset-top));
+    overflow-x: hidden;
+  }
+
+  .price-hero {
+    padding: 64px 20px 24px;
+  }
+
+  .price-hero h1 {
+    margin-bottom: 18px;
+    font-size: clamp(42px, 14vw, 64px);
+  }
+
+  .price-hero p:not(.eyebrow) {
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  .price-hero p br {
+    display: none;
+  }
+
+  .price-content {
+    padding: 6px 20px 76px;
+  }
+
+  .price-content > div {
+    gap: 18px;
+  }
+
+  .price-category-card {
+    border-radius: 20px;
+  }
+
+  .price-category-heading {
+    padding: 17px 18px;
+  }
+
+  .price-category-heading h2 {
+    font-size: 22px;
+  }
+
+  .price-table-wrap {
+    display: none;
+  }
+
+  .price-mobile-list {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .price-item-card {
+    min-height: 148px;
+    padding: 18px;
+    background: rgba(255, 253, 248, 0.9);
+    border: 1px solid rgba(7, 86, 61, 0.1);
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(42, 58, 46, 0.05);
+  }
+
+  .price-item-category {
+    margin: 0 0 8px;
+    color: var(--green);
+    font-size: 13px;
+    font-weight: 850;
+  }
+
+  .price-item-card h3 {
+    margin: 0 0 14px;
+    color: #142238;
+    font-size: 21px;
+    line-height: 1.3;
+    word-break: keep-all;
+  }
+
+  .price-item-card dl,
+  .price-item-card div,
+  .price-item-card dt,
+  .price-item-card dd {
+    margin: 0;
+  }
+
+  .price-item-card dl {
+    display: grid;
+    gap: 8px;
+  }
+
+  .price-item-card div {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .price-item-card dt {
+    color: #6a756f;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .price-item-card dd {
+    color: #46524b;
+    font-size: 15px;
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+
+  .price-item-card div:first-child dd {
+    color: var(--green-dark);
+    font-weight: 850;
+  }
+
+  .price-notice {
+    margin-top: 20px;
+    padding: 22px 20px;
+    border-radius: 20px;
   }
 
   .hero {
@@ -5303,6 +5608,11 @@ address {
   .footer-info p {
     margin: 0 0 8px;
     line-height: 1.6;
+  }
+
+  .footer-links {
+    justify-content: center;
+    margin: 14px 0 12px;
   }
 
   .mobile-final-cta {

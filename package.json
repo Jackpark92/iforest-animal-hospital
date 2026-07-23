@@ -3,6 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "verify": "node --check script.js && node --check case-archive.js && node --check admin-cases.js"
+    "verify": "node --check script.js && node --check case-archive.js && node --check admin-cases.js && node --check price-data.js && node --check price-page.js"
   }
 }
