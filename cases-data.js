@@ -294,7 +294,7 @@ window.IFOREST_CASES = [
     title: "곰팡이성 피부염",
     thumbnailLines: ["곰팡이성", "피부염"],
     subtitle: "피부질환 진료",
-    description: "곰팡이성 피부염",
+    description: "피부사상균증 진단 및 치료",
     categories: ["내과·노령질환"],
     icon: "internal",
     blogUrl: "https://blog.naver.com/vet_jackpark/224397368262",
