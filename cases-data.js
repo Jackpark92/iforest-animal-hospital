@@ -46,7 +46,7 @@ window.IFOREST_CASE_SECTIONS = [
 window.IFOREST_CASES = [
   {
     id: "orthopedic-patella-luxation",
-    thumbnail: "assets/cases/patellar-xray-4x3-premium.jpg",
+    thumbnail: "assets/cases/patellar-luxation-new.jpg",
     thumbnailFit: "contain",
     cardVariant: "premium-medical",
     thumbnailLogo: "assets/cases/iforest-green-cross.png",
@@ -57,7 +57,7 @@ window.IFOREST_CASES = [
     descriptionLines: ["활차구 성형술 · 경골조면이식술"],
     categories: ["정형외과"],
     icon: "bone",
-    blogUrl: "https://blog.naver.com/PostView.naver?blogId=vet_jackpark&logNo=223899252051",
+    blogUrl: "https://blog.naver.com/vet_jackpark/224382261464",
     publishedAt: ""
   },
   {
@@ -283,6 +283,21 @@ window.IFOREST_CASES = [
     categories: ["치과"],
     icon: "dental",
     blogUrl: "https://blog.naver.com/vet_jackpark/224270582679",
+    publishedAt: ""
+  },
+  {
+    id: "internal-fungal-dermatitis",
+    thumbnail: "assets/cases/fungal-dermatitis.jpg",
+    thumbnailFit: "contain",
+    cardVariant: "premium-medical",
+    thumbnailLogo: "assets/cases/iforest-green-cross.png",
+    title: "곰팡이성 피부염",
+    thumbnailLines: ["곰팡이성", "피부염"],
+    subtitle: "피부질환 진료",
+    description: "곰팡이성 피부염",
+    categories: ["내과·노령질환"],
+    icon: "internal",
+    blogUrl: "https://blog.naver.com/vet_jackpark/224397368262",
     publishedAt: ""
   },
   {
