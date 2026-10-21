@@ -1,0 +1,97 @@
+/* Scoped to the medical director's existing 05 research card. */
+.doctor-info-card.research {
+  container-type: inline-size;
+}
+
+.doctor-info-card.research .research-heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.doctor-info-card.research .doctor-icon {
+  flex: 0 0 42px;
+}
+
+.doctor-info-card.research .research-heading h3 {
+  margin: 0;
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.4;
+}
+
+.doctor-info-card.research .research-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+}
+
+.doctor-info-card.research .research-copy {
+  min-width: 0;
+}
+
+.doctor-info-card.research .research-publication {
+  display: inline-block;
+  margin: 0 0 16px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.doctor-info-card.research .research-journal {
+  margin: 0 0 10px;
+  color: #101b43;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.doctor-info-card.research .research-description {
+  margin: 0 0 18px;
+  color: #101b43;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.doctor-info-card.research .research-author {
+  display: inline-block;
+  padding: 5px 14px;
+  border: 1px solid rgba(7, 135, 82, 0.35);
+  border-radius: var(--radius);
+  background: var(--green-soft);
+  color: var(--green-dark);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.doctor-info-card.research .research-paper {
+  display: block;
+  width: 100%;
+  max-width: 721px;
+  height: auto;
+  object-fit: contain;
+  justify-self: center;
+}
+
+@container (max-width: 480px) {
+  .doctor-info-card.research .research-content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .doctor-info-card.research .research-content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .doctor-info-card.research .research-heading {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+}
