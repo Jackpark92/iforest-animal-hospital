@@ -1,97 +1,96 @@
-/* Scoped to the medical director's existing 05 research card. */
-.doctor-info-card.research {
-  container-type: inline-size;
+/* Only the director's 01–05 cards. */
+.director-credentials {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
-
-.doctor-info-card.research .research-heading {
+.director-credentials > .doctor-info-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid rgba(7, 135, 100, 0.2);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: none;
+}
+.director-credentials > .doctor-info-card.research {
+  grid-column: 1 / -1;
+}
+.director-credentials .credential-heading {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
-
-.doctor-info-card.research .doctor-icon {
+.director-credentials .doctor-icon {
   flex: 0 0 42px;
-}
-
-.doctor-info-card.research .research-heading h3 {
-  margin: 0;
-  font-size: clamp(20px, 2vw, 26px);
-  line-height: 1.4;
-}
-
-.doctor-info-card.research .research-content {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  align-items: center;
-  gap: 20px;
-}
-
-.doctor-info-card.research .research-copy {
-  min-width: 0;
-}
-
-.doctor-info-card.research .research-publication {
-  display: inline-block;
-  margin: 0 0 16px;
-  padding: 8px 10px;
-  border-radius: var(--radius);
-  background: var(--green-soft);
-  color: var(--green);
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
-.doctor-info-card.research .research-journal {
-  margin: 0 0 10px;
-  color: #101b43;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.5;
-}
-
-.doctor-info-card.research .research-description {
-  margin: 0 0 18px;
-  color: #101b43;
-  font-size: 16px;
-  line-height: 1.65;
-}
-
-.doctor-info-card.research .research-author {
-  display: inline-block;
-  padding: 5px 14px;
-  border: 1px solid rgba(7, 135, 82, 0.35);
-  border-radius: var(--radius);
+  width: 42px;
+  height: 42px;
+  border-color: rgba(7, 135, 100, 0.2);
   background: var(--green-soft);
   color: var(--green-dark);
   font-size: 16px;
   font-weight: 800;
 }
-
-.doctor-info-card.research .research-paper {
-  display: block;
-  width: 100%;
-  max-width: 721px;
-  height: auto;
-  object-fit: contain;
-  justify-self: center;
+.director-credentials .credential-heading h3 {
+  margin: 0;
+  color: var(--green-dark);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.4;
 }
-
-@container (max-width: 480px) {
-  .doctor-info-card.research .research-content {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.director-credentials .doctor-info-card ul {
+  gap: 8px;
 }
-
+.director-credentials .doctor-info-card li,
+.director-credentials .doctor-info-card p {
+  color: #4b5062;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.director-credentials .research-content,
+.director-credentials .research-copy {
+  min-width: 0;
+}
+.director-credentials .doctor-info-card .research-publication {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 7px 10px;
+  border-radius: var(--radius);
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: 16px;
+  font-weight: 750;
+}
+.director-credentials .doctor-info-card .research-journal {
+  margin: 0 0 4px;
+  color: #142e66;
+  font-size: 18px;
+  font-weight: 750;
+}
+.director-credentials .doctor-info-card .research-paper-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  word-break: normal;
+}
+.director-credentials .research-description {
+  margin: 0 0 8px;
+}
+.director-credentials .research-author {
+  display: inline-block;
+  padding: 3px 12px;
+  border: 1px solid rgba(7, 135, 100, 0.45);
+  border-radius: var(--radius);
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.6;
+}
 @media (max-width: 760px) {
-  .doctor-info-card.research .research-content {
+  .director-credentials {
     grid-template-columns: minmax(0, 1fr);
   }
-
-  .doctor-info-card.research .research-heading {
+  .director-credentials .credential-heading {
     gap: 12px;
-    margin-bottom: 20px;
   }
 }
