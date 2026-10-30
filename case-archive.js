@@ -50,6 +50,10 @@ const getBaseCases = () => (Array.isArray(window.IFOREST_CASES) ? window.IFOREST
   age: item.age || "",
   date: item.publishedAt || "",
   thumbnail: item.thumbnail || fallbackImage,
+  thumbnailAlt: item.thumbnailAlt,
+  thumbnailFit: item.thumbnailFit,
+  detailUrl: item.detailUrl,
+  seoTitle: item.seoTitle,
   sourceUrl: item.blogUrl || "",
   body: item.body || [],
   images: item.images || [],
@@ -134,9 +138,9 @@ const renderArchive = async () => {
     const image = item.thumbnail || item.images?.[0]?.src || fallbackImage;
     const meta = [item.species, item.age, item.date].filter(Boolean).join(" · ");
     const category = normalizeCategory(item.category || item.categories?.[0] || "치료 사례");
-    const sourceUrl = item.sourceUrl || item.blogUrl || "";
+    const sourceUrl = item.sourceUrl || item.blogUrl || item.detailUrl || "";
     const content = `
-        <img src="${escapeText(image)}" alt="${escapeText(item.title)} 대표 이미지" loading="lazy">
+        <img src="${escapeText(image)}" alt="${escapeText(item.thumbnailAlt || `${item.title} 대표 이미지`)}" loading="lazy">
         <span>${escapeText(category)}</span>
         <h3>${escapeText(item.title)}</h3>
         <p>${escapeText(item.summary || "아이숲동물병원의 실제 진료 사례입니다.")}</p>
@@ -193,7 +197,15 @@ const renderDetail = async () => {
   const heroImage = item.thumbnail || item.images?.[0]?.src || fallbackImage;
   const patientInfo = [item.species, item.breed, item.age].filter(Boolean).join(" · ");
   const category = normalizeCategory(item.category || item.categories?.[0] || "치료 사례");
-  document.title = `${item.title} | 아이숲동물병원 치료 사례`;
+  document.title = item.seoTitle || `${item.title} | 아이숲동물병원 치료 사례`;
+  if (item.seoTitle) {
+    const canonicalUrl = new URL(toCaseDetailUrl(item), "https://iforestah.com/").href;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", item.summary);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", item.seoTitle);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", item.summary);
+    document.querySelector('meta[property="og:image"]')?.setAttribute("content", new URL(heroImage, "https://iforestah.com/").href);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", canonicalUrl);
+  }
 
   root.innerHTML = `
     <article class="case-detail-shell">
@@ -205,7 +217,7 @@ const renderDetail = async () => {
           <p>${escapeText(item.summary || "")}</p>
           <small>${escapeText([patientInfo, item.date].filter(Boolean).join(" · "))}</small>
         </div>
-        <img src="${escapeText(heroImage)}" alt="${escapeText(item.title)} 대표 이미지" loading="eager">
+        <img src="${escapeText(heroImage)}" alt="${escapeText(item.thumbnailAlt || `${item.title} 대표 이미지`)}"${item.detailUrl && item.thumbnailFit === "contain" ? ' style="object-fit: contain"' : ""} loading="eager">
       </header>
       <div class="case-detail-body">${createBodyHtml(item)}</div>
       <footer class="case-detail-actions">

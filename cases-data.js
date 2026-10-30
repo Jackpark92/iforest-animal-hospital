@@ -486,6 +486,28 @@ window.IFOREST_CASES = [
     publishedAt: ""
   },
   {
+    id: "cat-chronic-kidney-disease",
+    thumbnail: "assets/cases/feline-chronic-kidney-disease.jpg",
+    thumbnailAlt: "고양이 만성신장병 진단을 위한 신장 초음파 검사 - 광명 아이숲동물병원",
+    thumbnailFit: "contain",
+    cardVariant: "premium-medical",
+    thumbnailLogo: "assets/cases/iforest-green-cross.png",
+    title: "고양이 만성신부전",
+    thumbnailLines: ["고양이", "만성신부전"],
+    subtitle: "고양이 만성신장병 진단과 관리",
+    description: "고양이 만성신장병 진단과 관리",
+    mobileTags: ["고양이 만성신장병", "진단과 관리"],
+    categories: ["고양이 특화진료"],
+    icon: "cat",
+    detailUrl: "case.html?id=cat-chronic-kidney-disease",
+    seoTitle: "고양이 만성신부전 진단과 관리 | 광명 아이숲동물병원",
+    body: [{
+      type: "paragraph",
+      text: "고양이 만성신장병은 혈액검사와 소변검사, 복부초음파 등을 종합적으로 평가하여 진단하고, 환자의 신장 기능과 임상 상태에 따라 지속적인 관리가 필요한 질환입니다."
+    }],
+    publishedAt: ""
+  },
+  {
     id: "cat-urinary-obstruction-aki",
     thumbnail: "assets/cases/feline-dysuria.jpg",
     thumbnailFit: "contain",

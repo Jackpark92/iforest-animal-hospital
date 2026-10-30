@@ -423,7 +423,7 @@ const createCaseThumbnail = (item) => {
     media.classList.add("case-media-photo");
     const image = document.createElement("img");
     image.src = item.thumbnail;
-    image.alt = `${item.title} 대표 이미지`;
+    image.alt = item.thumbnailAlt || `${item.title} 대표 이미지`;
     image.loading = "lazy";
     image.decoding = "async";
     image.className = item.thumbnailFit === "cover" ? "fit-cover" : "fit-contain";
@@ -617,7 +617,7 @@ const createCaseSection = (section, cases) => {
 };
 
 const getCaseUrl = (item) => {
-  return item.blogUrl || item.sourceUrl || "";
+  return item.blogUrl || item.sourceUrl || item.detailUrl || "";
 };
 
 const getMobileCaseTags = (item) => {
@@ -666,7 +666,7 @@ const createMobileCaseCard = (item, sectionTitle) => {
 
   const link = document.createElement("em");
   link.className = "mobile-case-link";
-  link.textContent = caseUrl ? "블로그 원문 보기 →" : "블로그 링크 확인 필요";
+  link.textContent = caseUrl ? (item.detailUrl && !item.blogUrl && !item.sourceUrl ? "자세히 보기 →" : "블로그 원문 보기 →") : "블로그 링크 확인 필요";
 
   card.append(badge, title, tags, link);
   return card;
