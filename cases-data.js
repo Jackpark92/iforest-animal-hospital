@@ -500,6 +500,7 @@ window.IFOREST_CASES = [
     categories: ["고양이 특화진료"],
     icon: "cat",
     detailUrl: "case.html?id=cat-chronic-kidney-disease",
+    blogUrl: "https://blog.naver.com/vet_jackpark/224459108850",
     seoTitle: "고양이 만성신부전 진단과 관리 | 광명 아이숲동물병원",
     body: [{
       type: "paragraph",
